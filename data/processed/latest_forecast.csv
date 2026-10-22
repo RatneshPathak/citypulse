@@ -1,0 +1,5 @@
+Station,data_through,stale_days,pm_today,forecast_pm25,lo,hi,risk_tier,risk_tier_upper,recommended_action
+"Bandra Kurla Complex, Mumbai - IITM",2026-10-21,0,78.3,80.9,71.3,89.0,Moderate,Moderate,Watch closely. Consider advisory for sensitive groups.
+"Borivali East, Mumbai - MPCB",2026-10-21,0,39.7,43.2,33.5,51.3,Satisfactory,Satisfactory,Routine monitoring. Sensitive groups may take care.
+"Chembur, Mumbai - MPCB",2026-10-21,0,51.2,59.4,49.8,67.5,Satisfactory,Moderate,Routine monitoring. Sensitive groups may take care.
+"Siddharth Nagar-Worli, Mumbai - IITM",2026-10-21,0,39.9,48.2,38.6,56.3,Satisfactory,Satisfactory,Routine monitoring. Sensitive groups may take care.

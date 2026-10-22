@@ -1,0 +1,24 @@
+{
+  "test_start": "2026-06-10",
+  "n_test_rows": 235,
+  "persistence_baseline": {
+    "MAE": 2.4186550469781665,
+    "RMSE": 3.711114387401516
+  },
+  "same_weekday_baseline": {
+    "MAE": 4.226631220490887,
+    "RMSE": 6.5388457395006645
+  },
+  "model": {
+    "MAE": 2.9338557491402577,
+    "RMSE": 4.3931448305141245
+  },
+  "interval_nominal": 0.8,
+  "interval_empirical_coverage_on_test": 0.9404255319148936,
+  "residual_quantiles_from_validation": {
+    "p10": -9.634494074160386,
+    "p90": 8.127186912078429
+  },
+  "tier_accuracy_model": 0.9702127659574468,
+  "tier_accuracy_persistence": 0.9744680851063829
+}
