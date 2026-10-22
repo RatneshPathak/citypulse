@@ -35,6 +35,10 @@ from src.decision.briefing import render_briefing_export_ui
 from src.decision.validation import render_validation_panel
 from src.decision import viz as decision_viz
 
+# Citizen and demo features
+from src.citizen.citizen_view import render_citizen_mode, render_aqi_card_export
+from src.demo.guided_demo import render_guided_demo
+
 st.set_page_config(
     page_title="CityPulse: Mumbai — Air Quality Prioritisation",
     page_icon=ICONS["page_icon"],
@@ -189,7 +193,16 @@ st_preds = preds_df[preds_df["canonical_station"] == selected_station].sort_valu
 st_prio_row = dyn_priority[dyn_priority["station"] == selected_station]
 st_prio = st_prio_row.iloc[0]
 
-tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab5 = st.tabs([
+# Add citizen mode toggle in sidebar
+st.sidebar.markdown("---")
+st.sidebar.markdown(f"### :material/people: View Mode")
+citizen_mode = st.sidebar.toggle(
+    "Citizen-Friendly Mode",
+    value=False,
+    help="Switch to simplified public view with health guidance"
+)
+
+tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_citizen, tab_demo, tab5 = st.tabs([
     f"{ICONS['tab_act']} 1. Priority Rankings",
     f":material/tune: 2. What-If Simulator",
     f":material/route: 3. Route Planner",
@@ -198,7 +211,9 @@ tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab5 = s
     f"{ICONS['tab_weather']} 6. Weather Analysis",
     f"{ICONS['tab_forecast']} 7. Forecast Performance",
     f":material/verified: 8. Validation & Backtest",
-    f"{ICONS['tab_methods']} 9. Data & Methods",
+    f":material/people: 9. Citizen View",
+    f":material/play_circle: 10. Guided Demo",
+    f"{ICONS['tab_methods']} 11. Data & Methods",
 ])
 
 with tab1:
@@ -786,4 +801,32 @@ with tab5:
             """
         )
 
+
+# TAB: Citizen View
+with tab_citizen:
+    render_takeaway(
+        "Simplified air quality information for the general public. Includes current status, health guidance for sensitive groups, and 7-day outlook with uncertainty."
+    )
+    
+    render_citizen_mode(
+        station_data=st_daily,
+        predictions=st_preds,
+        station_name=selected_station,
+        decision_date=decision_date
+    )
+    
+    # Shareable card export
+    render_aqi_card_export(
+        station_name=selected_station,
+        station_data=st_daily,
+        decision_date=decision_date
+    )
+
+
+# TAB: Guided Demo
+with tab_demo:
+    render_guided_demo()
+
+
 render_footer()
+
