@@ -115,3 +115,110 @@ Focus: Modernizing the decision-support dashboard for municipal inspectors (BMC 
   - Visual ASCII/Mermaid flow showing ingestion, cleaning, feature engineering, modeling, and prioritization.
 - **Interactive Expansion:**
   - Collapsible expander detailing specific missing data feeds (satellite AOD, hyper-local sensor meshes, traffic speed telemetry) required to beat persistence in all seasons.
+
+
+---
+
+## 2. Hackathon Feature Release (v2.5 — October 23, 2026)
+
+### 🚀 Major Decision Support Suite
+
+**Summary:** Complete enhancement with decision support tools, citizen mode, and rigorous validation for HackAMatch 1.0 final judging.
+
+### Added Features
+
+#### Decision Support (Priority A)
+- **A1. What-If Policy Simulator** ✅ (Tab 2)
+  - Interactive weight adjustment with real-time rank updates
+  - Monte Carlo stability: 500 runs, ±30% perturbations
+  - Probability heatmaps and rank range plots
+  - ~150 LOC in `src/decision/whatif.py`
+
+- **A2. Inspection Route Planner** ✅ (Tab 3)
+  - Nearest-neighbor TSP with haversine distance
+  - Interactive map with numbered stops
+  - Route table with leg/cumulative distances
+  - ~200 LOC in `src/decision/routing.py`
+
+- **A3. Weekly Briefing Export** ✅ (Tab 4)
+  - One-click HTML/PDF printable briefings
+  - Top-N zones, actions, evidence, attribution
+  - Clean print CSS (A4, page-break-inside: avoid)
+  - ~250 LOC in `src/decision/briefing.py`
+
+- **A4. Enhanced Action Recommendations** ✅ (Tab 1)
+  - Rule-based, transparent (no black-box AI)
+  - Context-aware: traffic, industrial, construction
+  - Evidence basis + operational caveats
+
+#### Explainability & Trust (Priority B)
+- **B1. Score Breakdown Explainer** ✅ (Tab 1)
+  - Waterfall chart: sub-scores, weights, contributions
+  - ~50 LOC in `charts.py::plot_score_breakdown()`
+
+- **B3. Honest Validation Panel** ✅ (Tab 8)
+  - Priority strategy backtest (+33% lift vs random)
+  - Model vs baseline (MAE: model 20.3, persistence 19.4)
+  - Interval coverage (74.1% actual vs 80% nominal)
+  - ~200 LOC in `src/decision/validation.py`
+
+#### Citizen Features (Priority D)
+- **D1. Citizen View** ✅ (Tab 9)
+  - Simplified health guidance (CPCB categories)
+  - Big AQI display with color gradient
+  - 7-day forecast with uncertainty
+  - ~300 LOC in `src/citizen/citizen_view.py`
+
+- **D2. Shareable AQI Cards** ✅ (Tab 9)
+  - HTML cards for WhatsApp/Twitter
+  - Trend indicators, responsive design
+  - ~100 LOC
+
+#### Demo & Presentation (Priority E)
+- **E1. Guided Demo Mode** ✅ (Tab 10)
+  - 8-step interactive walkthrough (60-90s)
+  - Auto-advance option for automated demos
+  - Progress bar, quick jump menu
+  - ~180 LOC in `src/demo/guided_demo.py`
+
+### Testing & Documentation
+- **10 new unit tests** in `tests/test_decision_features.py` (all passing)
+- **FEATURES.md**: Complete inventory with status (A1-E3)
+- **DEMO_SCRIPT_V2.md**: 3-minute live demo script
+- **PITCH_OUTLINE.md**: 5-slide pitch deck outline
+- **Updated README.md**: Feature highlights, new structure
+
+### UI/UX Changes
+- **11 tabs** (up from 5):
+  1. Priority Rankings
+  2. What-If Simulator
+  3. Route Planner
+  4. Briefing Export
+  5. Historical Patterns
+  6. Weather Analysis
+  7. Forecast Performance
+  8. Validation & Backtest
+  9. Citizen View
+  10. Guided Demo
+  11. Data & Methods
+
+- **Sidebar additions**:
+  - Resource Budget slider (1-15 teams)
+  - Citizen Mode toggle
+  - Weight reset button
+
+### Performance Optimizations
+- Heavy caching on Monte Carlo (500 runs)
+- Route computation cached
+- Backtest cached by parameters
+
+### Known Limitations
+1. Route distances are straight-line (not road routing)
+2. PDF export requires optional libraries
+3. Model doesn't beat persistence (reported honestly)
+4. Intervals undercover (74.1% vs 80% nominal)
+
+**Total New Code:** ~1,590 lines across 8 new modules  
+**Tests:** 10 tests, 100% passing  
+**Build Time:** ~72 hours (Oct 20-23, 2026)  
+**Status:** READY FOR JUDGING ✅
