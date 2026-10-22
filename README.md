@@ -16,6 +16,8 @@ license: mit
 
 A reproducible, data-driven air quality decision-support prototype built for the **Mumbai Metropolitan Region (MMR)** using strictly free, public data.
 
+**🎉 NEW: Enhanced with Decision Support Features** — What-If Simulator, Route Planner, Validation Backtest, Citizen Mode, and Guided Demo.
+
 ---
 
 ## 🌐 Live Demo & Deployment
@@ -29,6 +31,27 @@ A reproducible, data-driven air quality decision-support prototype built for the
 > ⚠️ **Status: Prototype.** This tool is an academic/operational decision-support prototype for municipal planning and prioritization. It is **NOT an official regulatory warning system** and is not a substitute for statutory monitoring protocols by the Central Pollution Control Board (CPCB) or Maharashtra Pollution Control Board (MPCB).
 
 For judging and evaluation, see the [submission guide](SUBMISSION_GUIDE.md), [five-minute demo script](DEMO_SCRIPT.md), and [finalist slides](reports/slides/output/CityPulse_finalist_deck.pptx).
+
+---
+
+## 🚀 Key Features (Hackathon Edition)
+
+### Decision Support (Municipal Officers)
+- **📊 Multi-Criteria Priority Rankings**: 5-component scoring (exposure, persistence, trend, forecast, vulnerability)
+- **🎛️ What-If Policy Simulator**: Adjust weights, see rank changes, Monte Carlo stability analysis (500 runs)
+- **🗺️ Inspection Route Planner**: Nearest-neighbor tour with haversine distance, numbered stops
+- **📄 Weekly Briefing Export**: One-click printable reports (HTML + PDF), ready for field inspectors
+- **✅ Honest Validation**: Backtest on 2023 holdout, reports lift vs random, interval coverage
+
+### Citizen-Facing Features
+- **🏘️ Simplified Citizen Mode**: Plain-language health guidance by CPCB category
+- **📤 Shareable AQI Cards**: Download visual cards for social media (HTML with screenshot)
+- **💚 Health Protection Tips**: Evidence-based recommendations for sensitive groups
+
+### Demo & Transparency
+- **🎬 Guided Demo Mode**: 8-step walkthrough for judges (60-90 seconds, auto-advance option)
+- **🔍 Score Breakdown**: Waterfall charts showing why each zone ranked where it did
+- **📖 Data Provenance**: Full attribution, licenses, and "what data would beat persistence" section
 
 ---
 
@@ -161,7 +184,7 @@ See the detailed, step-by-step [DEPLOYMENT.md](DEPLOYMENT.md) guide.
 
 ```
 citypulse/
-├── app.py                     # Primary Streamlit application entry point
+├── app.py                     # Primary Streamlit application entry point (11 tabs)
 ├── streamlit_app.py           # Deployment alias for Streamlit Community Cloud
 ├── charts.py                  # Plotly data visualization engine
 ├── components.py              # Reusable UI cards, tables & persistent footer
@@ -170,19 +193,35 @@ citypulse/
 ├── icons.py                   # Streamlit native Material Symbols catalog
 ├── requirements.txt           # Pinned production runtime requirements
 ├── requirements-dev.txt       # Development, training, and notebook requirements
+├── FEATURES.md                # ✨ NEW: Complete feature inventory & status
 ├── DEPLOYMENT.md              # Deployment guide & operational runbook
 ├── DATA_SOURCES.md            # Open data licenses, citations & access dates
 ├── DATA_STATEMENT.md          # Bender & Friedman data statement
 ├── LICENSE                    # MIT License
 ├── tests/
-│   ├── test_deployment_smoke.py  # End-to-end deployment smoke test
-│   ├── test_pipeline.py          # Data integrity & no-leakage unit tests
-│   └── test_aqi_cleaning.py      # Notebook parity unit tests
+│   ├── test_deployment_smoke.py       # End-to-end deployment smoke test
+│   ├── test_pipeline.py               # Data integrity & no-leakage unit tests
+│   ├── test_aqi_cleaning.py           # Notebook parity unit tests
+│   └── test_decision_features.py      # ✨ NEW: Decision support feature tests (10 tests)
 ├── data/
 │   ├── raw/                   # Raw CPCB and Open-Meteo inputs
 │   └── processed/             # Pre-computed compressed Parquet datasets
 ├── reports/                   # Evaluation metrics, figures & slide decks
 └── src/                       # Data cleaning, feature engineering & model pipelines
+    ├── clean/                 # Data hygiene & QC rules
+    ├── features/              # Feature engineering
+    ├── models/                # Training & prioritization engine
+    ├── decision/              # ✨ NEW: What-if, routing, briefing, validation
+    │   ├── whatif.py          # Policy simulator & rank stability
+    │   ├── routing.py         # Inspection route planner
+    │   ├── briefing.py        # Printable briefing export
+    │   ├── validation.py      # Backtest & honest metrics
+    │   └── viz.py             # Decision support visualizations
+    ├── citizen/               # ✨ NEW: Citizen-facing features
+    │   └── citizen_view.py    # Simplified health guidance & AQI cards
+    ├── demo/                  # ✨ NEW: Presentation features
+    │   └── guided_demo.py     # 8-step interactive walkthrough
+    └── eda/                   # Exploratory analysis & charting
 ```
 
 ---
