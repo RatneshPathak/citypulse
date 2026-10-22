@@ -1,12 +1,34 @@
+---
+title: CityPulse: Mumbai — Air Quality Prioritisation
+emoji: 🏙️
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: "1.66.1"
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # CityPulse: Mumbai — Predict. Explain. Act.
 
 > **Built for HackAMatch 1.0 by Ratnesh, Rishi & Shreya**
 
 A reproducible, data-driven air quality decision-support prototype built for the **Mumbai Metropolitan Region (MMR)** using strictly free, public data.
 
-For judging, use the [submission guide](SUBMISSION_GUIDE.md), [five-minute script](DEMO_SCRIPT.md), and [finalist slides](reports/slides/output/CityPulse_finalist_deck.pptx).
+---
+
+## 🌐 Live Demo & Deployment
+
+- **Primary Demo (Streamlit Community Cloud):**  
+  👉 **[https://citypulse-mumbai.streamlit.app](https://citypulse-mumbai.streamlit.app)**
+- **Fallback Mirror (Hugging Face Spaces):**  
+  👉 `https://huggingface.co/spaces/<your-username>/citypulse-mumbai`
+- **Deployment & Runbook Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step setup, memory profiles, and pre-demo wake-up procedures.
 
 > ⚠️ **Status: Prototype.** This tool is an academic/operational decision-support prototype for municipal planning and prioritization. It is **NOT an official regulatory warning system** and is not a substitute for statutory monitoring protocols by the Central Pollution Control Board (CPCB) or Maharashtra Pollution Control Board (MPCB).
+
+For judging and evaluation, see the [submission guide](SUBMISSION_GUIDE.md), [five-minute demo script](DEMO_SCRIPT.md), and [finalist slides](reports/slides/output/CityPulse_finalist_deck.pptx).
 
 ---
 
@@ -51,9 +73,6 @@ These findings use the bundled 2021–2023 AQI and weather data and the project'
 2. **Station variation:** Among stations with at least 150 valid days, **Mazgaon** averages **153.0 AQI** and **Borivali East** **88.6 AQI**. These point monitors do not represent whole wards.
 3. **Weather association:** Daily wind speed and AQI have Pearson **$r=-0.25$**. AQI > 200 occurs on **16.2%** of station-days in the lowest wind-speed quintile and **5.8%** in the highest. Season and location may confound the relationship.
 
-The separate four-station 2025–2026 pollutant notebook is supplementary. Its raw Excel exports are not bundled, so its metrics are excluded from the reproducible core demo.
-
-
 ---
 
 ## 4. Method, Baselines, and Validation
@@ -94,75 +113,81 @@ $$\text{Priority Score} = \frac{w_{\text{exp}} S_{\text{exp}} + w_{\text{pers}} 
 
 ---
 
-## 6. How to Run & Reproduce Locally
+## 6. How to Run Locally
 
 Requires Python 3.10+. Zero paid API keys, credit cards, or subscriptions required.
 
 ```bash
-git clone https://github.com/RatneshPathak/citypulse.git
-cd citypulse
+# 1. Clone repository
+git clone https://github.com/RishiBuilds/CityPulse.git
+cd CityPulse
 
+# 2. Set up virtual environment
 python -m venv venv
+
+# On Windows:
 venv\Scripts\activate
+# On Linux / macOS:
+source venv/bin/activate
+
+# 3. Install pinned runtime dependencies
 pip install -r requirements.txt
 
-python -m streamlit run app.py
+# 4. Run automated test suite
+python -m unittest discover tests
+
+# 5. Launch the dashboard
+streamlit run app.py
 ```
 
-On Linux and macOS, use `source venv/bin/activate` in place of the Windows activation command.
-
-Open the local URL printed in your terminal (typically `http://localhost:8501`).
-
-To re-run the entire pipeline from scratch using `make`:
-```bash
-make data
-make all
-make app
-```
+Open the local URL in your browser: `http://localhost:8501`.
 
 ---
 
-## 7. Project Structure
+## 7. How to Deploy (Streamlit Community Cloud & Hugging Face)
+
+See the detailed, step-by-step [DEPLOYMENT.md](DEPLOYMENT.md) guide.
+
+### Quick Summary for Streamlit Community Cloud:
+1. Push repository to GitHub: `git push origin main`
+2. Sign in to [share.streamlit.io](https://share.streamlit.io) with your GitHub account.
+3. Click **"New app"** -> Select repo `RishiBuilds/CityPulse`, branch `main`, main file `app.py`.
+4. Enter custom subdomain: `citypulse-mumbai`.
+5. Click **"Deploy"**. The app builds in ~90 seconds and is ready to share.
+
+---
+
+## 8. Project Structure
 
 ```
 citypulse/
-├── app.py
-├── Makefile
-├── requirements.txt
-├── README.md
-├── DATA_SOURCES.md
-├── DATA_STATEMENT.md
-├── SCHEMA.md
-├── NOTEBOOK_AUDIT.md
-├── DEMO_SCRIPT.md
+├── app.py                     # Primary Streamlit application entry point
+├── streamlit_app.py           # Deployment alias for Streamlit Community Cloud
+├── charts.py                  # Plotly data visualization engine
+├── components.py              # Reusable UI cards, tables & persistent footer
+├── config.py                  # Global branding, attribution & secret resolution
+├── theme.py                   # CityPulse dark theme design tokens & CSS
+├── icons.py                   # Streamlit native Material Symbols catalog
+├── requirements.txt           # Pinned production runtime requirements
+├── requirements-dev.txt       # Development, training, and notebook requirements
+├── DEPLOYMENT.md              # Deployment guide & operational runbook
+├── DATA_SOURCES.md            # Open data licenses, citations & access dates
+├── DATA_STATEMENT.md          # Bender & Friedman data statement
+├── LICENSE                    # MIT License
+├── tests/
+│   ├── test_deployment_smoke.py  # End-to-end deployment smoke test
+│   ├── test_pipeline.py          # Data integrity & no-leakage unit tests
+│   └── test_aqi_cleaning.py      # Notebook parity unit tests
 ├── data/
-│   ├── raw/
-│   └── processed/
-├── src/
-│   ├── CityPulse_AQI_Cleaning_EDA.ipynb
-│   ├── clean/
-│   │   ├── aqi_cleaning.py
-│   │   └── clean_pipeline.py
-│   ├── eda/
-│   │   └── visualizations.py
-│   ├── features/
-│   ├── ingest/
-│   └── models/
-├── reports/
-│   ├── CityPulse_AQI_Cleaning_EDA.html
-│   ├── notebook_reference_stats.json
-│   ├── eda_findings.md
-│   ├── EVALUATION.md
-│   ├── data_quality_report.md
-│   └── figures/
-└── notebooks/
-    └── citypulse_mumbai_eda_modelling.ipynb
+│   ├── raw/                   # Raw CPCB and Open-Meteo inputs
+│   └── processed/             # Pre-computed compressed Parquet datasets
+├── reports/                   # Evaluation metrics, figures & slide decks
+└── src/                       # Data cleaning, feature engineering & model pipelines
 ```
-
 
 ---
 
-## 8. Limitations & Missing Data Required
+## 9. Limitations & Missing Data Required
 
 1. **Why Regression Point Models Don't Decisively Beat Persistence:**
    - Daily ambient air quality is a heavily autoregressive physical process. Weather reanalysis provides macroscopic ventilation bounds, but cannot resolve hyper-local emission fluctuations.
@@ -174,10 +199,10 @@ citypulse/
 
 ---
 
-## 9. Responsible Use & Disclosures
+## 10. Responsible Use & Disclosures
 
 - **Responsible Use:** CityPulse is designed to assist environmental engineers and municipal officers in screening and triage. It must never be used as the sole basis for punitive regulatory enforcement without physical fenceline inspection.
-- **Third-Party Open-Source Components:** Built using Python, Streamlit, Pandas, NumPy, Scikit-Learn, Plotly, Seaborn, Matplotlib, and Folium under their respective permissive open-source licences.
+- **Third-Party Open-Source Components:** Built using Python, Streamlit, Pandas, NumPy, Scikit-Learn, and Plotly under permissive open-source licences.
 - **AI Assistance Disclosure:** An AI coding assistant was utilized as a pair programmer for pipeline design, code drafting, documentation structuring, and testing. All data was physically downloaded, all models were trained and evaluated on real observations, and all metrics were computed through code executed in this repository.
 - **Data Attribution:**
   - Air Quality Data: Central Pollution Control Board (CPCB) and Maharashtra Pollution Control Board (MPCB).
@@ -187,4 +212,3 @@ citypulse/
 ---
 
 *Built for HackAMatch 1.0 by Ratnesh, Rishi & Shreya*
-

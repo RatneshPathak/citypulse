@@ -1,6 +1,39 @@
+# Virtual Environment
 venv/
+.venv/
+env/
+
+# Python Cache & Bytecode
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Secrets and Local Configurations (NEVER COMMIT)
 .env
-*.pyc
+.env.local
+.env.*.local
+.streamlit/secrets.toml
+
+# Streamlit Local Runtime
+.streamlit/*.tmp
+
+# Jupyter Checkpoints & Scratch
 .ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Slide Build Cache
 reports/slides/.build/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Logs & Temporary Files
+*.log
+*.tmp
