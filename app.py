@@ -28,6 +28,13 @@ import theme
 from theme import AQI_PALETTE, COLORS, get_aqi_category_color
 import charts
 
+# Decision support modules
+from src.decision.whatif import compute_rank_stability, compute_rank_delta
+from src.decision.routing import compute_inspection_route
+from src.decision.briefing import render_briefing_export_ui
+from src.decision.validation import render_validation_panel
+from src.decision import viz as decision_viz
+
 st.set_page_config(
     page_title="CityPulse: Mumbai — Air Quality Prioritisation",
     page_icon=ICONS["page_icon"],
@@ -182,12 +189,16 @@ st_preds = preds_df[preds_df["canonical_station"] == selected_station].sort_valu
 st_prio_row = dyn_priority[dyn_priority["station"] == selected_station]
 st_prio = st_prio_row.iloc[0]
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    f"{ICONS['tab_act']} 1. Risk Prioritisation (ACT)",
-    f"{ICONS['tab_discover']} 2. Discover & Patterns",
-    f"{ICONS['tab_weather']} 3. Weather & Dispersion",
-    f"{ICONS['tab_forecast']} 4. Forecast & Risk Calibration",
-    f"{ICONS['tab_methods']} 5. Data Provenance & Methods",
+tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab5 = st.tabs([
+    f"{ICONS['tab_act']} 1. Priority Rankings",
+    f":material/tune: 2. What-If Simulator",
+    f":material/route: 3. Route Planner",
+    f":material/description: 4. Briefing Export",
+    f"{ICONS['tab_discover']} 5. Historical Patterns",
+    f"{ICONS['tab_weather']} 6. Weather Analysis",
+    f"{ICONS['tab_forecast']} 7. Forecast Performance",
+    f":material/verified: 8. Validation & Backtest",
+    f"{ICONS['tab_methods']} 9. Data & Methods",
 ])
 
 with tab1:
@@ -282,6 +293,260 @@ with tab1:
     st.plotly_chart(fig_breakdown, use_container_width=True, config=charts.CHART_CONFIG)
 
     render_action_dossier(st_prio.to_dict(), allocated=(st_prio["rank"] <= capacity_n))
+
+
+# TAB: What-If Policy Simulator
+with tab_whatif:
+    render_takeaway(
+        "Adjust policy weights to see how rankings change. Run Monte Carlo simulation to assess which zones are "
+        "**robust** to weight changes vs which are **unstable**."
+    )
+    
+    st.markdown(f"### :material/tune: Policy Weight Simulator")
+    
+    # Store baseline for comparison
+    if "baseline_priority" not in st.session_state:
+        st.session_state.baseline_priority = dyn_priority.copy()
+    
+    # Recompute button to store new baseline
+    col_sim1, col_sim2, col_sim3 = st.columns([1, 1, 1])
+    with col_sim1:
+        if st.button("📌 Set Current as New Baseline", use_container_width=True, help="Store current rankings as the new comparison baseline"):
+            st.session_state.baseline_priority = dyn_priority.copy()
+            st.success("Baseline updated!", icon=":material/check_circle:")
+    
+    with col_sim2:
+        if st.button("🔄 Reset to Original Default", use_container_width=True, help="Reset sidebar weights to recommended defaults"):
+            st.session_state.weights = DEFAULT_WEIGHTS.copy()
+            st.rerun()
+    
+    # Show current vs baseline comparison
+    st.markdown("---")
+    st.markdown("#### Rank Movement Analysis")
+    
+    delta_df = compute_rank_delta(st.session_state.baseline_priority, dyn_priority)
+    big_movers = delta_df[delta_df["delta"].abs() >= 3].head(10)
+    
+    col_move1, col_move2 = st.columns(2)
+    with col_move1:
+        st.markdown("**Biggest Rank Changes:**")
+        if not big_movers.empty:
+            for _, row in big_movers.head(5).iterrows():
+                direction_icon = "📈" if row["delta"] > 0 else "📉"
+                st.markdown(f"{direction_icon} **{row['station']}**: #{row['old_rank']} → #{row['new_rank']} ({row['movement']})")
+        else:
+            st.info("No significant rank changes with current weights.", icon=":material/info:")
+    
+    with col_move2:
+        # Summary statistics
+        moved_up = (delta_df["delta"] > 0).sum()
+        moved_down = (delta_df["delta"] < 0).sum()
+        unchanged = (delta_df["delta"] == 0).sum()
+        
+        st.markdown("**Summary:**")
+        st.markdown(f"- 📈 Moved up: **{moved_up}** zones")
+        st.markdown(f"- 📉 Moved down: **{moved_down}** zones")
+        st.markdown(f"- ➖ Unchanged: **{unchanged}** zones")
+    
+    # Visualization
+    if len(dyn_priority) > 0:
+        fig_movement = decision_viz.plot_rank_movement(
+            st.session_state.baseline_priority,
+            dyn_priority,
+            top_n=15
+        )
+        st.plotly_chart(fig_movement, use_container_width=True, config=charts.CHART_CONFIG)
+    
+    # Rank Stability Simulation
+    st.markdown("---")
+    st.markdown("### 🎲 Rank Stability Monte Carlo Simulation")
+    st.caption(
+        f"Run {500} simulations with random weight perturbations (±30%) to find zones that are **robust** "
+        "to policy choices vs those that are **sensitive**."
+    )
+    
+    run_stability = st.button(
+        "▶️ Run Stability Simulation (500 iterations)",
+        use_container_width=False,
+        help="This takes ~15-30 seconds"
+    )
+    
+    if run_stability or "stability_results" in st.session_state:
+        with st.spinner("Running Monte Carlo stability analysis..."):
+            stability_df = compute_rank_stability(
+                preds_df,
+                baseline_weights=st.session_state.weights,
+                n_simulations=500,
+                perturbation_pct=0.30,
+                target_n=capacity_n
+            )
+            st.session_state.stability_results = stability_df
+        
+        stability_df = st.session_state.stability_results
+        
+        # Show results
+        st.success(f"Simulation complete! Tested {500} random weight combinations.", icon=":material/check_circle:")
+        
+        col_stab1, col_stab2 = st.columns(2)
+        
+        with col_stab1:
+            # Probability heatmap
+            fig_prob = decision_viz.plot_probability_heatmap(stability_df, top_n=capacity_n)
+            st.plotly_chart(fig_prob, use_container_width=True, config=charts.CHART_CONFIG)
+        
+        with col_stab2:
+            # Rank range plot
+            fig_ranges = decision_viz.plot_rank_stability_ranges(stability_df, top_n=10)
+            st.plotly_chart(fig_ranges, use_container_width=True, config=charts.CHART_CONFIG)
+        
+        # Interpretation
+        st.markdown("---")
+        st.markdown("#### 💡 Stability Interpretation")
+        
+        robust_zones = stability_df[stability_df["prob_top_n"] > 0.80].head(5)
+        unstable_zones = stability_df[stability_df["rank_range"] > 10].head(5)
+        
+        col_interp1, col_interp2 = st.columns(2)
+        
+        with col_interp1:
+            st.markdown(f"**✅ Robust Top-{capacity_n} Zones** (>80% probability):")
+            if not robust_zones.empty:
+                for _, row in robust_zones.iterrows():
+                    st.markdown(f"- **{row['station']}**: {row['prob_top_n']*100:.0f}% in top-{capacity_n}")
+            else:
+                st.info("No zones have >80% probability — consider adjusting capacity_n", icon=":material/info:")
+        
+        with col_interp2:
+            st.markdown("**⚠️ Rank-Unstable Zones** (wide rank range):")
+            if not unstable_zones.empty:
+                for _, row in unstable_zones.iterrows():
+                    st.markdown(f"- **{row['station']}**: ranks {row['rank_min']}-{row['rank_max']} (range: {row['rank_range']})")
+            else:
+                st.success("All zones have stable rankings!", icon=":material/check_circle:")
+
+
+# TAB: Route Planner
+with tab_route:
+    render_takeaway(
+        f"Plan an efficient inspection route for the top-{capacity_n} priority zones using nearest-neighbor routing. "
+        "**Note:** Distances are straight-line (haversine), not actual road travel."
+    )
+    
+    st.markdown(f"### :material/route: Inspection Route Planner")
+    
+    # Starting point selector
+    route_col1, route_col2 = st.columns([2, 1])
+    
+    with route_col1:
+        top_stations_list = dyn_priority.head(capacity_n)["station"].tolist()
+        start_station_route = st.selectbox(
+            "Starting Point (Municipal Office / Depot)",
+            ["Highest Priority"] + top_stations_list,
+            help="Select where the inspection team will begin their route"
+        )
+        start_override = None if start_station_route == "Highest Priority" else start_station_route
+    
+    with route_col2:
+        if st.button("🗺️ Compute Optimal Route", type="primary", use_container_width=True):
+            st.session_state.route_computed = True
+    
+    if "route_computed" not in st.session_state:
+        st.session_state.route_computed = False
+    
+    if st.session_state.route_computed:
+        # Compute route
+        with st.spinner("Computing nearest-neighbor tour..."):
+            route_df, total_distance = compute_inspection_route(
+                dyn_priority,
+                top_n=capacity_n,
+                start_station=start_override
+            )
+        
+        # Display route summary
+        st.markdown("---")
+        route_sum_col1, route_sum_col2, route_sum_col3 = st.columns(3)
+        
+        with route_sum_col1:
+            st.metric(
+                label="Total Route Distance",
+                value=f"{total_distance:.1f} km",
+                help="Straight-line distance (not road routing)"
+            )
+        
+        with route_sum_col2:
+            avg_dist = route_df["distance_from_prev_km"].mean()
+            st.metric(
+                label="Avg. Leg Distance",
+                value=f"{avg_dist:.1f} km",
+                help="Average distance between consecutive stops"
+            )
+        
+        with route_sum_col3:
+            st.metric(
+                label="Number of Stops",
+                value=f"{len(route_df)}",
+                help="Inspection zones on this route"
+            )
+        
+        st.warning(
+            "⚠️ **Disclaimer:** Distances shown are straight-line (haversine) calculations, NOT actual road routing. "
+            "Real travel time will be longer due to road networks, traffic, and Mumbai's geography.",
+            icon=":material/warning:"
+        )
+        
+        # Show map with route
+        st.markdown("---")
+        st.markdown("#### 🗺️ Route Visualization")
+        fig_route = decision_viz.plot_inspection_route_map(route_df, selected_station)
+        st.plotly_chart(fig_route, use_container_width=True, config=charts.CHART_CONFIG)
+        
+        # Route table
+        st.markdown("---")
+        st.markdown("#### 📋 Detailed Route Schedule")
+        
+        display_route = route_df[[
+            "stop_number", "station", "zone", "latest_aqi",
+            "priority_score", "distance_from_prev_km", "cumulative_distance_km"
+        ]].rename(columns={
+            "stop_number": "Stop",
+            "station": "Station",
+            "zone": "Zone",
+            "latest_aqi": "AQI",
+            "priority_score": "Score",
+            "distance_from_prev_km": "Leg (km)",
+            "cumulative_distance_km": "Cumulative (km)"
+        })
+        
+        st.dataframe(
+            display_route,
+            column_config={
+                "Stop": st.column_config.NumberColumn("Stop #", width="small", format="#%d"),
+                "Station": st.column_config.TextColumn("Station", width="medium"),
+                "Zone": st.column_config.TextColumn("Zone", width="small"),
+                "AQI": st.column_config.NumberColumn("Latest AQI", format="%.0f", width="small"),
+                "Score": st.column_config.NumberColumn("Priority", format="%.1f", width="small"),
+                "Leg (km)": st.column_config.NumberColumn("Leg Distance", format="%.2f", width="small"),
+                "Cumulative (km)": st.column_config.NumberColumn("Total Distance", format="%.2f", width="small"),
+            },
+            hide_index=True,
+            use_container_width=True,
+        )
+
+
+# TAB: Briefing Export
+with tab_briefing:
+    render_takeaway(
+        "Generate a printable one-page briefing document for field inspectors. Includes top priority zones, "
+        "recommended actions, evidence basis, and data attribution. Exports as HTML (always) and PDF (if library available)."
+    )
+    
+    render_briefing_export_ui(
+        priority_df=dyn_priority,
+        decision_date=decision_date,
+        target_date=target_date,
+        weights=st.session_state.weights,
+        capacity_n=capacity_n
+    )
 
 
 with tab2:
@@ -419,6 +684,11 @@ with tab4:
         st.dataframe(disp_anom, use_container_width=True, height=220, hide_index=True)
     else:
         st.info("No extreme statistical residual anomalies flagged for this station during 2023.", icon=":material/info:")
+
+
+# TAB: Validation & Backtest
+with tab_valid:
+    render_validation_panel(daily_df, preds_df, capacity_n=capacity_n)
 
 
 with tab5:
