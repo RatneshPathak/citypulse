@@ -1,0 +1,33 @@
+{
+  "n_predictions": 1295,
+  "eval_start": "2025-07-01",
+  "nominal_coverage": 0.8,
+  "empirical_coverage": 0.819,
+  "mean_band_width": 17.5,
+  "persistence_MAE": 5.53,
+  "persistence_RMSE": 9.45,
+  "high_day_precision": 0.72,
+  "high_day_recall": 0.74,
+  "coverage_by_level": {
+    "[0.0, 30.0)": {
+      "n": 887,
+      "coverage": 0.84,
+      "MAE": 3.37
+    },
+    "[30.0, 60.0)": {
+      "n": 282,
+      "coverage": 0.791,
+      "MAE": 8.37
+    },
+    "[60.0, 90.0)": {
+      "n": 105,
+      "coverage": 0.781,
+      "MAE": 11.72
+    },
+    "[90.0, inf)": {
+      "n": 21,
+      "coverage": 0.476,
+      "MAE": 27.46
+    }
+  }
+}
