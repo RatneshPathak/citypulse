@@ -115,16 +115,6 @@ CityPulse is an educational prototype, not an emergency-warning system. Recommen
 - **Open-source libraries:** pandas, NumPy, scikit-learn, Streamlit, Plotly, `<others>` — used under their respective licences.
 - **Data and map attribution:** `<e.g. source names; OpenStreetMap contributors if maps are used>`
 
-## 11. Team
-
-Team of three. Update with names and roles.
-
-| Member | Role |
-|---|---|
-| Ratnesh Pathak | Lead — data, analysis, modelling |
-| `<Member 2>` | `<role>` |
-| `<Member 3>` | `<role>` |
-
-## 12. Hackathon
+## 11. Hackathon
 
 HackAMatch 1.0 — Data Mavericks × NSDC. Problem statement: *CityPulse*.
