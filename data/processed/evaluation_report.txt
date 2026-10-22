@@ -1,0 +1,157 @@
+
+========================================================================
+1. DATA QUALITY AUDIT (hourly cleaned file)
+========================================================================
+Rows: 53187   Stations: 4
+Duplicate (station, hour) rows: 0
+Station                 Bandra Kurla Complex, Mumbai - IITM Borivali East, Mumbai - MPCB Chembur, Mumbai - MPCB Siddharth Nagar-Worli, Mumbai - IITM
+first                                            2025-04-07                   2025-01-01             2025-01-01                           2025-01-01
+last                                             2026-10-21                   2026-10-21             2026-10-21                           2026-10-21
+hours_present                                         10826                        12457                  15128                                14776
+hours_expected                                        13495                        15816                  15816                                15816
+hour_coverage_%                                        80.2                         78.8                   95.6                                 93.4
+PM2.5_missing_%                                         7.7                          5.8                    1.8                                  8.7
+PM10_missing_%                                          6.3                         16.0                    1.7                                  4.0
+NO2_missing_%                                          11.2                         17.8                    0.8                                  9.8
+SO2_missing_%                                           8.1                          9.2                    2.3                                100.0
+PM2.5_negative                                            0                            0                      0                                    0
+PM2.5_p99.9                                           258.0                        128.4                  150.7                                131.4
+PM2.5_max                                             555.8                        160.4                  771.4                                357.8
+same_as_prev_hour_%                                     0.4                          1.7                    0.2                                  0.4
+longest_identical_run_h                                  10                            4                      6                                   10
+
+How to read: 'same_as_prev_hour_%' and 'longest_identical_run_h' help detect forward-filled or stuck-sensor values. Large values suggest filled/stuck data.
+
+========================================================================
+2. EXPLORATORY FINDINGS (daily station means, PM2.5 in ug/m3)
+========================================================================
+
+FINDING A - Stations differ:
+                                      days  mean  median   p95  pct_days_above_60
+Station                                                                          
+Bandra Kurla Complex, Mumbai - IITM    368  32.5    23.5  80.4               14.4
+Borivali East, Mumbai - MPCB           454  23.6    20.5  46.6                2.2
+Chembur, Mumbai - MPCB                 602  30.1    23.1  68.5                9.5
+Siddharth Nagar-Worli, Mumbai - IITM   521  27.7    17.5  70.4               11.7
+
+FINDING B - Strong seasonal pattern (mean PM2.5 by season and station):
+Station             Bandra Kurla Complex, Mumbai - IITM  Borivali East, Mumbai - MPCB  Chembur, Mumbai - MPCB  Siddharth Nagar-Worli, Mumbai - IITM  ALL STATIONS
+season                                                                                                                                                           
+Monsoon (Jun-Sep)                                  17.4                          12.7                    15.6                                  13.7          15.0
+Post-monsoon (Oct)                                 74.7                          33.1                    42.1                                  37.9          43.9
+Summer (Mar-May)                                   32.3                          22.0                    26.3                                  22.5          25.4
+Winter (Nov-Feb)                                   64.7                          33.4                    49.9                                  55.8          48.0
+
+FINDING C - Weekday pattern (mean PM2.5, all stations):
+dow
+Monday       28.0
+Tuesday      29.5
+Wednesday    27.8
+Thursday     28.4
+Friday       29.6
+Saturday     27.9
+Sunday       27.6
+
+FINDING D - Time-of-day pattern (hourly mean PM2.5, all stations):
+ts
+0     29.8
+1     29.8
+2     29.0
+3     28.1
+4     27.8
+5     27.7
+6     28.1
+7     29.1
+8     30.6
+9     31.8
+10    32.2
+11    31.3
+12    30.7
+13    29.6
+14    28.1
+15    27.5
+16    27.4
+17    27.5
+18    27.7
+19    28.1
+20    28.1
+21    28.8
+22    29.3
+23    29.7
+
+FINDING E - Co-movement with other pollutants (daily correlation with PM2.5; correlation is NOT causation):
+PM2.5    1.00
+PM10     0.82
+NO2      0.62
+CO       0.38
+
+========================================================================
+3. ROLLING-ORIGIN (walk-forward) VALIDATION - tests every month after enough history
+========================================================================
+Walk-forward folds run: 17. Each fold trains ONLY on target dates before the test month (leakage assertion passed for every fold).
+Pooled test rows: 1391
+
+POOLED  model       MAE=6.20  RMSE=11.03
+POOLED  persistence MAE=5.41  RMSE=9.27
+
+By month:
+           n  mean_pm25  MAE_model  MAE_persistence       better
+month                                                           
+2025-06   96      20.73       4.52             3.84  persistence
+2025-07   80      17.46       3.75             2.86  persistence
+2025-08   96      12.33       3.61             2.45  persistence
+2025-09   97      16.41       4.39             4.37  persistence
+2025-10   88      45.76      16.60            12.19  persistence
+2025-11   66      60.35      11.45            10.28  persistence
+2025-12   71      55.05      11.60            11.07  persistence
+2026-01   83      40.70      10.06             9.05  persistence
+2026-02   83      39.80       7.78             6.46  persistence
+2026-03  112      29.31       7.12             7.47        model
+2026-04   96      29.75       6.40             6.06  persistence
+2026-05   84      17.09       2.56             2.13  persistence
+2026-06   78      14.99       2.61             2.25  persistence
+2026-07   71      12.83       1.92             1.66  persistence
+2026-08   80      11.59       1.93             1.61  persistence
+2026-09   68      11.31       2.93             2.50  persistence
+2026-10   42      40.34       6.51             6.12  persistence
+
+Months where model beats persistence: 1 of 17
+
+By season:
+                      n  mean_pm25  MAE_model  MAE_persistence
+season                                                        
+Monsoon (Jun-Sep)   666      14.92       3.30             2.78
+Post-monsoon (Oct)  130      44.01      13.34            10.23
+Summer (Mar-May)    292      25.94       5.57             5.47
+Winter (Nov-Feb)    303      48.10      10.10             9.08
+
+By actual PM2.5 level tomorrow (does it help when pollution is high?):
+                           n  MAE_model  MAE_persistence
+level                                                   
+<30 (Good)               971       3.66             3.22
+30-60                    297       9.37             8.83
+>60 (Moderate or worse)  123      18.56            14.49
+
+High-pollution day detection (actual PM2.5 >= 60 tomorrow; flag = forecast >= 60):
+             flagged_days  true_high_days  precision  recall
+model               101.0           123.0       0.71    0.59
+persistence         126.0           123.0       0.72    0.74
+
+========================================================================
+4. SENSITIVITY CHECK - minimum valid hours required per day
+========================================================================
+ min_hours_per_day  test_rows  MAE_model  MAE_persistence
+                12       1596       6.06             5.48
+                18       1391       6.20             5.41
+                22       1236       6.43             5.28
+
+How to read: if the conclusion (which method is better) stays the same across rows, the result is not an artefact of this one cleaning choice.
+
+========================================================================
+5. INTEGRITY STATEMENT (safe to say to judges)
+========================================================================
+- Features use only data up to day t; the target is day t+1.
+- Every walk-forward fold trains only on dates earlier than its test month (asserted in code).
+- The baseline (persistence) is evaluated on exactly the same rows as the model.
+- The risk tier is a rule-based heuristic on PM2.5 categories, not a validated probability.
+- Results come from 4 stations only and may not generalise city-wide.
