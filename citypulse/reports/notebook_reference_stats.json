@@ -1,0 +1,120 @@
+{
+  "raw_rows": 63168,
+  "raw_files": 8,
+  "stations": [
+    "Bandra Kurla Complex, Mumbai - IITM",
+    "Borivali East, Mumbai - MPCB",
+    "Chembur, Mumbai - MPCB",
+    "Siddharth Nagar-Worli, Mumbai - IITM"
+  ],
+  "rows_per_station_raw": 15792,
+  "all_missing_rows_dropped": 9981,
+  "cleaned_rows": 53187,
+  "cleaned_columns": 10,
+  "offline_rows_by_station": {
+    "Bandra Kurla Complex, Mumbai - IITM": 4966,
+    "Borivali East, Mumbai - MPCB": 3335,
+    "Chembur, Mumbai - MPCB": 664,
+    "Siddharth Nagar-Worli, Mumbai - IITM": 1016
+  },
+  "station_summary": {
+    "Bandra Kurla Complex, Mumbai - IITM": {
+      "pm25_mean": 33.5,
+      "pm25_median": 23.64,
+      "pm25_min": 0.05,
+      "pm25_max": 555.79,
+      "pm25_count": 9991,
+      "pm10_mean": 101.06,
+      "pm10_median": 83.64,
+      "pm10_min": 0.06,
+      "pm10_max": 699.41,
+      "pm10_count": 10149,
+      "so2_mean": 3.97,
+      "so2_median": 2.9,
+      "so2_count": 9953,
+      "co_mean": 0.58,
+      "co_median": 0.5,
+      "co_count": 10565,
+      "outliers_pm25": 308,
+      "outlier_pct_pm25": 3.08
+    },
+    "Borivali East, Mumbai - MPCB": {
+      "pm25_mean": 23.61,
+      "pm25_median": 19.36,
+      "pm25_min": 0.67,
+      "pm25_max": 160.4,
+      "pm25_count": 11729,
+      "pm10_mean": 62.76,
+      "pm10_median": 53.55,
+      "pm10_min": 1.75,
+      "pm10_max": 615.0,
+      "pm10_count": 10464,
+      "so2_mean": 11.86,
+      "so2_median": 12.1,
+      "so2_count": 11316,
+      "co_mean": 0.19,
+      "co_median": 0.17,
+      "co_count": 11468,
+      "outliers_pm25": 376,
+      "outlier_pct_pm25": 3.21
+    },
+    "Chembur, Mumbai - MPCB": {
+      "pm25_mean": 30.21,
+      "pm25_median": 22.71,
+      "pm25_min": 0.04,
+      "pm25_max": 771.39,
+      "pm25_count": 14862,
+      "pm10_mean": 75.92,
+      "pm10_median": 62.44,
+      "pm10_min": 3.56,
+      "pm10_max": 469.68,
+      "pm10_count": 14878,
+      "so2_mean": 6.97,
+      "so2_median": 3.59,
+      "so2_count": 14783,
+      "co_mean": 0.68,
+      "co_median": 0.64,
+      "co_count": 14968,
+      "outliers_pm25": 297,
+      "outlier_pct_pm25": 2.0
+    },
+    "Siddharth Nagar-Worli, Mumbai - IITM": {
+      "pm25_mean": 29.3,
+      "pm25_median": 18.5,
+      "pm25_min": 0.07,
+      "pm25_max": 357.79,
+      "pm25_count": 13496,
+      "pm10_mean": 79.81,
+      "pm10_median": 64.96,
+      "pm10_min": 0.68,
+      "pm10_max": 406.72,
+      "pm10_count": 14189,
+      "so2_mean": null,
+      "so2_median": null,
+      "so2_count": 0,
+      "co_mean": 0.71,
+      "co_median": 0.67,
+      "co_count": 14234,
+      "outliers_pm25": 300,
+      "outlier_pct_pm25": 2.22
+    }
+  },
+  "total_pm25_valid_readings": 50078,
+  "total_pm25_outliers": 1281,
+  "overall_pm25_outlier_pct": 2.56,
+  "worli_so2_missing_pct": 100.0,
+  "yearly_pm25_mean": {
+    "2025": {
+      "BKC": 34.53,
+      "Borivali East": 25.98,
+      "Chembur": 35.38,
+      "Worli": 32.23
+    },
+    "2026": {
+      "BKC": 32.64,
+      "Borivali East": 20.34,
+      "Chembur": 23.78,
+      "Worli": 25.82
+    }
+  }
+}

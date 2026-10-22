@@ -3,3 +3,4 @@ __pycache__/
 .env
 *.pyc
 .ipynb_checkpoints/
+citypulse/data/raw/synthetic/

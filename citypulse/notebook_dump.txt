@@ -1,0 +1,1586 @@
+
+=================================== CELL 0 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import os
+
+print("CityPulse Air Watch")
+print("Let's inspect our AQI dataset!")
+
+print(os.listdir('/content'))
+
+--- OUTPUTS ---
+CityPulse Air Watch
+Let's inspect our AQI dataset!
+['.config', 'sample_data']
+
+
+=================================== CELL 1 (code) ===================================
+--- SOURCE ---
+import os
+
+files = [
+    f for f in os.listdir('/content')
+    if os.path.isfile(os.path.join('/content', f))
+]
+
+print("Total files uploaded:", len(files))
+
+for i, file in enumerate(files, 1):
+    size_mb = os.path.getsize(os.path.join('/content', file)) / (1024 * 1024)
+    print(f"{i}. {file} ({size_mb:.2f} MB)")
+--- OUTPUTS ---
+Total files uploaded: 8
+1. Advance_Search_1792672262632.xlsx (0.38 MB)
+2. Advance_Search_1792673076381.xlsx (0.42 MB)
+3. Advance_Search_1792671763347.xlsx (0.37 MB)
+4. Advance_Search_1792673310690.xlsx (0.37 MB)
+5. Advance_Search_1792673241762.xlsx (0.46 MB)
+6. Advance_Search_1792672943405.xlsx (0.33 MB)
+7. Advance_Search_1792672709872.xlsx (0.44 MB)
+8. Advance_Search_1792673175387.xlsx (0.53 MB)
+
+
+=================================== CELL 2 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import os
+import glob
+
+files = glob.glob('/content/*.xlsx')
+
+for file in sorted(files):
+    print("\n" + "=" * 70)
+    print("FILE:", os.path.basename(file))
+
+    try:
+        excel = pd.ExcelFile(file)
+        print("Sheets:", excel.sheet_names)
+
+        for sheet in excel.sheet_names:
+            df = pd.read_excel(file, sheet_name=sheet)
+
+            print(f"\nSheet: {sheet}")
+            print("Rows and columns:", df.shape)
+            print("Column names:")
+            print(df.columns.tolist())
+
+            print("\nFirst 3 rows:")
+            print(df.head(3).to_string(index=False))
+
+    except Exception as e:
+        print("Could not read file:", e)
+--- OUTPUTS ---
+
+======================================================================
+FILE: Advance_Search_1792671763347.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (8746, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 17:52:06        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792672262632.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (7066, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:00:45        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792672709872.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (8746, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:07:22        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792672943405.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (7066, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:12:09        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792673076381.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (7066, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:14:29        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792673175387.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (8746, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:15:40        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792673241762.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (8746, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:17:07        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+======================================================================
+FILE: Advance_Search_1792673310690.xlsx
+Sheets: ['CPCB Ambient AQ']
+
+Sheet: CPCB Ambient AQ
+Rows and columns: (7066, 10)
+Column names:
+['CENTRAL POLLUTION CONTROL BOARD', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9']
+
+First 3 rows:
+CENTRAL POLLUTION CONTROL BOARD Unnamed: 1  Unnamed: 2 Unnamed: 3 Unnamed: 4     Unnamed: 5 Unnamed: 6 Unnamed: 7 Unnamed: 8 Unnamed: 9
+ CONTINUOUS AMBIENT AIR QUALITY        NaN         NaN        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+               Date: 22-10-2026        NaN         NaN        NaN        NaN Time: 18:18:21        NaN        NaN        NaN        NaN
+                          State        NaN Maharashtra        NaN        NaN            NaN        NaN        NaN        NaN        NaN
+
+
+=================================== CELL 3 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import glob
+import os
+
+files = sorted(glob.glob('/content/*.xlsx'))
+
+for file in files:
+    print("\n" + "=" * 80)
+    print("FILE:", os.path.basename(file))
+
+    raw = pd.read_excel(file, header=None)
+
+    # Show the first 25 rows without assuming a header
+    print(raw.head(25).dropna(how='all').to_string(
+        index=True, header=False
+    ))
+
+--- OUTPUTS ---
+
+================================================================================
+FILE: Advance_Search_1792671763347.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+2                  Date: 22-10-2026               NaN                                  NaN   NaN  NaN  Time: 17:52:06  NaN  NaN  NaN    NaN
+3                             State               NaN                          Maharashtra   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+4                              City               NaN                               Mumbai   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+5                           Station               NaN  Bandra Kurla Complex, Mumbai - IITM   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+6                         Parameter               NaN   NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+7                         AvgPeriod               NaN                                   1H   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+8                              From               NaN                  2025-01-01 00:00:00   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+9                                To               NaN                  2025-12-31 00:00:00   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+10                        From Date           To Date                                PM2.5  PM10   NO             NO2  NH3  SO2   CO  OZONE
+11                 01-01-2025 00:00  01-01-2025 01:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+12                 01-01-2025 01:00  01-01-2025 02:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+13                 01-01-2025 02:00  01-01-2025 03:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+14                 01-01-2025 03:00  01-01-2025 04:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+15                 01-01-2025 04:00  01-01-2025 05:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+16                 01-01-2025 05:00  01-01-2025 06:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+17                 01-01-2025 06:00  01-01-2025 07:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+18                 01-01-2025 07:00  01-01-2025 08:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+19                 01-01-2025 08:00  01-01-2025 09:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+20                 01-01-2025 09:00  01-01-2025 10:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+21                 01-01-2025 10:00  01-01-2025 11:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+22                 01-01-2025 11:00  01-01-2025 12:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+23                 01-01-2025 12:00  01-01-2025 13:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+24                 01-01-2025 13:00  01-01-2025 14:00                                  NaN   NaN  NaN             NaN  NaN  NaN  NaN    NaN
+
+================================================================================
+FILE: Advance_Search_1792672262632.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                  NaN     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                  NaN     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                  NaN     NaN    NaN  Time: 18:00:45    NaN   NaN   NaN    NaN
+3                             State               NaN                          Maharashtra     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+4                              City               NaN                               Mumbai     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+5                           Station               NaN  Bandra Kurla Complex, Mumbai - IITM     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+6                         Parameter               NaN   NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+7                         AvgPeriod               NaN                                   1H     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+8                              From               NaN                  2026-01-01 00:00:00     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+9                                To               NaN                  2026-10-22 00:00:00     NaN    NaN             NaN    NaN   NaN   NaN    NaN
+10                        From Date           To Date                                PM2.5    PM10     NO             NO2    NH3   SO2    CO  OZONE
+11                 01-01-2026 00:00  01-01-2026 01:00                                57.79  124.02  63.24             NaN  44.27  7.23  1.24    NaN
+12                 01-01-2026 01:00  01-01-2026 02:00                                74.52  151.96  56.48             NaN  39.54  5.75  1.47    NaN
+13                 01-01-2026 02:00  01-01-2026 03:00                                83.48  156.06  39.89           83.67  27.92  4.98  1.39    NaN
+14                 01-01-2026 03:00  01-01-2026 04:00                                83.12  153.96  28.67           82.56  20.07  4.34   1.3    NaN
+15                 01-01-2026 04:00  01-01-2026 05:00                                87.62     158  29.66           84.74  20.76   5.3   1.3    NaN
+16                 01-01-2026 05:00  01-01-2026 06:00                                89.92     164  25.81           77.04  18.07  6.31  1.22    NaN
+17                 01-01-2026 06:00  01-01-2026 07:00                                  NaN  155.89  28.35           60.97  19.85  5.71  0.58    NaN
+18                 01-01-2026 07:00  01-01-2026 08:00                                68.36  112.56  28.05           65.58  19.63  5.62   0.9    NaN
+19                 01-01-2026 08:00  01-01-2026 09:00                                54.44   77.69  26.73           64.78  18.71  6.62  1.06    NaN
+20                 01-01-2026 09:00  01-01-2026 10:00                                43.29   59.59  76.97           78.13  53.88  6.29  1.17    NaN
+21                 01-01-2026 10:00  01-01-2026 11:00                                45.04   97.17  63.78           83.43  44.65  6.52  1.17    NaN
+22                 01-01-2026 11:00  01-01-2026 12:00                                43.89  124.23  16.03           59.15  11.22  6.51  0.98    NaN
+23                 01-01-2026 12:00  01-01-2026 13:00                                   42  105.16  10.95           57.08   7.67  6.58  0.91    NaN
+24                 01-01-2026 13:00  01-01-2026 14:00                                38.83   84.05   6.26              51   4.38   6.5  0.77    NaN
+
+================================================================================
+FILE: Advance_Search_1792672709872.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                 NaN    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                 NaN    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                 NaN    NaN    NaN  Time: 18:07:22   NaN  NaN   NaN    NaN
+3                             State               NaN                         Maharashtra    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+4                              City               NaN                              Mumbai    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+5                           Station               NaN        Borivali East, Mumbai - MPCB    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+6                         Parameter               NaN  NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+7                         AvgPeriod               NaN                                  1H    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+8                              From               NaN                 2025-01-01 00:00:00    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+9                                To               NaN                 2025-12-31 00:00:00    NaN    NaN             NaN   NaN  NaN   NaN    NaN
+10                        From Date           To Date                               PM2.5   PM10     NO             NO2   NH3  SO2    CO  OZONE
+11                 01-01-2025 00:00  01-01-2025 01:00                               32.89  70.55   8.04            4.65  9.47  NaN  0.19    NaN
+12                 01-01-2025 01:00  01-01-2025 02:00                               32.84  67.46   9.06            6.98  9.48  NaN  0.19    NaN
+13                 01-01-2025 02:00  01-01-2025 03:00                               36.85  84.18  10.92           11.96  9.47  NaN  0.19    NaN
+14                 01-01-2025 03:00  01-01-2025 04:00                               37.19  87.47   9.09            7.42  9.46  NaN  0.19    NaN
+15                 01-01-2025 04:00  01-01-2025 05:00                                35.9  73.38   9.07            5.37  9.43  NaN  0.19    NaN
+16                 01-01-2025 05:00  01-01-2025 06:00                                34.7  70.17   8.94            4.77  9.41  NaN  0.19    NaN
+17                 01-01-2025 06:00  01-01-2025 07:00                               31.54  63.05    8.6            4.82  9.42  NaN  0.19    NaN
+18                 01-01-2025 07:00  01-01-2025 08:00                               28.95  59.66   8.25            4.35  9.43  NaN  0.19    NaN
+19                 01-01-2025 08:00  01-01-2025 09:00                                27.5  59.77    8.6            3.63  9.48  NaN  0.19    NaN
+20                 01-01-2025 09:00  01-01-2025 10:00                               26.74  58.86   9.12            4.96  9.58  NaN  0.19    NaN
+21                 01-01-2025 10:00  01-01-2025 11:00                               28.09  62.69   6.66            5.82  9.52  NaN  0.19    NaN
+22                 01-01-2025 11:00  01-01-2025 12:00                               30.19  66.98   5.34            7.07  9.51  NaN  0.19    NaN
+23                 01-01-2025 12:00  01-01-2025 13:00                               31.42  78.67    4.3            8.38  9.49  NaN  0.19    NaN
+24                 01-01-2025 13:00  01-01-2025 14:00                               33.19   89.4   4.29            8.03  9.48  NaN  0.19    NaN
+
+================================================================================
+FILE: Advance_Search_1792672943405.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                 NaN     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                 NaN     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                 NaN     NaN    NaN  Time: 18:12:09    NaN    NaN   NaN    NaN
+3                             State               NaN                         Maharashtra     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+4                              City               NaN                              Mumbai     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+5                           Station               NaN        Borivali East, Mumbai - MPCB     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+6                         Parameter               NaN  NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+7                         AvgPeriod               NaN                                  1H     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+8                              From               NaN                 2026-01-01 00:00:00     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+9                                To               NaN                 2026-10-22 00:00:00     NaN    NaN             NaN    NaN    NaN   NaN    NaN
+10                        From Date           To Date                               PM2.5    PM10     NO             NO2    NH3    SO2    CO  OZONE
+11                 01-01-2026 00:00  01-01-2026 01:00                               24.66   85.15   65.2             NaN  27.64   14.9  0.38    NaN
+12                 01-01-2026 01:00  01-01-2026 02:00                               25.42   87.64  72.51             NaN  31.15  14.51  0.36    NaN
+13                 01-01-2026 02:00  01-01-2026 03:00                                26.4    90.8  79.29             NaN   34.6  14.92  0.38    NaN
+14                 01-01-2026 03:00  01-01-2026 04:00                               25.23   86.99  84.26             NaN  36.94  15.37  0.39    NaN
+15                 01-01-2026 04:00  01-01-2026 05:00                               26.75   91.92  88.01             NaN  38.88  15.36  0.38    NaN
+16                 01-01-2026 05:00  01-01-2026 06:00                               29.11   99.59  91.39             NaN  40.39  14.55  0.36    NaN
+17                 01-01-2026 06:00  01-01-2026 07:00                               32.88  111.92  93.02             NaN  41.64  14.22  0.36    NaN
+18                 01-01-2026 07:00  01-01-2026 08:00                               34.03  115.59  90.94             NaN  41.53  14.49  0.36    NaN
+19                 01-01-2026 08:00  01-01-2026 09:00                               22.18   76.92  89.93             NaN  40.89  14.25  0.36    NaN
+20                 01-01-2026 09:00  01-01-2026 10:00                               16.04   57.13  89.28             NaN   40.5  14.06  0.35    NaN
+21                 01-01-2026 10:00  01-01-2026 11:00                               15.09   54.04  85.23             NaN  38.64  12.94  0.32    NaN
+22                 01-01-2026 11:00  01-01-2026 12:00                               11.26   41.58  73.69             NaN  33.96  14.66  0.37    NaN
+23                 01-01-2026 12:00  01-01-2026 13:00                                8.65   33.15  58.15             NaN   27.3  15.18  0.38    NaN
+24                 01-01-2026 13:00  01-01-2026 14:00                                6.59   26.43  43.26             NaN  21.24   15.8   0.4    NaN
+
+================================================================================
+FILE: Advance_Search_1792673076381.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                 NaN     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                 NaN     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                 NaN     NaN   NaN  Time: 18:14:29    NaN    NaN   NaN    NaN
+3                             State               NaN                         Maharashtra     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+4                              City               NaN                              Mumbai     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+5                           Station               NaN              Chembur, Mumbai - MPCB     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+6                         Parameter               NaN  NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+7                         AvgPeriod               NaN                                  1H     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+8                              From               NaN                 2026-01-01 00:00:00     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+9                                To               NaN                 2026-10-22 00:00:00     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+10                        From Date           To Date                               PM2.5    PM10    NO             NO2    NH3    SO2    CO  OZONE
+11                 01-01-2026 00:00  01-01-2026 01:00                               13.54   77.18   1.2           48.94  39.13   0.16   0.9    NaN
+12                 01-01-2026 01:00  01-01-2026 02:00                               14.13   86.07  1.05           40.62  39.16   0.12   0.8    NaN
+13                 01-01-2026 02:00  01-01-2026 03:00                               19.32   89.25  1.12           45.23  38.09    NaN  0.82    NaN
+14                 01-01-2026 03:00  01-01-2026 04:00                               27.55   91.73  1.61           56.84  37.66   0.49  0.95    NaN
+15                 01-01-2026 04:00  01-01-2026 05:00                               34.29  101.64  6.58           64.06  35.88   3.03  1.31    NaN
+16                 01-01-2026 05:00  01-01-2026 06:00                               47.67  114.19   4.3           57.33  33.92   3.71  1.12    NaN
+17                 01-01-2026 06:00  01-01-2026 07:00                               57.19  121.85  4.27           41.71  33.63   0.89  0.77    NaN
+18                 01-01-2026 07:00  01-01-2026 08:00                               44.55  106.86  1.14           20.85  31.15    NaN   0.4    NaN
+19                 01-01-2026 08:00  01-01-2026 09:00                               21.58    78.4  0.92           16.38  28.93   1.03  0.31    NaN
+20                 01-01-2026 09:00  01-01-2026 10:00                                5.93   59.45  2.61           21.68  28.49   1.24  0.38    NaN
+21                 01-01-2026 10:00  01-01-2026 11:00                                 0.9   50.01  2.52           18.35  29.44   2.26  0.29    NaN
+22                 01-01-2026 11:00  01-01-2026 12:00                                 NaN   38.18  2.77           23.99  28.33  10.43  0.31    NaN
+23                 01-01-2026 12:00  01-01-2026 13:00                                 NaN   34.89  3.43           30.31  28.28  42.56  0.31    NaN
+24                 01-01-2026 13:00  01-01-2026 14:00                                 NaN   41.75  1.98           31.22  29.34  11.33  0.35    NaN
+
+================================================================================
+FILE: Advance_Search_1792673175387.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                 NaN     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                 NaN     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                 NaN     NaN   NaN  Time: 18:15:40    NaN    NaN   NaN    NaN
+3                             State               NaN                         Maharashtra     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+4                              City               NaN                              Mumbai     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+5                           Station               NaN              Chembur, Mumbai - MPCB     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+6                         Parameter               NaN  NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+7                         AvgPeriod               NaN                                  1H     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+8                              From               NaN                 2025-01-01 00:00:00     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+9                                To               NaN                 2025-12-31 00:00:00     NaN   NaN             NaN    NaN    NaN   NaN    NaN
+10                        From Date           To Date                               PM2.5    PM10    NO             NO2    NH3    SO2    CO  OZONE
+11                 01-01-2025 00:00  01-01-2025 01:00                               61.33  125.21  2.67           33.23  40.05   3.38  1.19    NaN
+12                 01-01-2025 01:00  01-01-2025 02:00                                64.5  128.48  1.75           26.53  38.98   4.32  1.06    NaN
+13                 01-01-2025 02:00  01-01-2025 03:00                               68.74  129.52  1.66           24.96  37.68   4.26  1.02    NaN
+14                 01-01-2025 03:00  01-01-2025 04:00                               67.43  124.98  1.61           16.59   35.8   4.16  0.94    NaN
+15                 01-01-2025 04:00  01-01-2025 05:00                               63.68  129.92   1.5           16.25  33.99   4.93  0.92    NaN
+16                 01-01-2025 05:00  01-01-2025 06:00                                63.4  125.73  1.61           18.39   33.8   6.65  0.95    NaN
+17                 01-01-2025 06:00  01-01-2025 07:00                               67.57  130.61  3.08           27.27  35.85   6.88  0.96    NaN
+18                 01-01-2025 07:00  01-01-2025 08:00                               67.93  137.77   2.5           21.23  35.36   8.03  0.84    NaN
+19                 01-01-2025 08:00  01-01-2025 09:00                               67.11  131.08  2.64           18.24  34.65  10.53  0.79    NaN
+20                 01-01-2025 09:00  01-01-2025 10:00                               64.22  132.38  1.89           12.61  32.75  13.64   0.7    NaN
+21                 01-01-2025 10:00  01-01-2025 11:00                               61.84  125.18  1.18            9.97  31.34  11.81  0.66    NaN
+22                 01-01-2025 11:00  01-01-2025 12:00                               55.59  117.19  0.67            7.96  30.29  10.13   0.6    NaN
+23                 01-01-2025 12:00  01-01-2025 13:00                               54.85  111.04  0.43            5.29  28.53   7.37  0.53    NaN
+24                 01-01-2025 13:00  01-01-2025 14:00                               43.65  105.18  0.34            4.03  27.69   9.15  0.51    NaN
+
+================================================================================
+FILE: Advance_Search_1792673241762.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                   NaN     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                   NaN     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                   NaN     NaN   NaN  Time: 18:17:07   NaN  NaN   NaN    NaN
+3                             State               NaN                           Maharashtra     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+4                              City               NaN                                Mumbai     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+5                           Station               NaN  Siddharth Nagar-Worli, Mumbai - IITM     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+6                         Parameter               NaN    NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+7                         AvgPeriod               NaN                                    1H     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+8                              From               NaN                   2025-01-01 00:00:00     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+9                                To               NaN                   2025-12-31 00:00:00     NaN   NaN             NaN   NaN  NaN   NaN    NaN
+10                        From Date           To Date                                 PM2.5    PM10    NO             NO2   NH3  SO2    CO  OZONE
+11                 01-01-2025 00:00  01-01-2025 01:00                                 60.76    74.6  3.34           30.77  6.43  NaN  0.88    NaN
+12                 01-01-2025 01:00  01-01-2025 02:00                                 60.05    84.6  4.72           44.33   5.8  NaN  1.08    NaN
+13                 01-01-2025 02:00  01-01-2025 03:00                                 64.26    96.4  8.35            52.5  5.96  NaN  1.18    NaN
+14                 01-01-2025 03:00  01-01-2025 04:00                                 77.95  102.82   7.6            46.7  6.19  NaN  1.06    NaN
+15                 01-01-2025 04:00  01-01-2025 05:00                                  72.9  106.37  4.66           31.03  6.93  NaN  0.84    NaN
+16                 01-01-2025 05:00  01-01-2025 06:00                                 70.66   92.48  4.97           34.28  6.71  NaN  0.85    NaN
+17                 01-01-2025 06:00  01-01-2025 07:00                                 68.27   87.31  3.93           25.37  6.92  NaN  0.58    NaN
+18                 01-01-2025 07:00  01-01-2025 08:00                                 63.48   70.74  4.23           27.92  6.62  NaN  0.51    NaN
+19                 01-01-2025 08:00  01-01-2025 09:00                                  56.1   66.58  4.81            30.5  6.32  NaN  0.69    NaN
+20                 01-01-2025 09:00  01-01-2025 10:00                                 54.12   74.23  6.24           33.76   6.4  NaN  0.78    NaN
+21                 01-01-2025 10:00  01-01-2025 11:00                                 53.12   74.55  6.03           35.95  6.39  NaN  0.81    NaN
+22                 01-01-2025 11:00  01-01-2025 12:00                                 53.81      86  4.65           32.71   6.7  NaN  0.75    NaN
+23                 01-01-2025 12:00  01-01-2025 13:00                                 54.22   92.36  3.28           24.26  7.07  NaN  0.79    NaN
+24                 01-01-2025 13:00  01-01-2025 14:00                                 58.15   82.58  2.89           17.03  7.06  NaN  0.72    NaN
+
+================================================================================
+FILE: Advance_Search_1792673310690.xlsx
+0   CENTRAL POLLUTION CONTROL BOARD               NaN                                   NaN     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+1    CONTINUOUS AMBIENT AIR QUALITY               NaN                                   NaN     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+2                  Date: 22-10-2026               NaN                                   NaN     NaN    NaN  Time: 18:18:21    NaN  NaN   NaN    NaN
+3                             State               NaN                           Maharashtra     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+4                              City               NaN                                Mumbai     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+5                           Station               NaN  Siddharth Nagar-Worli, Mumbai - IITM     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+6                         Parameter               NaN    NO,PM10,PM2.5,NO2,SO2,CO,Ozone,NH3     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+7                         AvgPeriod               NaN                                    1H     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+8                              From               NaN                   2026-01-01 00:00:00     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+9                                To               NaN                   2026-10-22 00:00:00     NaN    NaN             NaN    NaN  NaN   NaN    NaN
+10                        From Date           To Date                                 PM2.5    PM10     NO             NO2    NH3  SO2    CO  OZONE
+11                 01-01-2026 00:00  01-01-2026 01:00                                 44.84   71.69  12.94           41.75  22.28  NaN  0.85    NaN
+12                 01-01-2026 01:00  01-01-2026 02:00                                 52.15   85.76    5.4           65.21  20.98  NaN  0.83    NaN
+13                 01-01-2026 02:00  01-01-2026 03:00                                 73.54  123.29   5.06           81.87  22.31  NaN  0.85    NaN
+14                 01-01-2026 03:00  01-01-2026 04:00                                 81.89  138.88   3.55           73.67  22.04  NaN  0.86    NaN
+15                 01-01-2026 04:00  01-01-2026 05:00                                 83.77  152.51   3.91           77.64  22.78  NaN  0.92    NaN
+16                 01-01-2026 05:00  01-01-2026 06:00                                 86.42  156.56   3.72           51.74  20.94  NaN  0.82    NaN
+17                 01-01-2026 06:00  01-01-2026 07:00                                 80.93  137.31   4.06           35.61   19.5  NaN  0.72    NaN
+18                 01-01-2026 07:00  01-01-2026 08:00                                 75.63  103.93   5.15           45.95  18.93  NaN  0.65    NaN
+19                 01-01-2026 08:00  01-01-2026 09:00                                 62.41   74.86   4.94           49.51  19.93  NaN  0.58    NaN
+20                 01-01-2026 09:00  01-01-2026 10:00                                 54.82   60.03    5.2           50.54  19.72  NaN  0.59    NaN
+21                 01-01-2026 10:00  01-01-2026 11:00                                 54.61   69.23   5.82           47.43   19.1  NaN  0.53    NaN
+22                 01-01-2026 11:00  01-01-2026 12:00                                 52.99    77.1   5.91              50  18.33  NaN  0.44    NaN
+23                 01-01-2026 12:00  01-01-2026 13:00                                 52.08   76.08   4.63           51.55  18.33  NaN  0.38    NaN
+24                 01-01-2026 13:00  01-01-2026 14:00                                 49.33    68.7   2.54           28.22  15.72  NaN  0.25    NaN
+
+
+=================================== CELL 4 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import glob
+import os
+
+# 1. Find all uploaded Excel files
+files = sorted(glob.glob('/content/*.xlsx'))
+
+if len(files) == 0:
+    raise ValueError("No Excel files found. Please upload your CPCB files.")
+
+print("Excel files found:", len(files))
+
+all_data = []
+reports = []
+
+# 2. Read and process each Excel file
+for file in files:
+    print("Processing:", os.path.basename(file))
+
+    # Read report metadata
+    raw = pd.read_excel(file, header=None)
+
+    station = raw.iloc[5, 2]
+    period_start = raw.iloc[8, 2]
+    period_end = raw.iloc[9, 2]
+
+    # Actual column headers are on Excel row 11
+    df = pd.read_excel(file, header=10)
+
+    # Remove completely empty rows and columns
+    df = df.dropna(how='all').dropna(axis=1, how='all')
+    df.columns = df.columns.astype(str).str.strip()
+
+    # Check that expected date columns exist
+    required_dates = ['From Date', 'To Date']
+    missing_dates = [c for c in required_dates if c not in df.columns]
+
+    if missing_dates:
+        print("Skipping file because date columns are missing:", file)
+        continue
+
+    # Convert dates into proper datetime format
+    for col in required_dates:
+        df[col] = pd.to_datetime(
+            df[col], dayfirst=True, errors='coerce'
+        )
+
+    # Convert pollutant measurements into numbers
+    pollutant_cols = [
+        c for c in df.columns
+        if c not in ['From Date', 'To Date']
+    ]
+
+    for col in pollutant_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # Add station and source information
+    df['Station'] = station
+    df['Source_File'] = os.path.basename(file)
+
+    all_data.append(df)
+
+    # Create a summary for this file
+    reports.append({
+        'File': os.path.basename(file),
+        'Station': station,
+        'Period_Start': period_start,
+        'Period_End': period_end,
+        'Rows': len(df),
+        'Missing_From_Date': df['From Date'].isna().sum(),
+        'Missing_To_Date': df['To Date'].isna().sum(),
+        'Duplicate_Timestamps': df.duplicated(
+            subset=['From Date', 'To Date']
+        ).sum()
+    })
+
+# 3. Combine all files
+if not all_data:
+    raise ValueError(
+        "No files were processed successfully. Check the Excel headers."
+    )
+
+combined = pd.concat(all_data, ignore_index=True)
+report = pd.DataFrame(reports)
+
+# 4. Display file summary
+print("\n===== FILE SUMMARY =====")
+display(report)
+
+# 5. Check missing values in each file
+print("\n===== MISSING VALUES BY FILE (%) =====")
+
+for file_name, group in combined.groupby('Source_File'):
+    print("\nFile:", file_name)
+
+    measurements = group.drop(
+        columns=['Station', 'Source_File', 'From Date', 'To Date'],
+        errors='ignore'
+    )
+
+    missing_percent = (
+        measurements.isna().mean().mul(100).round(1)
+    )
+
+    display(missing_percent.to_frame('Missing_Percent'))
+
+# 6. Overall dataset summary
+print("\n===== COMBINED DATASET =====")
+print("Total rows:", len(combined))
+print("Total columns:", len(combined.columns))
+print("\nStations:")
+print(combined['Station'].value_counts(dropna=False))
+
+print("\nFirst 5 rows:")
+display(combined.head())
+
+# 7. Overall missing-value summary
+print("\n===== OVERALL MISSING VALUES (%) =====")
+display(
+    combined.isna().mean().mul(100).round(1)
+    .to_frame('Missing_Percent')
+)
+
+# 8. Save the combined data and reports
+combined.to_csv(
+    '/content/mumbai_pollution_combined.csv', index=False
+)
+report.to_csv(
+    '/content/cpcb_file_summary.csv', index=False
+)
+
+print("\nSaved combined data and file summary to Colab.")
+--- OUTPUTS ---
+Excel files found: 8
+Processing: Advance_Search_1792671763347.xlsx
+Processing: Advance_Search_1792672262632.xlsx
+Processing: Advance_Search_1792672709872.xlsx
+Processing: Advance_Search_1792672943405.xlsx
+Processing: Advance_Search_1792673076381.xlsx
+Processing: Advance_Search_1792673175387.xlsx
+Processing: Advance_Search_1792673241762.xlsx
+Processing: Advance_Search_1792673310690.xlsx
+
+===== FILE SUMMARY =====
+
+['                                File                               Station  \\\n', '0  Advance_Search_1792671763347.xlsx   Bandra Kurla Complex, Mumbai - IITM   \n', '1  Advance_Search_1792672262632.xlsx   Bandra Kurla Complex, Mumbai - IITM   \n', '2  Advance_Search_1792672709872.xlsx          Borivali East, Mumbai - MPCB   \n', '3  Advance_Search_1792672943405.xlsx          Borivali East, Mumbai - MPCB   \n', '4  Advance_Search_1792673076381.xlsx                Chembur, Mumbai - MPCB   \n', '5  Advance_Search_1792673175387.xlsx                Chembur, Mumbai - MPCB   \n', '6  Advance_Search_1792673241762.xlsx  Siddharth Nagar-Worli, Mumbai - IITM   \n', '7  Advance_Search_1792673310690.xlsx  Siddharth Nagar-Worli, Mumbai - IITM   \n', '\n', '          Period_Start           Period_End  Rows  Missing_From_Date  \\\n', '0  2025-01-01 00:00:00  2025-12-31 00:00:00  8736                  0   \n', '1  2026-01-01 00:00:00  2026-10-22 00:00:00  7056                  0   \n', '2  2025-01-01 00:00:00  2025-12-31 00:00:00  8736                  0   \n', '3  2026-01-01 00:00:00  2026-10-22 00:00:00  7056                  0   \n', '4  2026-01-01 00:00:00  2026-10-22 00:00:00  7056                  0   \n', '5  2025-01-01 00:00:00  2025-12-31 00:00:00  8736                  0   \n', '6  2025-01-01 00:00:00  2025-12-31 00:00:00  8736                  0   \n', '7  2026-01-01 00:00:00  2026-10-22 00:00:00  7056                  0   \n', '\n', '   Missing_To_Date  Duplicate_Timestamps  \n', '0                0                     0  \n', '1                0                     0  \n', '2                0                     0  \n', '3                0                     0  \n', '4                0                     0  \n', '5                0                     0  \n', '6                0                     0  \n', '7                0                     0  ']
+
+===== MISSING VALUES BY FILE (%) =====
+
+File: Advance_Search_1792671763347.xlsx
+
+['       Missing_Percent\n', 'PM2.5             47.6\n', 'PM10              48.0\n', 'NO                48.7\n', 'NO2               49.5\n', 'NH3               48.7\n', 'SO2               49.3\n', 'CO                43.4']
+
+File: Advance_Search_1792672262632.xlsx
+
+['       Missing_Percent\n', 'PM2.5             23.3\n', 'PM10              20.6\n', 'NO                21.9\n', 'NO2               26.2\n', 'NH3               22.7\n', 'SO2               21.7\n', 'CO                20.3']
+
+File: Advance_Search_1792672709872.xlsx
+
+['       Missing_Percent\n', 'PM2.5             22.1\n', 'PM10              34.0\n', 'NO                19.3\n', 'NO2               22.8\n', 'NH3               20.9\n', 'SO2               26.6\n', 'CO                26.5']
+
+File: Advance_Search_1792672943405.xlsx
+
+['       Missing_Percent\n', 'PM2.5             30.2\n', 'PM10              33.4\n', 'NO                29.0\n', 'NO2               50.4\n', 'NH3               29.0\n', 'SO2               30.5\n', 'CO                28.5']
+
+File: Advance_Search_1792673076381.xlsx
+
+['       Missing_Percent\n', 'PM2.5              6.1\n', 'PM10               5.9\n', 'NO                 5.8\n', 'NO2                5.8\n', 'NH3                6.3\n', 'SO2                7.5\n', 'CO                 6.7']
+
+File: Advance_Search_1792673175387.xlsx
+
+['       Missing_Percent\n', 'PM2.5              5.7\n', 'PM10               5.7\n', 'NO                 6.1\n', 'NO2                4.3\n', 'NH3                5.9\n', 'SO2                5.5\n', 'CO                 4.0']
+
+File: Advance_Search_1792673241762.xlsx
+
+['       Missing_Percent\n', 'PM2.5             16.0\n', 'PM10              10.3\n', 'NO                13.2\n', 'NO2               17.6\n', 'NH3               13.2\n', 'SO2              100.0\n', 'CO                 8.8']
+
+File: Advance_Search_1792673310690.xlsx
+
+['       Missing_Percent\n', 'PM2.5             12.7\n', 'PM10              10.0\n', 'NO                11.7\n', 'NO2               13.2\n', 'NH3               13.1\n', 'SO2              100.0\n', 'CO                11.2']
+
+===== COMBINED DATASET =====
+Total rows: 63168
+Total columns: 11
+
+Stations:
+Station
+Bandra Kurla Complex, Mumbai - IITM     15792
+Borivali East, Mumbai - MPCB            15792
+Chembur, Mumbai - MPCB                  15792
+Siddharth Nagar-Worli, Mumbai - IITM    15792
+Name: count, dtype: int64
+
+First 5 rows:
+
+['            From Date             To Date  PM2.5  PM10  NO  NO2  NH3  SO2  CO  \\\n', '0 2025-01-01 00:00:00 2025-01-01 01:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '1 2025-01-01 01:00:00 2025-01-01 02:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '2 2025-01-01 02:00:00 2025-01-01 03:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '3 2025-01-01 03:00:00 2025-01-01 04:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '4 2025-01-01 04:00:00 2025-01-01 05:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '\n', '                               Station                        Source_File  \n', '0  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '1  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '2  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '3  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '4  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  ']
+
+===== OVERALL MISSING VALUES (%) =====
+
+['             Missing_Percent\n', 'From Date                0.0\n', 'To Date                  0.0\n', 'PM2.5                   20.7\n', 'PM10                    21.4\n', 'NO                      19.7\n', 'NO2                     23.7\n', 'NH3                     20.2\n', 'SO2                     42.9\n', 'CO                      18.9\n', 'Station                  0.0\n', 'Source_File              0.0']
+
+Saved combined data and file summary to Colab.
+
+
+=================================== CELL 5 (code) ===================================
+--- SOURCE ---
+# STEP 2: Check dataset quality
+
+print("Dataset shape (rows, columns):", combined.shape)
+
+print("\n1. Missing values in each column:")
+print(combined.isna().sum())
+
+print("\n2. Duplicate complete rows:")
+print(combined.duplicated().sum())
+
+print("\n3. Duplicate timestamps within each station:")
+print(
+    combined.duplicated(
+        subset=['Station', 'From Date', 'To Date']
+    ).sum()
+)
+
+print("\n4. Date range:")
+print("Earliest:", combined['From Date'].min())
+print("Latest:", combined['From Date'].max())
+
+print("\n5. Records per station:")
+print(combined['Station'].value_counts())
+
+print("\n6. Sample records:")
+display(combined.head(10))
+--- OUTPUTS ---
+Dataset shape (rows, columns): (63168, 11)
+
+1. Missing values in each column:
+From Date          0
+To Date            0
+PM2.5          13090
+PM10           13488
+NO             12449
+NO2            14973
+NH3            12762
+SO2            27116
+CO             11933
+Station            0
+Source_File        0
+dtype: int64
+
+2. Duplicate complete rows:
+0
+
+3. Duplicate timestamps within each station:
+0
+
+4. Date range:
+Earliest: 2025-01-01 00:00:00
+Latest: 2026-10-21 23:00:00
+
+5. Records per station:
+Station
+Bandra Kurla Complex, Mumbai - IITM     15792
+Borivali East, Mumbai - MPCB            15792
+Chembur, Mumbai - MPCB                  15792
+Siddharth Nagar-Worli, Mumbai - IITM    15792
+Name: count, dtype: int64
+
+6. Sample records:
+
+['            From Date             To Date  PM2.5  PM10  NO  NO2  NH3  SO2  CO  \\\n', '0 2025-01-01 00:00:00 2025-01-01 01:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '1 2025-01-01 01:00:00 2025-01-01 02:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '2 2025-01-01 02:00:00 2025-01-01 03:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '3 2025-01-01 03:00:00 2025-01-01 04:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '4 2025-01-01 04:00:00 2025-01-01 05:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '5 2025-01-01 05:00:00 2025-01-01 06:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '6 2025-01-01 06:00:00 2025-01-01 07:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '7 2025-01-01 07:00:00 2025-01-01 08:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '8 2025-01-01 08:00:00 2025-01-01 09:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '9 2025-01-01 09:00:00 2025-01-01 10:00:00    NaN   NaN NaN  NaN  NaN  NaN NaN   \n', '\n', '                               Station                        Source_File  \n', '0  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '1  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '2  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '3  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '4  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '5  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '6  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '7  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '8  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  \n', '9  Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  ']
+
+=================================== CELL 6 (code) ===================================
+--- SOURCE ---
+# STEP 3: Investigate missing values by station and year
+
+pollutants = [
+    'PM2.5', 'PM10', 'NO', 'NO2', 'NH3', 'SO2', 'CO'
+]
+
+# Create a year column
+combined['Year'] = combined['From Date'].dt.year
+
+print("===== MISSING VALUES BY STATION (%) =====")
+
+station_missing = (
+    combined.groupby('Station')[pollutants]
+    .apply(lambda group: group.isna().mean() * 100)
+    .round(1)
+)
+
+display(station_missing)
+
+print("\n===== MISSING VALUES BY YEAR (%) =====")
+
+year_missing = (
+    combined.groupby('Year')[pollutants]
+    .apply(lambda group: group.isna().mean() * 100)
+    .round(1)
+)
+
+display(year_missing)
+
+print("\n===== RECORDS WITH ALL POLLUTANTS MISSING =====")
+
+all_missing = combined[pollutants].isna().all(axis=1)
+
+print("Rows with every pollutant missing:", all_missing.sum())
+print(
+    "Percentage of all records:",
+    round(all_missing.mean() * 100, 2), "%"
+)
+
+print("\n===== ALL-POLLUTANT MISSING ROWS BY STATION =====")
+
+display(
+    combined.assign(All_Pollutants_Missing=all_missing)
+    .groupby('Station')['All_Pollutants_Missing']
+    .agg(['sum', 'count'])
+    .rename(columns={
+        'sum': 'All_Missing_Rows',
+        'count': 'Total_Rows'
+    })
+)
+--- OUTPUTS ---
+===== MISSING VALUES BY STATION (%) =====
+
+['                                      PM2.5  PM10    NO   NO2   NH3    SO2  \\\n', 'Station                                                                      \n', 'Bandra Kurla Complex, Mumbai - IITM    36.7  35.7  36.7  39.1  37.1   37.0   \n', 'Borivali East, Mumbai - MPCB           25.7  33.7  23.6  35.1  24.5   28.3   \n', 'Chembur, Mumbai - MPCB                  5.9   5.8   6.0   5.0   6.1    6.4   \n', 'Siddharth Nagar-Worli, Mumbai - IITM   14.5  10.2  12.5  15.6  13.1  100.0   \n', '\n', '                                        CO  \n', 'Station                                     \n', 'Bandra Kurla Complex, Mumbai - IITM   33.1  \n', 'Borivali East, Mumbai - MPCB          27.4  \n', 'Chembur, Mumbai - MPCB                 5.2  \n', 'Siddharth Nagar-Worli, Mumbai - IITM   9.9  ']
+
+===== MISSING VALUES BY YEAR (%) =====
+
+['      PM2.5  PM10    NO   NO2   NH3   SO2    CO\n', 'Year                                           \n', '2025   22.8  24.5  21.8  23.5  22.2  45.3  20.7\n', '2026   18.1  17.5  17.1  23.9  17.8  39.9  16.7']
+
+===== RECORDS WITH ALL POLLUTANTS MISSING =====
+Rows with every pollutant missing: 9981
+Percentage of all records: 15.8 %
+
+===== ALL-POLLUTANT MISSING ROWS BY STATION =====
+
+['                                      All_Missing_Rows  Total_Rows\n', 'Station                                                           \n', 'Bandra Kurla Complex, Mumbai - IITM               4966       15792\n', 'Borivali East, Mumbai - MPCB                      3335       15792\n', 'Chembur, Mumbai - MPCB                             664       15792\n', 'Siddharth Nagar-Worli, Mumbai - IITM              1016       15792']
+
+=================================== CELL 7 (code) ===================================
+--- SOURCE ---
+# STEP 4: Missing values by original file
+
+pollutants = [
+    'PM2.5', 'PM10', 'NO', 'NO2', 'NH3', 'SO2', 'CO'
+]
+
+file_missing = (
+    combined.groupby(['Station', 'Source_File'])[pollutants]
+    .agg(lambda col: round(col.isna().mean() * 100, 1))
+)
+
+display(file_missing)
+
+print("\n===== FILES WITH 100% MISSING SO2 =====")
+so2_missing = (
+    combined.groupby('Source_File')['SO2']
+    .apply(lambda col: col.isna().mean() * 100)
+)
+
+display(so2_missing[so2_missing == 100].to_frame(
+    'SO2_Missing_Percent'
+))
+--- OUTPUTS ---
+['                                                                        PM2.5  \\\n', 'Station                              Source_File                                \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx   47.6   \n', '                                     Advance_Search_1792672262632.xlsx   23.3   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx   22.1   \n', '                                     Advance_Search_1792672943405.xlsx   30.2   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx    6.1   \n', '                                     Advance_Search_1792673175387.xlsx    5.7   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx   16.0   \n', '                                     Advance_Search_1792673310690.xlsx   12.7   \n', '\n', '                                                                        PM10  \\\n', 'Station                              Source_File                               \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  48.0   \n', '                                     Advance_Search_1792672262632.xlsx  20.6   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx  34.0   \n', '                                     Advance_Search_1792672943405.xlsx  33.4   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx   5.9   \n', '                                     Advance_Search_1792673175387.xlsx   5.7   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx  10.3   \n', '                                     Advance_Search_1792673310690.xlsx  10.0   \n', '\n', '                                                                          NO  \\\n', 'Station                              Source_File                               \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  48.7   \n', '                                     Advance_Search_1792672262632.xlsx  21.9   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx  19.3   \n', '                                     Advance_Search_1792672943405.xlsx  29.0   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx   5.8   \n', '                                     Advance_Search_1792673175387.xlsx   6.1   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx  13.2   \n', '                                     Advance_Search_1792673310690.xlsx  11.7   \n', '\n', '                                                                         NO2  \\\n', 'Station                              Source_File                               \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  49.5   \n', '                                     Advance_Search_1792672262632.xlsx  26.2   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx  22.8   \n', '                                     Advance_Search_1792672943405.xlsx  50.4   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx   5.8   \n', '                                     Advance_Search_1792673175387.xlsx   4.3   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx  17.6   \n', '                                     Advance_Search_1792673310690.xlsx  13.2   \n', '\n', '                                                                         NH3  \\\n', 'Station                              Source_File                               \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  48.7   \n', '                                     Advance_Search_1792672262632.xlsx  22.7   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx  20.9   \n', '                                     Advance_Search_1792672943405.xlsx  29.0   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx   6.3   \n', '                                     Advance_Search_1792673175387.xlsx   5.9   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx  13.2   \n', '                                     Advance_Search_1792673310690.xlsx  13.1   \n', '\n', '                                                                          SO2  \\\n', 'Station                              Source_File                                \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx   49.3   \n', '                                     Advance_Search_1792672262632.xlsx   21.7   \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx   26.6   \n', '                                     Advance_Search_1792672943405.xlsx   30.5   \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx    7.5   \n', '                                     Advance_Search_1792673175387.xlsx    5.5   \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx  100.0   \n', '                                     Advance_Search_1792673310690.xlsx  100.0   \n', '\n', '                                                                          CO  \n', 'Station                              Source_File                              \n', 'Bandra Kurla Complex, Mumbai - IITM  Advance_Search_1792671763347.xlsx  43.4  \n', '                                     Advance_Search_1792672262632.xlsx  20.3  \n', 'Borivali East, Mumbai - MPCB         Advance_Search_1792672709872.xlsx  26.5  \n', '                                     Advance_Search_1792672943405.xlsx  28.5  \n', 'Chembur, Mumbai - MPCB               Advance_Search_1792673076381.xlsx   6.7  \n', '                                     Advance_Search_1792673175387.xlsx   4.0  \n', 'Siddharth Nagar-Worli, Mumbai - IITM Advance_Search_1792673241762.xlsx   8.8  \n', '                                     Advance_Search_1792673310690.xlsx  11.2  ']
+
+===== FILES WITH 100% MISSING SO2 =====
+
+['                                   SO2_Missing_Percent\n', 'Source_File                                           \n', 'Advance_Search_1792673241762.xlsx                100.0\n', 'Advance_Search_1792673310690.xlsx                100.0']
+
+=================================== CELL 8 (code) ===================================
+--- SOURCE ---
+# STEP 5: Create an analysis-ready copy
+
+pollutants = [
+    'PM2.5', 'PM10', 'NO', 'NO2', 'NH3', 'SO2', 'CO'
+]
+
+# Keep the original combined dataset unchanged
+eda_data = combined.copy()
+
+# Identify rows with no pollutant measurements at all
+all_missing = eda_data[pollutants].isna().all(axis=1)
+
+print("Rows before filtering:", len(eda_data))
+print("Rows with all pollutants missing:", all_missing.sum())
+
+# Exclude only completely empty measurement rows
+eda_data = eda_data.loc[~all_missing].copy()
+
+print("Rows retained for EDA:", len(eda_data))
+print("Rows removed from analysis copy:", all_missing.sum())
+
+print("\nRemaining missing values:")
+display(eda_data[pollutants].isna().sum())
+
+# Save the analysis-ready copy
+eda_data.to_csv(
+    '/content/mumbai_pollution_eda_ready.csv',
+    index=False
+)
+
+print("\nSaved: mumbai_pollution_eda_ready.csv")
+--- OUTPUTS ---
+Rows before filtering: 63168
+Rows with all pollutants missing: 9981
+Rows retained for EDA: 53187
+Rows removed from analysis copy: 9981
+
+Remaining missing values:
+
+['PM2.5     3109\n', 'PM10      3507\n', 'NO        2468\n', 'NO2       4992\n', 'NH3       2781\n', 'SO2      17135\n', 'CO        1952\n', 'dtype: int64']
+
+Saved: mumbai_pollution_eda_ready.csv
+
+
+=================================== CELL 9 (code) ===================================
+--- SOURCE ---
+ # STEP 6: Descriptive statistics for each station
+
+pollutants = [
+    'PM2.5', 'PM10', 'NO', 'NO2', 'NH3', 'SO2', 'CO'
+]
+
+# Calculate statistics station by station
+station_stats = eda_data.groupby('Station')[pollutants].agg(
+    ['mean', 'median', 'min', 'max', 'count']
+).round(2)
+
+display(station_stats)
+
+# Save the results for your project
+station_stats.to_csv('/content/station_pollution_statistics.csv')
+
+print("Saved: station_pollution_statistics.csv")
+--- OUTPUTS ---
+['                                      PM2.5                              \\\n', '                                       mean median   min     max  count   \n', 'Station                                                                   \n', 'Bandra Kurla Complex, Mumbai - IITM   33.50  23.64  0.05  555.79   9991   \n', 'Borivali East, Mumbai - MPCB          23.61  19.36  0.67  160.40  11729   \n', 'Chembur, Mumbai - MPCB                30.21  22.71  0.04  771.39  14862   \n', 'Siddharth Nagar-Worli, Mumbai - IITM  29.30  18.50  0.07  357.79  13496   \n', '\n', '                                        PM10                              ...  \\\n', '                                        mean median   min     max  count  ...   \n', 'Station                                                                   ...   \n', 'Bandra Kurla Complex, Mumbai - IITM   101.06  83.64  0.06  699.41  10149  ...   \n', 'Borivali East, Mumbai - MPCB           62.76  53.55  1.75  615.00  10464  ...   \n', 'Chembur, Mumbai - MPCB                 75.92  62.44  3.56  469.68  14878  ...   \n', 'Siddharth Nagar-Worli, Mumbai - IITM   79.81  64.96  0.68  406.72  14189  ...   \n', '\n', '                                        SO2                                CO  \\\n', '                                       mean median   min     max  count  mean   \n', 'Station                                                                         \n', 'Bandra Kurla Complex, Mumbai - IITM    3.97   2.90  0.00   85.61   9953  0.58   \n', 'Borivali East, Mumbai - MPCB          11.86  12.10  0.44   53.49  11316  0.19   \n', 'Chembur, Mumbai - MPCB                 6.97   3.59  0.00  192.19  14783  0.68   \n', 'Siddharth Nagar-Worli, Mumbai - IITM    NaN    NaN   NaN     NaN      0  0.71   \n', '\n', '                                                               \n', '                                     median  min   max  count  \n', 'Station                                                        \n', 'Bandra Kurla Complex, Mumbai - IITM    0.50  0.0  5.43  10565  \n', 'Borivali East, Mumbai - MPCB           0.17  0.0  0.79  11468  \n', 'Chembur, Mumbai - MPCB                 0.64  0.0  5.14  14968  \n', 'Siddharth Nagar-Worli, Mumbai - IITM   0.67  0.0  4.97  14234  \n', '\n', '[4 rows x 35 columns]']
+Saved: station_pollution_statistics.csv
+
+
+=================================== CELL 10 (code) ===================================
+--- SOURCE ---
+import matplotlib.pyplot as plt
+
+# Calculate average pollutant concentrations for each station
+station_means = eda_data.groupby("Station")[["PM2.5", "PM10"]].mean()
+
+# Display the average values
+print(station_means.round(2))
+
+# Graph 1: Average PM2.5
+plt.figure(figsize=(10, 5))
+station_means["PM2.5"].plot(kind="bar")
+plt.title("Average PM2.5 Concentration by Station")
+plt.xlabel("Monitoring Station")
+plt.ylabel("Average PM2.5 Concentration")
+plt.xticks(rotation=30, ha="right")
+plt.tight_layout()
+plt.show()
+
+# Graph 2: Average PM10
+plt.figure(figsize=(10, 5))
+station_means["PM10"].plot(kind="bar")
+plt.title("Average PM10 Concentration by Station")
+plt.xlabel("Monitoring Station")
+plt.ylabel("Average PM10 Concentration")
+plt.xticks(rotation=30, ha="right")
+plt.tight_layout()
+plt.show()
+
+# Save the results as a CSV file
+station_means.to_csv("/content/station_mean_pm25_pm10.csv")
+
+print("Success! The station averages have been saved.")
+--- OUTPUTS ---
+                                      PM2.5    PM10
+Station                                            
+Bandra Kurla Complex, Mumbai - IITM   33.50  101.06
+Borivali East, Mumbai - MPCB          23.61   62.76
+Chembur, Mumbai - MPCB                30.21   75.92
+Siddharth Nagar-Worli, Mumbai - IITM  29.30   79.81
+
+['<Figure size 1000x500 with 1 Axes>']
+[image/png image data]
+['<Figure size 1000x500 with 1 Axes>']
+[image/png image data]
+Success! The station averages have been saved.
+
+
+=================================== CELL 11 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Convert dates into datetime format
+eda_data["From Date"] = pd.to_datetime(
+    eda_data["From Date"], errors="coerce"
+)
+
+# Extract month
+eda_data["Month"] = (
+    eda_data["From Date"].dt.to_period("M").astype(str)
+)
+
+# Calculate monthly average PM2.5 by station
+monthly_pm25 = eda_data.pivot_table(
+    index="Month",
+    columns="Station",
+    values="PM2.5",
+    aggfunc="mean"
+)
+
+# Plot monthly trends
+monthly_pm25.plot(figsize=(14, 6), marker=".")
+plt.title("Monthly PM2.5 Trends Across Mumbai Stations")
+plt.xlabel("Month")
+plt.ylabel("Average PM2.5 Concentration")
+plt.xticks(rotation=45, ha="right")
+plt.legend(title="Monitoring Station")
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+# Save the monthly data
+monthly_pm25.to_csv("/content/monthly_pm25_trends.csv")
+
+print("Monthly PM2.5 trends saved successfully!")
+
+--- OUTPUTS ---
+['<Figure size 1400x600 with 1 Axes>']
+[image/png image data]
+Monthly PM2.5 trends saved successfully!
+
+
+=================================== CELL 12 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Prepare dates
+eda_data["From Date"] = pd.to_datetime(
+    eda_data["From Date"], errors="coerce"
+)
+
+eda_data["Month"] = eda_data["From Date"].dt.to_period("M")
+
+# Calculate monthly average PM2.5 for every station
+monthly_pm25 = (
+    eda_data.groupby(["Month", "Station"])["PM2.5"]
+    .mean()
+    .unstack("Station")
+)
+
+# Show the data
+print(monthly_pm25.round(2).to_string())
+
+# Draw a separate line for every station
+fig, ax = plt.subplots(figsize=(14, 6))
+
+for station in monthly_pm25.columns:
+    ax.plot(
+        monthly_pm25.index.astype(str),
+        monthly_pm25[station],
+        marker="o",
+        markersize=3,
+        label=station
+    )
+
+ax.set_title("Monthly PM2.5 Trends Across Mumbai Stations")
+ax.set_xlabel("Month")
+ax.set_ylabel("Average PM2.5 Concentration")
+ax.tick_params(axis="x", rotation=60)
+ax.legend(title="Station", bbox_to_anchor=(1.02, 1), loc="upper left")
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+monthly_pm25.to_csv("/content/monthly_pm25_trends.csv")
+
+print("Monthly trend data saved successfully!")
+--- OUTPUTS ---
+Station  Bandra Kurla Complex, Mumbai - IITM  Borivali East, Mumbai - MPCB  Chembur, Mumbai - MPCB  Siddharth Nagar-Worli, Mumbai - IITM
+Month                                                                                                                                   
+2025-01                                  NaN                         34.12                   57.03                                 65.42
+2025-02                                  NaN                         28.94                   44.05                                 58.54
+2025-03                                  NaN                         28.81                   48.19                                 25.71
+2025-04                                28.08                         23.07                   28.78                                 17.20
+2025-05                                29.07                         16.72                   16.21                                 15.99
+2025-06                                23.80                         15.74                   23.71                                 16.82
+2025-07                                22.95                         12.61                   17.90                                 16.12
+2025-08                                11.04                         11.54                   12.98                                 12.61
+2025-09                                19.14                         14.30                   19.66                                 13.09
+2025-10                                72.54                         31.42                   38.64                                 39.51
+2025-11                                80.41                         55.78                   57.93                                 60.20
+2025-12                                71.83                         45.51                   60.66                                 65.40
+2026-01                                62.26                         24.67                   37.96                                 56.16
+2026-02                                59.51                         24.86                   42.77                                 48.77
+2026-03                                39.32                         17.69                   25.32                                 37.06
+2026-04                                38.34                         30.18                   24.53                                 22.36
+2026-05                                23.43                         13.93                   17.22                                 14.92
+2026-06                                15.39                          9.78                   14.36                                 16.46
+2026-07                                12.50                         10.71                   11.45                                 15.09
+2026-08                                17.09                         11.32                   11.53                                 10.41
+2026-09                                19.62                         11.58                   13.08                                  8.85
+2026-10                                58.91                         37.77                   47.34                                 34.78
+
+['<Figure size 1400x600 with 1 Axes>']
+[image/png image data]
+Monthly trend data saved successfully!
+
+
+=================================== CELL 13 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Prepare dates
+eda_data["From Date"] = pd.to_datetime(
+    eda_data["From Date"], errors="coerce"
+)
+
+eda_data["Month"] = eda_data["From Date"].dt.to_period("M")
+
+# Calculate monthly average PM2.5 for every station
+monthly_pm25 = (
+    eda_data.groupby(["Month", "Station"])["PM2.5"]
+    .mean()
+    .unstack("Station")
+)
+
+# Show the data
+print(monthly_pm25.round(2).to_string())
+
+# Draw a separate line for every station
+fig, ax = plt.subplots(figsize=(14, 6))
+
+for station in monthly_pm25.columns:
+    ax.plot(
+        monthly_pm25.index.astype(str),
+        monthly_pm25[station],
+        marker="o",
+        markersize=3,
+        label=station
+    )
+
+ax.set_title("Monthly PM2.5 Trends Across Mumbai Stations")
+ax.set_xlabel("Month")
+ax.set_ylabel("Average PM2.5 Concentration")
+ax.tick_params(axis="x", rotation=60)
+ax.legend(title="Station", bbox_to_anchor=(1.02, 1), loc="upper left")
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+monthly_pm25.to_csv("/content/monthly_pm25_trends.csv")
+
+print("Monthly trend data saved successfully!")
+--- OUTPUTS ---
+Station  Bandra Kurla Complex, Mumbai - IITM  Borivali East, Mumbai - MPCB  Chembur, Mumbai - MPCB  Siddharth Nagar-Worli, Mumbai - IITM
+Month                                                                                                                                   
+2025-01                                  NaN                         34.12                   57.03                                 65.42
+2025-02                                  NaN                         28.94                   44.05                                 58.54
+2025-03                                  NaN                         28.81                   48.19                                 25.71
+2025-04                                28.08                         23.07                   28.78                                 17.20
+2025-05                                29.07                         16.72                   16.21                                 15.99
+2025-06                                23.80                         15.74                   23.71                                 16.82
+2025-07                                22.95                         12.61                   17.90                                 16.12
+2025-08                                11.04                         11.54                   12.98                                 12.61
+2025-09                                19.14                         14.30                   19.66                                 13.09
+2025-10                                72.54                         31.42                   38.64                                 39.51
+2025-11                                80.41                         55.78                   57.93                                 60.20
+2025-12                                71.83                         45.51                   60.66                                 65.40
+2026-01                                62.26                         24.67                   37.96                                 56.16
+2026-02                                59.51                         24.86                   42.77                                 48.77
+2026-03                                39.32                         17.69                   25.32                                 37.06
+2026-04                                38.34                         30.18                   24.53                                 22.36
+2026-05                                23.43                         13.93                   17.22                                 14.92
+2026-06                                15.39                          9.78                   14.36                                 16.46
+2026-07                                12.50                         10.71                   11.45                                 15.09
+2026-08                                17.09                         11.32                   11.53                                 10.41
+2026-09                                19.62                         11.58                   13.08                                  8.85
+2026-10                                58.91                         37.77                   47.34                                 34.78
+
+['<Figure size 1400x600 with 1 Axes>']
+[image/png image data]
+Monthly trend data saved successfully!
+
+
+=================================== CELL 14 (code) ===================================
+--- SOURCE ---
+import matplotlib.pyplot as plt
+
+# Extract year from the date
+eda_data["Year"] = eda_data["From Date"].dt.year
+
+# Calculate yearly average PM2.5 for each station
+yearly_pm25 = eda_data.pivot_table(
+    index="Station",
+    columns="Year",
+    values="PM2.5",
+    aggfunc="mean"
+)
+
+print("Yearly average PM2.5:")
+print(yearly_pm25.round(2))
+
+# Plot comparison
+yearly_pm25.plot(kind="bar", figsize=(10, 5))
+
+plt.title("Yearly Average PM2.5 by Mumbai Station")
+plt.xlabel("Monitoring Station")
+plt.ylabel("Average PM2.5 Concentration")
+plt.xticks(rotation=25, ha="right")
+plt.legend(title="Year")
+plt.tight_layout()
+plt.show()
+
+# Save results
+yearly_pm25.to_csv("/content/yearly_pm25_comparison.csv")
+
+print("Yearly comparison saved successfully!")
+--- OUTPUTS ---
+Yearly average PM2.5:
+Year                                   2025   2026
+Station                                           
+Bandra Kurla Complex, Mumbai - IITM   34.53  32.64
+Borivali East, Mumbai - MPCB          25.98  20.34
+Chembur, Mumbai - MPCB                35.38  23.78
+Siddharth Nagar-Worli, Mumbai - IITM  32.23  25.82
+
+['<Figure size 1000x500 with 1 Axes>']
+[image/png image data]
+Yearly comparison saved successfully!
+
+
+=================================== CELL 15 (code) ===================================
+--- SOURCE ---
+pollutants = ["PM2.5", "PM10", "NO", "NO2", "NH3", "SO2", "CO"]
+
+# Get the highest readings for each pollutant
+for pollutant in pollutants:
+    print(f"\n--- Highest 5 readings: {pollutant} ---")
+
+    highest = eda_data.nlargest(5, pollutant)[
+        ["From Date", "Station", pollutant]
+    ]
+
+    print(highest.to_string(index=False))
+--- OUTPUTS ---
+
+--- Highest 5 readings: PM2.5 ---
+          From Date                             Station  PM2.5
+2026-08-04 19:00:00              Chembur, Mumbai - MPCB 771.39
+2025-10-21 01:00:00 Bandra Kurla Complex, Mumbai - IITM 555.79
+2025-10-21 02:00:00 Bandra Kurla Complex, Mumbai - IITM 537.11
+2025-07-29 01:00:00 Bandra Kurla Complex, Mumbai - IITM 443.96
+2025-10-21 00:00:00 Bandra Kurla Complex, Mumbai - IITM 437.90
+
+--- Highest 5 readings: PM10 ---
+          From Date                             Station   PM10
+2025-10-21 01:00:00 Bandra Kurla Complex, Mumbai - IITM 699.41
+2025-10-21 02:00:00 Bandra Kurla Complex, Mumbai - IITM 646.20
+2025-12-11 08:00:00        Borivali East, Mumbai - MPCB 615.00
+2025-07-29 03:00:00 Bandra Kurla Complex, Mumbai - IITM 602.02
+2025-05-25 11:00:00        Borivali East, Mumbai - MPCB 599.94
+
+--- Highest 5 readings: NO ---
+          From Date                             Station     NO
+2026-03-23 07:00:00 Bandra Kurla Complex, Mumbai - IITM 446.22
+2026-03-23 02:00:00 Bandra Kurla Complex, Mumbai - IITM 444.36
+2026-03-23 01:00:00 Bandra Kurla Complex, Mumbai - IITM 401.36
+2026-03-23 08:00:00 Bandra Kurla Complex, Mumbai - IITM 336.68
+2026-01-12 00:00:00 Bandra Kurla Complex, Mumbai - IITM 316.26
+
+--- Highest 5 readings: NO2 ---
+          From Date                              Station    NO2
+2026-06-03 09:00:00         Borivali East, Mumbai - MPCB 247.51
+2025-11-23 00:00:00 Siddharth Nagar-Worli, Mumbai - IITM 211.38
+2025-11-09 05:00:00 Siddharth Nagar-Worli, Mumbai - IITM 203.32
+2025-11-04 20:00:00  Bandra Kurla Complex, Mumbai - IITM 201.46
+2026-10-10 20:00:00  Bandra Kurla Complex, Mumbai - IITM 196.21
+
+--- Highest 5 readings: NH3 ---
+          From Date                             Station    NH3
+2026-03-09 07:00:00 Bandra Kurla Complex, Mumbai - IITM 478.63
+2026-03-09 02:00:00 Bandra Kurla Complex, Mumbai - IITM 477.56
+2026-03-09 04:00:00 Bandra Kurla Complex, Mumbai - IITM 472.76
+2026-03-09 01:00:00 Bandra Kurla Complex, Mumbai - IITM 469.36
+2026-03-09 03:00:00 Bandra Kurla Complex, Mumbai - IITM 468.84
+
+--- Highest 5 readings: SO2 ---
+          From Date                Station    SO2
+2026-01-06 13:00:00 Chembur, Mumbai - MPCB 192.19
+2025-10-01 13:00:00 Chembur, Mumbai - MPCB 182.92
+2025-04-10 11:00:00 Chembur, Mumbai - MPCB 177.24
+2026-07-09 13:00:00 Chembur, Mumbai - MPCB 172.74
+2025-10-02 12:00:00 Chembur, Mumbai - MPCB 163.30
+
+--- Highest 5 readings: CO ---
+          From Date                             Station   CO
+2026-04-12 22:00:00 Bandra Kurla Complex, Mumbai - IITM 5.43
+2026-04-12 20:00:00 Bandra Kurla Complex, Mumbai - IITM 5.31
+2026-04-12 23:00:00 Bandra Kurla Complex, Mumbai - IITM 5.19
+2026-03-03 03:00:00              Chembur, Mumbai - MPCB 5.14
+2026-04-12 16:00:00 Bandra Kurla Complex, Mumbai - IITM 5.12
+
+
+=================================== CELL 16 (code) ===================================
+--- SOURCE ---
+import matplotlib.pyplot as plt
+
+stations = eda_data["Station"].unique()
+
+data_to_plot = [
+    eda_data.loc[
+        eda_data["Station"] == station, "PM2.5"
+    ].dropna()
+    for station in stations
+]
+
+plt.figure(figsize=(12, 6))
+plt.boxplot(data_to_plot, tick_labels=stations, showfliers=True)
+
+plt.title("PM2.5 Distribution and Outliers by Mumbai Station")
+plt.xlabel("Monitoring Station")
+plt.ylabel("PM2.5 Concentration")
+plt.xticks(rotation=25, ha="right")
+plt.grid(axis="y", alpha=0.3)
+plt.tight_layout()
+plt.show()
+--- OUTPUTS ---
+['<Figure size 1200x600 with 1 Axes>']
+[image/png image data]
+
+=================================== CELL 17 (code) ===================================
+--- SOURCE ---
+import pandas as pd
+
+outlier_reports = []
+
+for station in eda_data["Station"].unique():
+    values = eda_data.loc[
+        eda_data["Station"] == station, "PM2.5"
+    ].dropna()
+
+    q1 = values.quantile(0.25)
+    q3 = values.quantile(0.75)
+    iqr = q3 - q1
+
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+
+    station_data = eda_data[
+        (eda_data["Station"] == station)
+        & (
+            (eda_data["PM2.5"] < lower_bound)
+            | (eda_data["PM2.5"] > upper_bound)
+        )
+    ][["From Date", "Station", "PM2.5"]].copy()
+
+    outlier_reports.append(station_data)
+
+outliers = pd.concat(outlier_reports, ignore_index=True)
+
+outliers.to_csv(
+    "/content/pm25_potential_outliers.csv",
+    index=False
+)
+
+print("Potential PM2.5 outliers:", len(outliers))
+print(outliers.head(10).to_string(index=False))
+print("Saved: pm25_potential_outliers.csv")
+--- OUTPUTS ---
+Potential PM2.5 outliers: 1281
+          From Date                             Station  PM2.5
+2025-05-13 23:00:00 Bandra Kurla Complex, Mumbai - IITM 118.77
+2025-07-29 01:00:00 Bandra Kurla Complex, Mumbai - IITM 443.96
+2025-07-29 02:00:00 Bandra Kurla Complex, Mumbai - IITM 280.01
+2025-07-29 03:00:00 Bandra Kurla Complex, Mumbai - IITM 146.69
+2025-10-10 23:00:00 Bandra Kurla Complex, Mumbai - IITM 104.24
+2025-10-11 00:00:00 Bandra Kurla Complex, Mumbai - IITM 101.40
+2025-10-11 01:00:00 Bandra Kurla Complex, Mumbai - IITM  96.80
+2025-10-11 02:00:00 Bandra Kurla Complex, Mumbai - IITM 102.94
+2025-10-11 10:00:00 Bandra Kurla Complex, Mumbai - IITM 101.87
+2025-10-11 22:00:00 Bandra Kurla Complex, Mumbai - IITM  95.54
+Saved: pm25_potential_outliers.csv
+
+
+=================================== CELL 18 (code) ===================================
+--- SOURCE ---
+# Count valid PM2.5 readings at each station
+valid_counts = (
+    eda_data.groupby("Station")["PM2.5"]
+    .count()
+    .rename("Valid readings")
+)
+
+# Count potential outliers at each station
+outlier_counts = (
+    outliers.groupby("Station")
+    .size()
+    .rename("Potential outliers")
+)
+
+# Combine the counts
+outlier_summary = pd.concat(
+    [valid_counts, outlier_counts], axis=1
+).fillna(0)
+
+outlier_summary["Potential outliers"] = (
+    outlier_summary["Potential outliers"].astype(int)
+)
+
+outlier_summary["Outlier percentage"] = (
+    outlier_summary["Potential outliers"]
+    / outlier_summary["Valid readings"] * 100
+).round(2)
+
+print(outlier_summary)
+
+# Save the summary
+outlier_summary.to_csv(
+    "/content/pm25_outlier_summary.csv"
+)
+
+print("\nSaved: pm25_outlier_summary.csv")
+--- OUTPUTS ---
+                                      Valid readings  Potential outliers  \
+Station                                                                    
+Bandra Kurla Complex, Mumbai - IITM             9991                 308   
+Borivali East, Mumbai - MPCB                   11729                 376   
+Chembur, Mumbai - MPCB                         14862                 297   
+Siddharth Nagar-Worli, Mumbai - IITM           13496                 300   
+
+                                      Outlier percentage  
+Station                                                   
+Bandra Kurla Complex, Mumbai - IITM                 3.08  
+Borivali East, Mumbai - MPCB                        3.21  
+Chembur, Mumbai - MPCB                              2.00  
+Siddharth Nagar-Worli, Mumbai - IITM                2.22  
+
+Saved: pm25_outlier_summary.csv
+
+
+=================================== CELL 19 (code) ===================================
+--- SOURCE ---
+# Extract hour from timestamp
+eda_data["Hour"] = eda_data["From Date"].dt.hour
+
+# Calculate average PM2.5 for each hour and station
+hourly_pm25 = eda_data.pivot_table(
+    index="Hour",
+    columns="Station",
+    values="PM2.5",
+    aggfunc="mean"
+)
+
+# Plot hourly patterns
+hourly_pm25.plot(
+    figsize=(12, 6),
+    marker="o"
+)
+
+plt.title("Hourly PM2.5 Patterns Across Mumbai Stations")
+plt.xlabel("Hour of Day (0 = Midnight, 12 = Noon)")
+plt.ylabel("Average PM2.5 Concentration")
+plt.xticks(range(0, 24))
+plt.grid(True, alpha=0.3)
+plt.legend(title="Monitoring Station")
+plt.tight_layout()
+plt.show()
+
+# Save results
+hourly_pm25.to_csv("/content/hourly_pm25_patterns.csv")
+
+print("Hourly analysis saved successfully!")
+--- OUTPUTS ---
+['<Figure size 1200x600 with 1 Axes>']
+[image/png image data]
+Hourly analysis saved successfully!
+
+
+=================================== CELL 20 (code) ===================================
+--- SOURCE ---
+# Calculate average PM10 for each hour and station
+hourly_pm10 = eda_data.pivot_table(
+    index="Hour",
+    columns="Station",
+    values="PM10",
+    aggfunc="mean"
+)
+
+# Plot hourly PM10 patterns
+hourly_pm10.plot(
+    figsize=(12, 6),
+    marker="o"
+)
+
+plt.title("Hourly PM10 Patterns Across Mumbai Stations")
+plt.xlabel("Hour of Day (0 = Midnight, 12 = Noon)")
+plt.ylabel("Average PM10 Concentration")
+plt.xticks(range(0, 24))
+plt.grid(True, alpha=0.3)
+plt.legend(title="Monitoring Station")
+plt.tight_layout()
+plt.show()
+
+# Save results
+hourly_pm10.to_csv("/content/hourly_pm10_patterns.csv")
+
+print("Hourly PM10 analysis saved successfully!")
+--- OUTPUTS ---
+['<Figure size 1200x600 with 1 Axes>']
+[image/png image data]
+Hourly PM10 analysis saved successfully!
+
+
+=================================== CELL 21 (code) ===================================
+--- SOURCE ---
+# Keep the original date and pollutant columns
+final_columns = [
+    "From Date",
+    "To Date",
+    "Station",
+    "PM2.5",
+    "PM10",
+    "NO",
+    "NO2",
+    "NH3",
+    "SO2",
+    "CO"
+]
+
+# Create the final analysis dataset
+final_eda_data = eda_data[final_columns].copy()
+
+# Save as CSV
+final_eda_data.to_csv(
+    "/content/citypulse_cleaned_data.csv",
+    index=False
+)
+
+print("Dataset shape:", final_eda_data.shape)
+print("Saved: citypulse_cleaned_data.csv")
+print(final_eda_data.head())
+--- OUTPUTS ---
+Dataset shape: (53187, 10)
+Saved: citypulse_cleaned_data.csv
+               From Date             To Date  \
+2321 2025-04-07 17:00:00 2025-04-07 18:00:00   
+2322 2025-04-07 18:00:00 2025-04-07 19:00:00   
+2323 2025-04-07 19:00:00 2025-04-07 20:00:00   
+2324 2025-04-07 20:00:00 2025-04-07 21:00:00   
+2325 2025-04-07 21:00:00 2025-04-07 22:00:00   
+
+                                  Station  PM2.5    PM10     NO    NO2    NH3  \
+2321  Bandra Kurla Complex, Mumbai - IITM  60.88  120.89  26.63  96.21   6.58   
+2322  Bandra Kurla Complex, Mumbai - IITM  62.61  138.53  26.56  95.40   7.31   
+2323  Bandra Kurla Complex, Mumbai - IITM  62.48  159.74  38.99  85.61   9.81   
+2324  Bandra Kurla Complex, Mumbai - IITM  69.23  159.85  36.36  80.67  10.51   
+2325  Bandra Kurla Complex, Mumbai - IITM  73.04  148.13  19.56  68.27  12.42   
+
+       SO2    CO  
+2321  3.57  0.88  
+2322  3.85  1.16  
+2323  3.18  1.16  
+2324  2.99  0.95  
+2325  2.99  0.66  
+
+
+=================================== CELL 22 (code) ===================================
+--- SOURCE ---
+pollutants = ["PM2.5", "PM10", "NO", "NO2", "NH3", "SO2", "CO"]
+
+# Calculate summary statistics by station
+summary_report = (
+    final_eda_data.groupby("Station")[pollutants]
+    .agg(["mean", "median", "min", "max", "count"])
+    .round(2)
+)
+
+# Save the report
+summary_report.to_csv("/content/citypulse_station_summary.csv")
+
+print("Station summary report created successfully!")
+print(summary_report)
+--- OUTPUTS ---
+Station summary report created successfully!
+                                      PM2.5                              \
+                                       mean median   min     max  count   
+Station                                                                   
+Bandra Kurla Complex, Mumbai - IITM   33.50  23.64  0.05  555.79   9991   
+Borivali East, Mumbai - MPCB          23.61  19.36  0.67  160.40  11729   
+Chembur, Mumbai - MPCB                30.21  22.71  0.04  771.39  14862   
+Siddharth Nagar-Worli, Mumbai - IITM  29.30  18.50  0.07  357.79  13496   
+
+                                        PM10                              ...  \
+                                        mean median   min     max  count  ...   
+Station                                                                   ...   
+Bandra Kurla Complex, Mumbai - IITM   101.06  83.64  0.06  699.41  10149  ...   
+Borivali East, Mumbai - MPCB           62.76  53.55  1.75  615.00  10464  ...   
+Chembur, Mumbai - MPCB                 75.92  62.44  3.56  469.68  14878  ...   
+Siddharth Nagar-Worli, Mumbai - IITM   79.81  64.96  0.68  406.72  14189  ...   
+
+                                        SO2                                CO  \
+                                       mean median   min     max  count  mean   
+Station                                                                         
+Bandra Kurla Complex, Mumbai - IITM    3.97   2.90  0.00   85.61   9953  0.58   
+Borivali East, Mumbai - MPCB          11.86  12.10  0.44   53.49  11316  0.19   
+Chembur, Mumbai - MPCB                 6.97   3.59  0.00  192.19  14783  0.68   
+Siddharth Nagar-Worli, Mumbai - IITM    NaN    NaN   NaN     NaN      0  0.71   
+
+                                                               
+                                     median  min   max  count  
+Station                                                        
+Bandra Kurla Complex, Mumbai - IITM    0.50  0.0  5.43  10565  
+Borivali East, Mumbai - MPCB           0.17  0.0  0.79  11468  
+Chembur, Mumbai - MPCB                 0.64  0.0  5.14  14968  
+Siddharth Nagar-Worli, Mumbai - IITM   0.67  0.0  4.97  14234  
+
+[4 rows x 35 columns]
+
+
+=================================== CELL 23 (code) ===================================
+--- SOURCE ---
+from google.colab import files
+
+files.download("/content/citypulse_cleaned_data.csv")
+--- OUTPUTS ---
+['<IPython.core.display.Javascript object>']
+['<IPython.core.display.Javascript object>']
+
+=================================== CELL 24 (code) ===================================
+--- SOURCE ---
+from google.colab import files
+
+files.download("/content/citypulse_station_summary.csv")
+--- OUTPUTS ---
+['<IPython.core.display.Javascript object>']
+['<IPython.core.display.Javascript object>']
