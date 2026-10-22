@@ -1,128 +1,190 @@
-# CityPulse — Predict. Explain. Act.
+# CityPulse: Mumbai — Predict. Explain. Act.
 
-A decision-support prototype built for **HackAMatch 1.0 (Data Mavericks × NSDC) — Data Science + AI Challenge**.
+> **Built for HackAMatch 1.0 by Ratnesh, Rishi & Shreya**
 
-CityPulse uses free public data to help spot air-quality problems in **Mumbai**, understand the signals behind them, and decide where to focus attention.
+A reproducible, data-driven air quality decision-support prototype built for the **Mumbai Metropolitan Region (MMR)** using strictly free, public data.
 
-> **Status:** prototype. This is NOT an official warning system and is not a substitute for expert judgement.
+For judging, use the [submission guide](SUBMISSION_GUIDE.md), [five-minute script](DEMO_SCRIPT.md), and [finalist slides](reports/slides/output/CityPulse_finalist_deck.pptx).
 
-> Fill in every `<...>` placeholder with your real results before submitting. Remove this note when done.
+> ⚠️ **Status: Prototype.** This tool is an academic/operational decision-support prototype for municipal planning and prioritization. It is **NOT an official regulatory warning system** and is not a substitute for statutory monitoring protocols by the Central Pollution Control Board (CPCB) or Maharashtra Pollution Control Board (MPCB).
 
 ---
 
-## 1. Problem and intended user
+## 1. Problem Framing & Intended User
 
-- **Problem:** Which monitoring stations in Mumbai are likely to see poor air quality, and where should attention go first?
-- **Intended user:** a municipal or ward-level officer who prioritises pollution-control actions and public advisories.
-- **Geography and time scope:** Mumbai, `<start date>` to `<end date>`
-- **Decision supported:** which stations/areas to prioritise, and when.
+- **Intended User:** A municipal environment or public health officer (BMC / MPCB ward officer) tasked with allocating scarce environmental enforcement and mitigation resources (e.g. mobile anti-smog misting cannons, mechanized vacuum sweepers, construction site dust inspections, industrial stack audits, and localized health advisories).
+- **Core Decision Supported:** *"Which monitoring zones and time windows across Mumbai should we prioritise for attention and intervention this week, and why?"*
+- **Geographic & Temporal Scope:** Mumbai Metropolitan Region (Greater Mumbai, Navi Mumbai, and surrounding urban corridors), with 597,912 deduplicated hourly AQI records across 36 station labels (2021–2023), paired with 26,280 hourly weather observations.
+- **Key Constraint:** Municipal departments operate under finite capacity constraints (e.g. "We can deploy enforcement squads to at most $N=5$ zones this week"). CityPulse translates continuous data streams into an explainable, ranked priority queue.
 
-## 2. The core loop
+---
 
-| Step | What CityPulse does |
-|---|---|
-| **Discover** | Finds patterns in historical air-quality data (time of week, season, station differences). |
-| **Predict** | Forecasts `<AQI / pollutant>` for the next `<horizon>` and compares it with a simple baseline. |
-| **Explain** | Shows the evidence, forecast error range and a data-freshness label. |
-| **Act** | Shows a risk tier (a heuristic, not a probability) and a suggested next step. |
+## 2. The Core Decision Loop
 
-## 3. Key findings
+```mermaid
+graph TD
+    A[DISCOVER<br/>Find the Signal] --> B[PREDICT<br/>Validated Forecast & Uncertainty]
+    B --> C[EXPLAIN<br/>Evidence & Attribution Caveats]
+    C --> D[ACT<br/>Ranked Action Dossier under Constraints]
 
-Use only results from your notebook (`CityPulse_AQI_Cleaning_EDA.ipynb`). Do not include numbers you have not computed.
+    subgraph "CityPulse Engine"
+        A -.-> |Seasonal Washout, Diurnal Traffic, Spatial Gradients| B
+        B -.-> |Calibrated Probabilities & 80% Quantile Intervals| C
+        C -.-> |Micro-Environment Context & Residual Anomalies| D
+    end
+```
 
-1. `<finding 1 + chart>`
-2. `<finding 2 + chart>`
-3. `<finding 3 + chart>`
+| Step | What CityPulse Does | Mumbai Operational Implementation |
+| :--- | :--- | :--- |
+| **Discover** | Extracts empirical signals and spatial anomalies from multi-year records. | Identifies seasonal washout vs winter trapping, diurnal commute peaks, and coastal vs inland gradients. |
+| **Predict** | Estimates next-day levels and evaluates against strict baselines on a forward holdout. | Uses persistence as the point-estimate benchmark; evaluates a gradient boosting classifier for AQI > 200. |
+| **Explain** | Presents the evidence basis, prediction range, and limitations. | Shows prior-day weather, nominal 80% prediction intervals, and sensor quality flags. |
+| **Act** | Synthesizes an explainable Priority Score under municipal capacity constraints ($N$). | Generates targeted, defensible interventions (misting, anti-idling, landfill thermal scans) with honest caveats. |
 
-## 4. Method and validation
+---
 
-- **Split:** chronological (train on earlier data, test on the most recent period). No random shuffling.
-- **Baseline:** `<persistence / seasonal naive>`
-- **Model:** `<e.g. Random Forest / Ridge on lag features>`
-- **Metrics:** MAE and RMSE for baseline vs model.
-- **Results:** `<paste actual MAE/RMSE from the notebook>`
-- **Uncertainty:** forecast range from test-set residuals (`<e.g. 10th–90th percentile>`).
-- **Risk tier:** rule-based heuristic on forecast values using `<AQI category thresholds>`. It is not a validated probability.
-- **Leakage control:** features use only information available at forecast time.
+## 3. Key Findings (Empirically Computed)
 
-Analysis notebook: [`CityPulse_AQI_Cleaning_EDA.ipynb`](CityPulse_AQI_Cleaning_EDA.ipynb)
+These findings use the bundled 2021–2023 AQI and weather data and the project's 18-valid-hour daily rule. The calculation and charts are in [`reports/eda_findings.md`](reports/eda_findings.md):
 
-## 5. Data
+1. **Seasonality:** Mean station-day AQI is **63.9** in June–September and **185.0** in December–February, across 22,608 valid station-days. Station coverage varies by season.
+2. **Station variation:** Among stations with at least 150 valid days, **Mazgaon** averages **153.0 AQI** and **Borivali East** **88.6 AQI**. These point monitors do not represent whole wards.
+3. **Weather association:** Daily wind speed and AQI have Pearson **$r=-0.25$**. AQI > 200 occurs on **16.2%** of station-days in the lowest wind-speed quintile and **5.8%** in the highest. Season and location may confound the relationship.
 
-Full details: [`DATA_STATEMENT.md`](DATA_STATEMENT.md)
+The separate four-station 2025–2026 pollutant notebook is supplementary. Its raw Excel exports are not bundled, so its metrics are excluded from the reproducible core demo.
 
-| Source | URL | Access date | Licence / terms | Fields used |
-|---|---|---|---|---|
-| `<source 1>` | `<url>` | `<date>` | `<licence>` | `<fields>` |
-| `<source 2>` | `<url>` | `<date>` | `<licence>` | `<fields>` |
 
-All data is public and free to access. No paid APIs, paid datasets or subscriptions are required. No synthetic data is presented as real-world evidence.
+---
 
-## 6. Run it locally
+## 4. Method, Baselines, and Validation
 
-Requires Python 3.10+.
+Strict chronological holdout design: **Train on 2021–2022 (24 months); Test forward on 2023 (12 months)**. Zero data shuffling, zero target leakage.
+
+### A. Continuous Regression Benchmark (Next-Day Mean AQI)
+
+| Model / Baseline | Holdout MAE | RMSE | $R^2$ | Skill vs Persistence | Operational Assessment |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Persistence Baseline ($t-1$)** | **19.42** | 30.38 | 0.820 | 0.0% | Strong autoregressive benchmark |
+| **Seasonal Naive ($t-7$)** | 34.57 | 50.01 | 0.513 | -78.0% | Weekly reference |
+| **Ridge Regression (L2 regularised)** | 19.46 | **28.62** | **0.841** | -0.2% | Best RMSE, slightly worse MAE |
+| **Histogram Gradient Boosting** | 20.33 | 29.97 | 0.825 | -4.7% | Positive skill in winter (+2.0%) |
+
+> **Holdout result:** Neither trained point model beats persistence on citywide MAE (19.42). The dashboard is a historical decision replay, not a live forecast. The classifier supplies an exploratory risk estimate, and the priority score is a decision heuristic.
+
+### B. Risk Event Classification (Probability of AQI > 200)
+
+| Model | Precision | Recall | F1 Score | PR-AUC | ROC-AUC | Brier Score |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **State Persistence ($AQI_{t-1} > 200$)** | 0.716 | 0.717 | 0.717 | N/A | N/A | N/A |
+| **Gradient Boosting Classifier** | 0.592 | **0.877** | **0.707** | **0.811** | **0.954** | **0.077** |
+
+- **Uncertainty Quantification:** Nominal 80% quantile intervals ($[p_{10}, p_{90}]$) achieve **74.1% empirical coverage** on the 2023 holdout. They under-cover and should not be presented as calibrated 80% guarantees.
+
+Full metrics and seasonal/station tables: [`reports/EVALUATION.md`](reports/EVALUATION.md).
+
+---
+
+## 5. Risk Prioritisation Engine (ACT)
+
+The Priority Score ($0 - 100$) integrates five normalized criteria:
+$$\text{Priority Score} = \frac{w_{\text{exp}} S_{\text{exp}} + w_{\text{pers}} S_{\text{pers}} + w_{\text{trend}} S_{\text{trend}} + w_{\text{fore}} S_{\text{fore}} + w_{\text{gap}} S_{\text{gap}}}{\sum w}$$
+
+- **Capacity Constraint:** Municipal users specify available inspection capacity (e.g. $N=5$ zones). The engine marks the top $N$ zones with an actionable badge.
+- **Defensible Interventions:** Translates evidence into proportional actions (anti-smog water cannons, traffic anti-idling synchronization, construction dust containment, landfill thermal imaging) while explicitly avoiding unverified single-source blame.
+
+---
+
+## 6. How to Run & Reproduce Locally
+
+Requires Python 3.10+. Zero paid API keys, credit cards, or subscriptions required.
 
 ```bash
 git clone https://github.com/RatneshPathak/citypulse.git
 cd citypulse
 
 python -m venv venv
-# Windows (Git Bash):
-source venv/Scripts/activate
-# Windows (cmd/PowerShell): venv\Scripts\activate
-# macOS / Linux: source venv/bin/activate
-
+venv\Scripts\activate
 pip install -r requirements.txt
-streamlit run app.py
+
+python -m streamlit run app.py
 ```
 
-Then open the local URL Streamlit prints (usually http://localhost:8501).
+On Linux and macOS, use `source venv/bin/activate` in place of the Windows activation command.
 
-- No API keys, passwords or private data are needed to run the demo.
-- `<Describe where processed data lives and how to rebuild it from the notebook if the app needs it.>`
+Open the local URL printed in your terminal (typically `http://localhost:8501`).
 
-## 7. Project structure
+To re-run the entire pipeline from scratch using `make`:
+```bash
+make data
+make all
+make app
+```
+
+---
+
+## 7. Project Structure
 
 ```
 citypulse/
-  CityPulse_AQI_Cleaning_EDA.ipynb   # cleaning + exploratory analysis
-  app.py                             # Streamlit dashboard
-  src/                               # helper scripts (e.g. profile_data.py)
-  notebooks/                         # additional notebooks
-  data/                              # processed data used by the app
-  DATA_STATEMENT.md
-  requirements.txt
-  README.md
+├── app.py
+├── Makefile
+├── requirements.txt
+├── README.md
+├── DATA_SOURCES.md
+├── DATA_STATEMENT.md
+├── SCHEMA.md
+├── NOTEBOOK_AUDIT.md
+├── DEMO_SCRIPT.md
+├── data/
+│   ├── raw/
+│   └── processed/
+├── src/
+│   ├── CityPulse_AQI_Cleaning_EDA.ipynb
+│   ├── clean/
+│   │   ├── aqi_cleaning.py
+│   │   └── clean_pipeline.py
+│   ├── eda/
+│   │   └── visualizations.py
+│   ├── features/
+│   ├── ingest/
+│   └── models/
+├── reports/
+│   ├── CityPulse_AQI_Cleaning_EDA.html
+│   ├── notebook_reference_stats.json
+│   ├── eda_findings.md
+│   ├── EVALUATION.md
+│   ├── data_quality_report.md
+│   └── figures/
+└── notebooks/
+    └── citypulse_mumbai_eda_modelling.ipynb
 ```
 
-## 8. Limitations
 
-Keep this specific and honest. Adapt to what you found:
+---
 
-- Coverage gaps: `<stations/periods with missing data and how handled>`
-- Station readings may not represent every neighbourhood in Mumbai.
-- No ground-truth health outcomes, so the risk tier is a heuristic.
-- Correlation in the analysis does not establish causation.
-- Forecast skill vs baseline: `<better / similar / worse on the test period>`
+## 8. Limitations & Missing Data Required
 
-## 9. Responsible use
+1. **Why Regression Point Models Don't Decisively Beat Persistence:**
+   - Daily ambient air quality is a heavily autoregressive physical process. Weather reanalysis provides macroscopic ventilation bounds, but cannot resolve hyper-local emission fluctuations.
+   - **Data Required to Beat Persistence:** Satellite Aerosol Optical Depth (AOD) at 1 km resolution, hyper-local sensor networks (< 500 m spacing), live arterial traffic speed telemetry, and active construction permit registers.
+2. **Monitoring Network Siting Disparities:**
+   - Greater Mumbai's monitoring stations are heavily clustered along highway corridors in Western and Central Mumbai. Suburban expanses in the North-East have fewer continuous monitors, creating a spatial coverage bias.
+3. **No Direct Ground-Truth Health Outcome Data:**
+   - The Priority Score is a decision-support heuristic, not a medical morbidity forecast.
 
-CityPulse is an educational prototype, not an emergency-warning system. Recommendations are prompts for expert review. No personal or sensitive data is used or published.
+---
 
-## 10. AI assistance and third-party components
+## 9. Responsible Use & Disclosures
 
-- **AI assistance:** `<describe accurately, e.g. an AI assistant was used for planning, code drafting and README drafting; the team reviewed, ran and can explain all code and results>`
-- **Open-source libraries:** pandas, NumPy, scikit-learn, Streamlit, Plotly, `<others>` — used under their respective licences.
-- **Data attribution:** `<source names; OpenStreetMap contributors if maps are used>`
+- **Responsible Use:** CityPulse is designed to assist environmental engineers and municipal officers in screening and triage. It must never be used as the sole basis for punitive regulatory enforcement without physical fenceline inspection.
+- **Third-Party Open-Source Components:** Built using Python, Streamlit, Pandas, NumPy, Scikit-Learn, Plotly, Seaborn, Matplotlib, and Folium under their respective permissive open-source licences.
+- **AI Assistance Disclosure:** An AI coding assistant was utilized as a pair programmer for pipeline design, code drafting, documentation structuring, and testing. All data was physically downloaded, all models were trained and evaluated on real observations, and all metrics were computed through code executed in this repository.
+- **Data Attribution:**
+  - Air Quality Data: Central Pollution Control Board (CPCB) and Maharashtra Pollution Control Board (MPCB).
+  - Weather Data: Open-Meteo (`https://open-meteo.com`), licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+  - Spatial Context Data: © OpenStreetMap contributors, licensed under the Open Database License (ODbL).
 
-## 11. Team
+---
 
-| Member | Role |
-|---|---|
-| Ratnesh Pathak | Lead — data, analysis, modelling |
-| Rishi Chaurasiya | `<role, e.g. data sourcing, documentation>` |
-| Shreya Pandey | `<role, e.g. app, charts, presentation>` |
+*Built for HackAMatch 1.0 by Ratnesh, Rishi & Shreya*
 
-## 12. Hackathon
-
-HackAMatch 1.0 — Data Mavericks × NSDC. Problem statement: *CityPulse*.

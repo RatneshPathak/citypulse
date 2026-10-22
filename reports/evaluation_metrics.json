@@ -1,0 +1,32 @@
+{
+  "holdout_start": "2023-01-01",
+  "holdout_end": "2023-12-31",
+  "persistence": {
+    "MAE": 19.42,
+    "RMSE": 30.38,
+    "R2": 0.82,
+    "Skill_vs_Persistence_%": 0.0
+  },
+  "ridge": {
+    "MAE": 19.46,
+    "RMSE": 28.62,
+    "R2": 0.841,
+    "Skill_vs_Persistence_%": -0.2
+  },
+  "gradient_boosting": {
+    "MAE": 20.33,
+    "RMSE": 29.97,
+    "R2": 0.825,
+    "Skill_vs_Persistence_%": -4.7
+  },
+  "classifier": {
+    "Precision": 0.592,
+    "Recall": 0.877,
+    "F1": 0.707,
+    "ROC_AUC": 0.954,
+    "PR_AUC": 0.811,
+    "Brier_Score": 0.077
+  },
+  "interval_coverage_pct": 74.1,
+  "interval_nominal_pct": 80
+}

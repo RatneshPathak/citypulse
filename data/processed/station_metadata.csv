@@ -1,0 +1,14 @@
+station,lat,lon,type,zone
+Bandra Kurla Complex,19.0596,72.8613,commercial,Western Suburbs
+Colaba,18.9067,72.8147,residential,South Mumbai
+Kurla,19.0726,72.8794,industrial,Eastern Suburbs
+Powai,19.1195,72.9064,residential,Eastern Suburbs
+Borivali East,19.2307,72.8567,residential,Western Suburbs
+Chembur,19.0522,72.8949,industrial,Eastern Suburbs
+Worli,19.0176,72.8151,residential,South Mumbai
+Sion,19.0437,72.864,mixed,Central Mumbai
+Andheri East,19.1136,72.8697,commercial,Western Suburbs
+Mazgaon,18.9628,72.8483,port/industrial,South Mumbai
+Malad West,19.1857,72.8485,residential,Western Suburbs
+Vile Parle West,19.099,72.8432,residential,Western Suburbs
+Navi Mumbai,19.0368,73.0158,mixed,Navi Mumbai

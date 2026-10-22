@@ -1,0 +1,19 @@
+station,latitude,longitude,zone,env_type,major_roads_count,industrial_areas_count,construction_sites_count,commercial_zones_count,residential_zones_count,parks_count,is_coastal
+Bandra Kurla Complex,19.0596,72.8613,Western Suburbs,Commercial / Financial,0,0,0,0,0,0,0
+Colaba,18.9067,72.8147,South Mumbai,Coastal / Residential,0,0,0,0,0,0,1
+Kurla,19.0726,72.8794,Eastern Suburbs,Dense Urban / Transit Hub,0,0,0,0,0,0,0
+Powai,19.1195,72.9064,Eastern Suburbs,Lake / Institutional / Mixed,0,0,0,0,0,0,0
+Borivali East,19.2307,72.8567,Western Suburbs,Residential / Near National Park,0,0,0,0,0,0,0
+Chembur,19.0522,72.8949,Eastern Suburbs,Industrial / Refinery corridor,0,0,0,0,0,0,0
+Worli,19.0176,72.8151,South Mumbai,Coastal / Commercial,0,0,0,0,0,0,1
+Sion,19.0437,72.864,Central Mumbai,Heavy Traffic Highway Junction,0,0,0,0,0,0,0
+Chhatrapati Shivaji Intl. Airport (T2),19.0974,72.8745,Western Suburbs,Aviation / High Traffic,0,0,0,0,0,0,0
+Vile Parle West,19.099,72.8432,Western Suburbs,Suburban Residential,0,0,0,0,0,0,0
+Mazgaon,18.9628,72.8483,South Mumbai,Port / Docks / Industrial,0,0,0,0,0,0,1
+Malad West,19.1857,72.8485,Western Suburbs,Commercial / Tech Park,0,0,0,0,0,0,0
+Chakala-Andheri East,19.1136,72.8697,Western Suburbs,Industrial Belt (MIDC),0,0,0,0,0,0,0
+Deonar,19.0553,72.9167,Eastern Suburbs,Solid Waste Dumping Ground / Abattoir,0,0,0,0,0,0,0
+Mahape Navi Mumbai,19.1098,73.0232,Navi Mumbai,Industrial Corridor (TTC MIDC),0,0,0,0,0,0,0
+Nerul Navi Mumbai,19.033,73.0169,Navi Mumbai,Planned Residential,0,0,0,0,0,0,0
+Kandivali East,19.2065,72.8675,Western Suburbs,Suburban Highway,0,0,0,0,0,0,0
+Mulund West,19.1764,72.9467,Eastern Suburbs,Foothill / Suburban,0,0,0,0,0,0,0
