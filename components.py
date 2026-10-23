@@ -3,6 +3,8 @@ CityPulse: Mumbai — Reusable UI Components
 HTML/Streamlit card components, KPI tiles, badges, and dossiers.
 Presentation layer with native Material Symbols icons and zero emojis.
 """
+from html import escape
+
 import streamlit as st
 from theme import COLORS, AQI_PALETTE, get_aqi_category_color
 from icons import ICONS
@@ -10,19 +12,42 @@ from config import EVENT_NAME, TEAM_MEMBERS, DISCLAIMER_TEXT
 
 def render_compact_banner():
     """Renders a concise, professional regulatory disclaimer banner."""
-    st.warning(
-        "**Decision-Support Prototype:** For municipal environmental planning (BMC/MPCB role). Not an official statutory emergency warning system. Grounded in verified CPCB and Open-Meteo public data.",
-        icon=":material/warning:",
+    st.markdown(
+        '<div class="cp-banner-compact" role="note">'
+        '<strong>Decision-support prototype</strong><span>For municipal planning and inspection triage. '
+        'This is not an official air-quality warning system.</span></div>',
+        unsafe_allow_html=True,
     )
 
 def render_header(station_name: str, date_str: str, total_stations: int = 37):
     """Renders the compact hero header with data freshness and station chips."""
-    st.title(f"{ICONS['app_logo']} CityPulse: Mumbai")
-    st.caption(
-        f"Municipal Air Quality Prioritisation & Early-Warning Decision Support • Greater Mumbai & Navi Mumbai &nbsp;|&nbsp; "
-        f"{ICONS['network']} **Network:** {total_stations} CAAQMS Stations &nbsp;|&nbsp; "
-        f"{ICONS['calendar']} **Data as of:** {date_str} &nbsp;|&nbsp; "
-        f"{ICONS['location']} **Station:** {station_name}"
+    station = escape(station_name)
+    date = escape(date_str)
+    st.markdown(
+        '<div class="cp-hero">'
+        '<div class="cp-hero-copy">'
+        '<div class="cp-hero-kicker">MUMBAI AIR QUALITY · DECISION CONSOLE</div>'
+        '<h1 class="cp-hero-title">CityPulse: Mumbai</h1>'
+        '<p class="cp-hero-sub">Explore the evidence, compare risks, and plan inspections.</p>'
+        '</div>'
+        '<div class="cp-chip-group" aria-label="Current replay context">'
+        f'<span class="cp-chip cp-chip-accent">{station}</span>'
+        f'<span class="cp-chip">Replay date · {date}</span>'
+        f'<span class="cp-chip">{total_stations} monitoring stations</span>'
+        '</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_navigation_guide():
+    st.markdown(
+        '<div class="cp-journey" aria-label="Dashboard sections">'
+        '<div><strong>Decide</strong><span>1–4 · Rank, test weights, route, export</span></div>'
+        '<div><strong>Understand</strong><span>5–6, 9 · Patterns, weather, case study</span></div>'
+        '<div><strong>Trust</strong><span>7–8, 12 · Forecast checks, validation, sources</span></div>'
+        '<div><strong>Share</strong><span>10–11 · Citizen view, guided demo</span></div>'
+        '</div>',
+        unsafe_allow_html=True,
     )
 
 def render_takeaway(text: str, highlight: str = "Key Decision Takeaway:"):
@@ -51,38 +76,33 @@ def render_kpi_card(
     st.markdown(html, unsafe_allow_html=True)
 
 def render_action_strip(priority_df, top_n: int = 5):
-    """Renders a compact horizontal action cards strip for top priority zones."""
+    """Renders readable action cards for top priority zones."""
     st.markdown(f"##### {ICONS['action_queue']} Immediate Municipal Action Queue (Top Priority Zones)")
     top_rows = priority_df.head(top_n)
+    if top_rows.empty:
+        st.info("No priority zones are available for this replay date.")
+        return
 
-    surf = COLORS["surface"]
-    border = COLORS["border"]
-    muted = COLORS["text_muted"]
-    accent = COLORS["accent"]
-
-    cols = st.columns(top_n)
+    cols = st.columns(min(2, len(top_rows)), gap="medium")
     for i, (_, row) in enumerate(top_rows.iterrows()):
         _, cat_col = get_aqi_category_color(row["latest_aqi"])
         rank = row["rank"]
-        station = row["station"][:14]
+        station = escape(str(row["station"]))
         latest_aqi = row["latest_aqi"]
         prio_score = row["priority_score"]
-        zone = row["zone"]
-        action = row["recommended_action"][:85]
+        zone = escape(str(row["zone"]))
+        action = escape(str(row["recommended_action"]))
 
-        with cols[i]:
+        with cols[i % len(cols)]:
             card_html = (
-                f'<div style="background: {surf}; border: 1px solid {border}; border-top: 3px solid {cat_col}; border-radius: 10px; padding: 12px 14px; height: 100%;">'
-                f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">'
-                f'<span style="font-weight: 700; font-size: 0.85rem; color: #ffffff;">#{rank} {station}..</span>'
-                f'<span style="background: {cat_col}; color: #000000; font-weight: 700; font-size: 0.72rem; padding: 1px 6px; border-radius: 12px;">{latest_aqi:.0f}</span>'
+                f'<div class="cp-queue-card" style="border-top-color: {cat_col};">'
+                f'<div class="cp-queue-top">'
+                f'<span class="cp-queue-rank">Priority #{rank}</span>'
+                f'<span class="cp-queue-aqi" style="border-color: {cat_col}; color: {cat_col};">AQI {latest_aqi:.0f}</span>'
                 f'</div>'
-                f'<div style="font-size: 0.76rem; color: {muted}; margin-bottom: 6px;">'
-                f'Score: <strong style="color: #ffffff;">{prio_score:.1f}</strong> • {zone}'
-                f'</div>'
-                f'<div style="font-size: 0.72rem; color: {accent}; font-weight: 500; line-height: 1.3;">'
-                f'→ {action}...'
-                f'</div>'
+                f'<div class="cp-queue-station">{station}</div>'
+                f'<div class="cp-queue-meta">{zone} · Priority score {prio_score:.1f}/100</div>'
+                f'<div class="cp-queue-action">{action}</div>'
                 f'</div>'
             )
             st.markdown(card_html, unsafe_allow_html=True)

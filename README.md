@@ -75,7 +75,7 @@ Twelve tabs, grouped by what you are trying to do.
 
 |                | Tab                               | What it gives you                                                                                                                                                                                               |
 | :------------- | :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Decide**     | 1. Priority Ranking and Triage    | Five-part composite score, top-N capacity flags, ward map, rule-based action dossiers (mechanical sweeping, wet suppression, anti-smog guns) and a waterfall showing how each criterion built each zone's score |
+| **Decide**     | 1. Priority Ranking and Triage    | Five-part composite score, top-N capacity flags, ward map, rule-based action dossiers, score breakdown, and a 30-day station data reliability panel |
 |                | 2. What-If Policy Simulator       | Re-balance the weights and see rank stability from a 500-run Monte Carlo analysis, with perturbation heatmaps                                                                                                   |
 |                | 3. Inspection Route Planner       | Nearest-neighbour tour (haversine distance) with stop-by-stop schedule, leg distances and cumulative travel                                                                                                     |
 |                | 4. Briefing Export                | Printable weekly summary as HTML, with optional PDF                                                                                                                                                             |
@@ -214,7 +214,15 @@ _Reproduce:_ `python Evaluate.py --quick`
 A transparent weighted average of five normalised criteria, scaled 0-100:
 
 ```
-score = (w_exp*S_exp + w_pers*S_pers + w_trend*S_trend + w_fore*S_fore + w_gap*S_gap) / sum(w)
+score = (
+    w_exp   * S_exp
+  + w_pers  * S_pers
+  + w_trend * S_trend
+  + w_fore  * S_fore
+  + w_gap   * S_gap
+) / sum(w)
+
+sum(w) = w_exp + w_pers + w_trend + w_fore + w_gap
 ```
 
 ```mermaid
@@ -233,6 +241,10 @@ pie showData title Default criterion weights (percent)
 | Forecast risk         |  0.20  | Calibrated next-day probability of an AQI > 200 event                       |
 | Trend                 |  0.15  | 7-day rate of worsening against a rolling baseline                          |
 | Vulnerability and gap |  0.10  | Transit corridor siting, industrial micro-environments, monitoring sparsity |
+
+### What could make this wrong?
+
+The ranking tab shows each station's data reliability over the 30 calendar days ending on the replay decision date. Coverage is usable hours after cleaning divided by 720 expected hours; a missing day counts as 24 unavailable hours. Short gaps filled by the cleaning pipeline count as usable. Days with at least 18 usable hours count as valid days. **High** means at least 90% hourly coverage and 24 valid days, **Medium** means at least 75% coverage and 18 valid days, and **Low** means less than either Medium threshold. These labels describe data availability, not model accuracy or calibrated forecast confidence. Sparse recent readings require checking current CPCB observations before using the ranking for action.
 
 ---
 

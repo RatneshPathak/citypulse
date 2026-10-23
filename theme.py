@@ -157,6 +157,17 @@ def inject_custom_css():
             gap: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
         }}
+        .cp-hero-copy {{
+            min-width: 250px;
+            flex: 1 1 380px;
+        }}
+        .cp-hero-kicker {{
+            color: {COLORS["accent_secondary"]};
+            font-size: 0.71rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            margin-bottom: 7px;
+        }}
         .cp-hero-title {{
             font-size: 1.65rem;
             font-weight: 700;
@@ -195,6 +206,79 @@ def inject_custom_css():
             border: 1px solid {COLORS["accent"]};
             color: #ffffff;
             font-weight: 600;
+        }}
+        .cp-journey {{
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+            margin: 1.35rem 0 0.9rem;
+        }}
+        .cp-journey > div {{
+            background: {COLORS["surface"]};
+            border: 1px solid {COLORS["border"]};
+            border-radius: 10px;
+            padding: 10px 12px;
+            min-width: 0;
+        }}
+        .cp-journey strong {{
+            display: block;
+            color: #ffffff;
+            font-size: 0.82rem;
+            margin-bottom: 3px;
+        }}
+        .cp-journey span {{
+            display: block;
+            color: {COLORS["text_muted"]};
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }}
+        .cp-queue-card {{
+            background: {COLORS["surface"]};
+            border: 1px solid {COLORS["border"]};
+            border-top: 3px solid {COLORS["accent"]};
+            border-radius: 11px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            min-height: 154px;
+        }}
+        .cp-queue-top {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }}
+        .cp-queue-rank {{
+            color: {COLORS["text_muted"]};
+            font-size: 0.73rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }}
+        .cp-queue-aqi {{
+            border: 1px solid;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }}
+        .cp-queue-station {{
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 650;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }}
+        .cp-queue-meta {{
+            color: {COLORS["text_muted"]};
+            font-size: 0.77rem;
+            margin: 4px 0 10px;
+        }}
+        .cp-queue-action {{
+            color: {COLORS["text"]};
+            font-size: 0.84rem;
+            line-height: 1.45;
         }}
 
         .cp-kpi-card {{
@@ -298,6 +382,8 @@ def inject_custom_css():
             padding: 6px;
             border: 1px solid {COLORS["border"]};
             margin-bottom: 1.25rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
         }}
         .stTabs [data-baseweb="tab"] {{
             border-radius: 8px !important;
@@ -319,6 +405,11 @@ def inject_custom_css():
             font-weight: 600 !important;
             box-shadow: 0 2px 8px rgba(79, 140, 255, 0.3) !important;
         }}
+        .stTabs [data-baseweb="tab"]:focus-visible,
+        button:focus-visible {{
+            outline: 2px solid {COLORS["accent_secondary"]} !important;
+            outline-offset: 2px !important;
+        }}
 
         [data-testid="stDataFrame"] {{
             border: 1px solid {COLORS["border"]};
@@ -337,6 +428,15 @@ def inject_custom_css():
             align-items: center;
             gap: 8px;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            line-height: 1.4;
+        }}
+        .cp-banner-compact strong {{
+            color: #ffdc77;
+            white-space: nowrap;
+        }}
+        .cp-banner-compact span {{
+            color: {COLORS["text"]};
         }}
 
         .cp-footer {{
@@ -387,6 +487,21 @@ def inject_custom_css():
         h6 [data-testid="stIconMaterial"] {{
             vertical-align: -0.15em !important;
             margin-right: 4px !important;
+        }}
+        @media (max-width: 900px) {{
+            .cp-journey {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+        }}
+        @media (max-width: 640px) {{
+            .block-container {{ padding: 1rem 0.9rem 2rem !important; }}
+            .cp-hero {{ padding: 18px; }}
+            .cp-hero-title {{ font-size: 1.4rem; }}
+            .cp-chip-group {{ gap: 6px; }}
+            .cp-chip {{ font-size: 0.72rem; }}
+            .cp-journey {{ grid-template-columns: 1fr 1fr; gap: 6px; }}
+            .cp-journey > div {{ padding: 9px; }}
+            .cp-evidence-grid {{ grid-template-columns: 1fr; }}
+            .cp-action-dossier {{ padding: 15px; }}
+            .stTabs [data-baseweb="tab"] {{ padding: 7px 10px !important; }}
         }}
     </style>
     """
