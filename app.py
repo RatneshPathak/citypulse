@@ -35,6 +35,7 @@ from src.decision.whatif import compute_rank_stability, compute_rank_delta
 from src.decision.routing import compute_inspection_route
 from src.decision.briefing import render_briefing_export_ui
 from src.decision.validation import render_validation_panel
+from src.decision.reliability import station_reliability
 from src.decision import viz as decision_viz
 decision_viz = importlib.reload(decision_viz)
 
@@ -226,6 +227,7 @@ st_daily = daily_df[
 st_preds = preds_df[preds_df["canonical_station"] == selected_station].sort_values("date").copy()
 st_prio_row = dyn_priority[dyn_priority["station"] == selected_station]
 st_prio = st_prio_row.iloc[0]
+reliability_df = station_reliability(daily_df, dyn_priority["date"].iloc[0])
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"### :material/people: View Mode")
@@ -287,6 +289,25 @@ with tab1:
             color_accent="#E5484D" if st_prio['forecast_prob_unhealthy'] >= 0.50 else "#2ECC71",
         )
 
+    st.markdown("##### What could make this wrong?")
+    station_reliability_row = reliability_df.loc[reliability_df["station"] == selected_station]
+    if station_reliability_row.empty:
+        st.warning("No hourly coverage records are available for this station in the past 30 days. Treat the ranking as low confidence.")
+    else:
+        reliability = station_reliability_row.iloc[0]
+        r1, r2, r3 = st.columns(3)
+        r1.metric("Usable hours", f"{reliability['coverage_pct']:.1f}%")
+        r2.metric("Missing or invalid", f"{reliability['missing_hours_pct']:.1f}%")
+        r3.metric("Data confidence", reliability["confidence"])
+        st.caption(
+            f"Past 30 calendar days through {decision_date}: {int(reliability['observed_hours'])} of "
+            f"{int(reliability['expected_hours'])} expected hours usable after cleaning; "
+            f"{int(reliability['valid_days'])} days meet the 18-hour validity rule. "
+            "Short gaps filled by the cleaning pipeline count as usable. This label describes data coverage, not forecast accuracy. Missing days count as 24 missing hours."
+        )
+        if reliability["confidence"] == "Low":
+            st.warning("Sparse recent readings can make this station's priority and forecast evidence unreliable. Verify current CPCB observations before acting.")
+
     render_action_strip(dyn_priority, top_n=min(5, capacity_n))
 
     st.markdown("---")
@@ -299,22 +320,24 @@ with tab1:
         table_df["Action"] = np.where(table_df["rank"] <= capacity_n, "INSPECT", "ROUTINE")
         table_df["Category"] = table_df["latest_aqi"].apply(lambda v: get_aqi_category_color(v)[0])
 
-        coverage_counts = daily_df.groupby("canonical_station")["is_cpcb_valid"].agg(["sum", "count"])
-        coverage_counts["coverage_pct"] = (coverage_counts["sum"] / coverage_counts["count"] * 100).round(1)
         table_df = table_df.merge(
-            coverage_counts[["coverage_pct"]].rename_axis("station"),
-            left_on="station", right_index=True, how="left"
+            reliability_df[["station", "coverage_pct", "missing_hours_pct", "confidence"]],
+            on="station", how="left"
         )
         table_df["coverage_pct"] = table_df["coverage_pct"].fillna(0)
+        table_df["missing_hours_pct"] = table_df["missing_hours_pct"].fillna(100)
+        table_df["confidence"] = table_df["confidence"].fillna("Low")
 
         display_df = table_df[[
-            "rank", "station", "priority_score", "latest_aqi", "Category", "coverage_pct", "Action", "zone"
+            "rank", "station", "priority_score", "latest_aqi", "Category", "coverage_pct", "missing_hours_pct", "confidence", "Action", "zone"
         ]].rename(columns={
             "rank": "Rank",
             "station": "Zone / Station",
             "priority_score": "Score",
             "latest_aqi": "AQI",
-            "coverage_pct": "Valid %",
+            "coverage_pct": "Coverage %",
+            "missing_hours_pct": "Unavailable %",
+            "confidence": "Confidence",
             "zone": "Zone",
         })
 
@@ -332,7 +355,9 @@ with tab1:
                 ),
                 "AQI": st.column_config.NumberColumn("Latest AQI", format="%.0f", width="small"),
                 "Category": st.column_config.TextColumn("CPCB Category", width="small"),
-                "Valid %": st.column_config.ProgressColumn("Data Coverage", help="% of station-days meeting 18h CPCB validity", format="%.0f%%", min_value=0, max_value=100, width="small"),
+                "Coverage %": st.column_config.ProgressColumn("Usable Hours", help="Usable hours after cleaning / expected hours in past 30 calendar days", format="%.0f%%", min_value=0, max_value=100, width="small"),
+                "Unavailable %": st.column_config.NumberColumn("Missing or Invalid Hours", help="Share of hours unavailable after cleaning in past 30 calendar days", format="%.1f%%", width="small"),
+                "Confidence": st.column_config.TextColumn("Data Confidence", width="small"),
                 "Action": st.column_config.TextColumn("Action Status", width="small"),
                 "Zone": st.column_config.TextColumn("Region", width="medium"),
             },
