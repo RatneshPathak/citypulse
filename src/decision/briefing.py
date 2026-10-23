@@ -15,7 +15,6 @@ import streamlit as st
 from config import DATA_ATTRIBUTION, TEAM_MEMBERS
 from theme import get_aqi_category_color
 
-
 def generate_briefing_html(
     priority_df: pd.DataFrame,
     top_n: int = 5,
@@ -46,7 +45,6 @@ def generate_briefing_html(
     """
     top_zones = priority_df.head(top_n)
     
-    # HTML header and styles
     html = """
 <!DOCTYPE html>
 <html>
@@ -166,7 +164,6 @@ def generate_briefing_html(
 <body>
 """
     
-    # Header
     generation_timestamp = datetime.now().strftime("%d %B %Y at %H:%M IST")
     html += f"""
     <div class="header">
@@ -180,7 +177,6 @@ def generate_briefing_html(
     </div>
 """
     
-    # Executive Summary
     avg_score = top_zones["priority_score"].mean()
     high_risk_count = (top_zones["latest_aqi"] > 150).sum()
     
@@ -195,7 +191,6 @@ def generate_briefing_html(
     </div>
 """
     
-    # Priority Zones
     html += """
     <div class="section">
         <h2>Priority Inspection Zones</h2>
@@ -204,7 +199,6 @@ def generate_briefing_html(
     for idx, row in top_zones.iterrows():
         cat_name, cat_color = get_aqi_category_color(row["latest_aqi"])
         
-        # Determine border color by category
         border_colors = {
             "Good": "#2ECC71",
             "Satisfactory": "#3498DB",
@@ -241,7 +235,6 @@ def generate_briefing_html(
     </div>
 """
     
-    # Policy Weights (if provided)
     if weights:
         html += """
     <div class="section">
@@ -280,7 +273,6 @@ def generate_briefing_html(
     </div>
 """
     
-    # Footer
     html += f"""
     <div class="footer">
         <p>
@@ -298,13 +290,11 @@ def generate_briefing_html(
     
     return html
 
-
 def try_export_pdf(html_content: str) -> Optional[bytes]:
     """
     Attempts to export HTML to PDF using available libraries.
     Returns None if no PDF library is available.
     """
-    # Try weasyprint first (better HTML/CSS support)
     try:
         import weasyprint
         pdf_bytes = weasyprint.HTML(string=html_content).write_pdf()
@@ -312,7 +302,6 @@ def try_export_pdf(html_content: str) -> Optional[bytes]:
     except ImportError:
         pass
     
-    # Fallback: Try xhtml2pdf
     try:
         from xhtml2pdf import pisa
         output = io.BytesIO()
@@ -323,9 +312,7 @@ def try_export_pdf(html_content: str) -> Optional[bytes]:
     except ImportError:
         pass
     
-    # No PDF library available
     return None
-
 
 def render_briefing_export_ui(
     priority_df: pd.DataFrame,
@@ -356,10 +343,8 @@ def render_briefing_export_ui(
         )
     
     with col2:
-        # Generate timestamp for filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
         
-        # Generate HTML
         html_content = generate_briefing_html(
             priority_df=priority_df,
             top_n=capacity_n,
@@ -368,17 +353,15 @@ def render_briefing_export_ui(
             weights=weights
         )
         
-        # HTML download button
         st.download_button(
             label="📥 Download HTML",
             data=html_content,
             file_name=f"citypulse_briefing_{timestamp}.html",
             mime="text/html",
-            use_container_width=True,
+            width='stretch',
             help="Download as HTML (opens in any browser, printable)"
         )
         
-        # Try PDF export
         pdf_bytes = try_export_pdf(html_content)
         if pdf_bytes:
             st.download_button(
@@ -386,7 +369,7 @@ def render_briefing_export_ui(
                 data=pdf_bytes,
                 file_name=f"citypulse_briefing_{timestamp}.pdf",
                 mime="application/pdf",
-                use_container_width=True,
+                width='stretch',
                 help="Download as PDF (ready to print)"
             )
         else:

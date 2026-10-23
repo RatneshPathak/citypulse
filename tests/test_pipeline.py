@@ -21,7 +21,6 @@ HOURLY_PATH = Path("data/processed/mumbai_aqi_hourly_clean.parquet")
 FEATURES_PATH = Path("data/processed/mumbai_features_model_ready.parquet")
 PREDICTIONS_PATH = Path("data/processed/holdout_predictions.parquet")
 
-
 class TestCityPulsePipeline(unittest.TestCase):
 
     def setUp(self):
@@ -40,7 +39,6 @@ class TestCityPulsePipeline(unittest.TestCase):
         for col in required_cols:
             self.assertIn(col, df.columns, f"Required column '{col}' missing from daily dataset")
 
-        # Range checks on valid days
         valid_df = df[df["is_cpcb_valid"] == 1]
         self.assertTrue((valid_df["aqi_mean"] >= 0).all(), "Negative AQI found in valid records")
         self.assertTrue((valid_df["aqi_mean"] <= 700).all(), "Unrealistically extreme AQI found (> 700)")
@@ -66,12 +64,9 @@ class TestCityPulsePipeline(unittest.TestCase):
     def test_03_no_target_leakage_in_features(self):
         """Test that decision features for day t do not contain day t or future targets."""
         df = pd.read_parquet(FEATURES_PATH)
-        # Verify that lag_1_aqi matches target_aqi shifted by 1 per station
         for station, group in df.groupby("canonical_station"):
             group = group.sort_values("date").reset_index(drop=True)
             if len(group) > 5:
-                # Check lag_1 against true aqi_mean of day t-1
-                # When consecutive days exist, lag_1 should equal previous valid day's aqi_mean
                 consecutive = (group["date"].diff().dt.days == 1)
                 for idx in range(1, min(len(group), 20)):
                     if consecutive.iloc[idx] and pd.notna(group["lag_1_aqi"].iloc[idx]):
@@ -93,7 +88,6 @@ class TestCityPulsePipeline(unittest.TestCase):
             hourly_df = pd.read_parquet(HOURLY_PATH)
             dups_hourly = hourly_df.duplicated(subset=["canonical_station", "timestamp_ist"]).sum()
             self.assertEqual(dups_hourly, 0, f"Found {dups_hourly} duplicate hourly station-timestamps")
-
 
 if __name__ == "__main__":
     unittest.main()

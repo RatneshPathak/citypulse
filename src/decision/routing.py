@@ -10,6 +10,11 @@ import pandas as pd
 from typing import List, Tuple, Optional
 import streamlit as st
 
+def valid_location_mask(locations: pd.DataFrame) -> pd.Series:
+    """Identify rows with usable geographic coordinates."""
+    lat = pd.to_numeric(locations["latitude"], errors="coerce")
+    lon = pd.to_numeric(locations["longitude"], errors="coerce")
+    return lat.between(-90, 90) & lon.between(-180, 180)
 
 def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """
@@ -17,7 +22,7 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     
     Uses the haversine formula assuming Earth radius = 6371 km.
     """
-    R = 6371.0  # Earth radius in km
+    R = 6371.0
     
     lat1_rad = np.radians(lat1)
     lat2_rad = np.radians(lat2)
@@ -28,7 +33,6 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
     
     return R * c
-
 
 def nearest_neighbor_tour(
     locations: pd.DataFrame,
@@ -52,6 +56,13 @@ def nearest_neighbor_tour(
         Total tour distance in km (straight-line)
     """
     n = len(locations)
+    if not n:
+        return [], 0.0
+    if start_idx not in range(n):
+        raise ValueError("start_idx must identify a location in the route")
+    if not valid_location_mask(locations).all():
+        raise ValueError("Every route location needs valid latitude and longitude")
+
     unvisited = set(range(n))
     tour = [start_idx]
     unvisited.remove(start_idx)
@@ -59,7 +70,6 @@ def nearest_neighbor_tour(
     
     current = start_idx
     while unvisited:
-        # Find nearest unvisited location
         nearest = None
         min_dist = float('inf')
         
@@ -80,7 +90,6 @@ def nearest_neighbor_tour(
         current = nearest
     
     return tour, total_dist
-
 
 @st.cache_data(ttl=3600)
 def compute_inspection_route(
@@ -108,23 +117,25 @@ def compute_inspection_route(
     total_distance : float
         Total tour distance in km
     """
-    # Filter to top-N
-    top_locs = priority_df.head(top_n).copy()
+    top_locs = priority_df.head(top_n).loc[lambda df: valid_location_mask(df)].copy()
+    if top_locs.empty:
+        return pd.DataFrame(columns=[
+            "stop_number", "station", "zone", "latitude", "longitude",
+            "priority_score", "latest_aqi", "distance_from_prev_km",
+            "cumulative_distance_km",
+        ]), 0.0
     
-    # Determine start index
     if start_station and start_station in top_locs["station"].values:
         start_idx = top_locs[top_locs["station"] == start_station].index[0]
         start_idx = list(top_locs.index).index(start_idx)
     else:
         start_idx = 0
     
-    # Compute tour
     tour_indices, total_dist = nearest_neighbor_tour(
         top_locs[["latitude", "longitude"]].reset_index(drop=True),
         start_idx=start_idx
     )
     
-    # Build route dataframe
     route_data = []
     cumulative = 0.0
     

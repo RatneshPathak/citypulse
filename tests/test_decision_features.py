@@ -8,10 +8,8 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# Test data path
 DATA_PATH = Path("data/processed/mumbai_aqi_daily_clean.parquet")
 PREDS_PATH = Path("data/processed/holdout_predictions.parquet")
-
 
 class TestPriorityScoring(unittest.TestCase):
     """Tests for the priority scoring engine."""
@@ -93,21 +91,35 @@ class TestPriorityScoring(unittest.TestCase):
             "Ranks should be sequential from 1 to N"
         )
 
-
 class TestRouting(unittest.TestCase):
     """Tests for the inspection route planner."""
+
+    def test_route_skips_unlocated_top_stations(self):
+        """Missing coordinates cannot enter distance comparisons or route stops."""
+        from src.decision.routing import compute_inspection_route
+
+        priority = pd.DataFrame({
+            "station": ["Missing A", "Located B", "Missing C", "Located D"],
+            "latitude": [np.nan, 19.1, np.nan, 19.2],
+            "longitude": [np.nan, 72.8, np.nan, 72.9],
+        })
+        route, distance = compute_inspection_route(priority, top_n=3)
+        self.assertEqual(route["station"].tolist(), ["Located B"])
+        self.assertEqual(distance, 0.0)
+
+        empty_route, empty_distance = compute_inspection_route(priority, top_n=1)
+        self.assertTrue(empty_route.empty)
+        self.assertEqual(empty_distance, 0.0)
     
     def test_haversine_distance_sanity(self):
         """Haversine distance should match known values."""
         from src.decision.routing import haversine_distance
         
-        # Mumbai to Delhi (approximate)
         mumbai_lat, mumbai_lon = 19.0760, 72.8777
         delhi_lat, delhi_lon = 28.6139, 77.2090
         
         dist = haversine_distance(mumbai_lat, mumbai_lon, delhi_lat, delhi_lon)
         
-        # Known distance is ~1150-1200 km
         self.assertGreater(dist, 1100, "Mumbai-Delhi distance should be > 1100 km")
         self.assertLess(dist, 1300, "Mumbai-Delhi distance should be < 1300 km")
     
@@ -124,7 +136,6 @@ class TestRouting(unittest.TestCase):
         """Route should start at the specified starting station."""
         from src.decision.routing import compute_inspection_route
         
-        # Create mock priority dataframe
         mock_priority = pd.DataFrame({
             "station": ["Station A", "Station B", "Station C"],
             "latitude": [19.1, 19.2, 19.3],
@@ -168,7 +179,6 @@ class TestRouting(unittest.TestCase):
             f"Route should visit exactly {top_n} stations"
         )
 
-
 class TestWhatIfSimulation(unittest.TestCase):
     """Tests for the what-if policy simulator."""
     
@@ -188,15 +198,11 @@ class TestWhatIfSimulation(unittest.TestCase):
         
         delta_df = compute_rank_delta(old_priority, new_priority)
         
-        # A moved from 1 to 2 (delta = -1, worsened)
         self.assertEqual(delta_df[delta_df["station"] == "A"]["delta"].iloc[0], -1)
         
-        # B moved from 2 to 1 (delta = +1, improved)
         self.assertEqual(delta_df[delta_df["station"] == "B"]["delta"].iloc[0], 1)
         
-        # C stayed at 3 (delta = 0)
         self.assertEqual(delta_df[delta_df["station"] == "C"]["delta"].iloc[0], 0)
-
 
 class TestValidation(unittest.TestCase):
     """Tests for validation metrics."""
@@ -205,7 +211,6 @@ class TestValidation(unittest.TestCase):
         """Coverage should be between 0 and 1."""
         from src.decision.validation import compute_interval_coverage
         
-        # Mock predictions with perfect coverage
         mock_preds = pd.DataFrame({
             "pred_p10": [50, 60, 70],
             "pred_p90": [100, 110, 120],
@@ -216,7 +221,6 @@ class TestValidation(unittest.TestCase):
         
         self.assertGreaterEqual(result["coverage"], 0.0, "Coverage should be >= 0")
         self.assertLessEqual(result["coverage"], 1.0, "Coverage should be <= 1")
-
 
 if __name__ == "__main__":
     unittest.main()

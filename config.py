@@ -19,7 +19,6 @@ DISCLAIMER_TEXT = (
     f"Data: {DATA_ATTRIBUTION}. See DATA_SOURCES.md for licences and access dates."
 )
 
-
 def get_secret(key: str, default: Optional[str] = None) -> Optional[str]:
     """
     Safely retrieves a secret from Streamlit secrets (st.secrets) with
@@ -37,7 +36,6 @@ def get_secret(key: str, default: Optional[str] = None) -> Optional[str]:
     Optional[str]
         The resolved secret string, or default.
     """
-    # 1. Try st.secrets if running within Streamlit context
     try:
         import streamlit as st
         if hasattr(st, "secrets") and key in st.secrets:
@@ -47,7 +45,6 @@ def get_secret(key: str, default: Optional[str] = None) -> Optional[str]:
     except Exception:
         pass
 
-    # 2. Fall back to environment variable
     env_val = os.environ.get(key)
     if env_val is not None and env_val.strip():
         return env_val.strip()

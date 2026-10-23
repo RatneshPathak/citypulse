@@ -30,7 +30,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 PREDICTIONS_PATH = Path("data/processed/holdout_predictions.parquet")
 PROCESSED_DIR = Path("data/processed")
 
-
 def compute_station_priority_scores(
     df: pd.DataFrame,
     as_of_date: str | None = None,
@@ -142,7 +141,6 @@ def compute_station_priority_scores(
     result_df["rank"] = result_df.index + 1
     return result_df
 
-
 def generate_action_recommendation(
     station: str,
     zone: str,
@@ -191,13 +189,11 @@ def generate_action_recommendation(
         "caveats": " ".join(caveats)
     }
 
-
 def simulate_capacity_constraint(priority_df: pd.DataFrame, capacity_n: int = 5) -> pd.DataFrame:
     """Simulates resource allocation under a budget constraint of N zones/week."""
     df = priority_df.copy()
     df["allocated_inspection"] = (df["rank"] <= capacity_n).astype(int)
     return df
-
 
 def main():
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -217,7 +213,6 @@ def main():
     print(f"Top 5 Priority Zones for Municipal Intervention:")
     top_5 = priority_table[["rank", "station", "zone", "priority_score", "latest_aqi", "risk_tier"]].head(5)
     print(top_5.to_string(index=False))
-
 
 if __name__ == "__main__":
     main()

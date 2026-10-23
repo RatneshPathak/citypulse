@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 from theme import COLORS, get_aqi_category_color
 
-
 def plot_rank_movement(
     old_priority: pd.DataFrame,
     new_priority: pd.DataFrame,
@@ -25,7 +24,6 @@ def plot_rank_movement(
     
     fig = go.Figure()
     
-    # Old rank (baseline)
     fig.add_trace(
         go.Scatter(
             x=delta_df["old_rank"],
@@ -40,15 +38,14 @@ def plot_rank_movement(
         )
     )
     
-    # New rank (adjusted)
     colors = []
     for delta in delta_df["delta"]:
         if delta > 0:
-            colors.append("#2ECC71")  # Moved up (improved)
+            colors.append("#2ECC71")
         elif delta < 0:
-            colors.append("#E5484D")  # Moved down (worsened)
+            colors.append("#E5484D")
         else:
-            colors.append(COLORS["text_muted"])  # No change
+            colors.append(COLORS["text_muted"])
     
     fig.add_trace(
         go.Scatter(
@@ -65,7 +62,6 @@ def plot_rank_movement(
         )
     )
     
-    # Draw arrows for movement
     for _, row in delta_df.iterrows():
         if row["delta"] != 0:
             arrow_color = "#2ECC71" if row["delta"] > 0 else "#E5484D"
@@ -104,7 +100,7 @@ def plot_rank_movement(
         ),
         height=400 + (len(delta_df) * 5),
         margin=dict(l=10, r=10, t=40, b=40),
-        paper_bgcolor=COLORS["background"],
+        paper_bgcolor=COLORS["bg"],
         plot_bgcolor=COLORS["surface"],
         font=dict(color=COLORS["text"], size=10),
         showlegend=True,
@@ -120,7 +116,6 @@ def plot_rank_movement(
     
     return fig
 
-
 def plot_rank_stability_ranges(stability_df: pd.DataFrame, top_n: int = 10) -> go.Figure:
     """
     Shows rank stability as range plots for top stations.
@@ -130,7 +125,6 @@ def plot_rank_stability_ranges(stability_df: pd.DataFrame, top_n: int = 10) -> g
     
     fig = go.Figure()
     
-    # Add range bars
     for _, row in top_stable.iterrows():
         fig.add_trace(
             go.Scatter(
@@ -150,7 +144,6 @@ def plot_rank_stability_ranges(stability_df: pd.DataFrame, top_n: int = 10) -> g
             )
         )
     
-    # Add mean rank as diamond
     fig.add_trace(
         go.Scatter(
             x=top_stable["rank_mean"],
@@ -179,14 +172,13 @@ def plot_rank_stability_ranges(stability_df: pd.DataFrame, top_n: int = 10) -> g
         ),
         height=300 + (len(top_stable) * 25),
         margin=dict(l=10, r=10, t=40, b=40),
-        paper_bgcolor=COLORS["background"],
+        paper_bgcolor=COLORS["bg"],
         plot_bgcolor=COLORS["surface"],
         font=dict(color=COLORS["text"], size=10),
         hovermode="closest",
     )
     
     return fig
-
 
 def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = None) -> go.Figure:
     """
@@ -197,7 +189,6 @@ def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = No
     
     fig = go.Figure()
     
-    # Draw route line
     fig.add_trace(
         scatter_cls(
             lat=route_df["latitude"],
@@ -209,7 +200,6 @@ def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = No
         )
     )
     
-    # Draw station markers with numbers
     colors = []
     for i in range(len(route_df)):
         _, cat_color = get_aqi_category_color(route_df.iloc[i]["latest_aqi"])
@@ -223,7 +213,6 @@ def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = No
             marker=dict(
                 size=20,
                 color=colors,
-                line=dict(color="#ffffff", width=2),
             ),
             text=route_df["stop_number"],
             textfont=dict(size=11, color="#ffffff", family="Arial Black"),
@@ -265,7 +254,6 @@ def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = No
         fig.update_layout(mapbox=map_config, margin=dict(l=0, r=0, t=10, b=0), height=450)
     
     return fig
-
 
 def plot_probability_heatmap(stability_df: pd.DataFrame, top_n: int = 5) -> go.Figure:
     """
@@ -314,7 +302,7 @@ def plot_probability_heatmap(stability_df: pd.DataFrame, top_n: int = 5) -> go.F
         ),
         height=350 + (len(top_stations) * 8),
         margin=dict(l=10, r=10, t=40, b=40),
-        paper_bgcolor=COLORS["background"],
+        paper_bgcolor=COLORS["bg"],
         plot_bgcolor=COLORS["surface"],
         font=dict(color=COLORS["text"], size=10),
     )

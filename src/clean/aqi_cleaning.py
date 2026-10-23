@@ -19,7 +19,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 POLLUTANTS: List[str] = ["PM2.5", "PM10", "NO", "NO2", "NH3", "SO2", "CO"]
 FINAL_COLUMNS: List[str] = ["From Date", "To Date", "Station"] + POLLUTANTS
 
-
 def load_cpcb_excel_file(file_path: Union[str, Path]) -> Tuple[pd.DataFrame, Dict]:
     """
     Parses a single official CPCB Advance Search Excel export.
@@ -66,7 +65,6 @@ def load_cpcb_excel_file(file_path: Union[str, Path]) -> Tuple[pd.DataFrame, Dic
     }
     return df, metadata
 
-
 def load_all_cpcb_excel_files(
     directory_or_glob: Union[str, Path] = "data/raw/cpcb"
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -96,7 +94,6 @@ def load_all_cpcb_excel_files(
     report_df = pd.DataFrame(reports)
     return combined, report_df
 
-
 def deduplicate_records(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
     """
     Verifies and drops any duplicate timestamps within each station.
@@ -109,7 +106,6 @@ def deduplicate_records(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
         logging.warning(f"Removed {num_dups} duplicate records across station-timestamps.")
         df = df[~dup_mask].copy()
     return df, num_dups
-
 
 def handle_missing_values(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
     """
@@ -127,7 +123,6 @@ def handle_missing_values(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
         f"retained {len(cleaned_df)} analysis-ready rows."
     )
     return cleaned_df, num_offline
-
 
 def detect_outliers_iqr(
     df: pd.DataFrame,
@@ -164,7 +159,6 @@ def detect_outliers_iqr(
         return pd.DataFrame()
     return pd.concat(outlier_dfs, ignore_index=True)
 
-
 def compute_station_statistics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Computes station-by-station multi-pollutant descriptive summary statistics:
@@ -179,7 +173,6 @@ def compute_station_statistics(df: pd.DataFrame) -> pd.DataFrame:
         .round(2)
     )
     return stats
-
 
 def clean_aqi_dataset(
     raw_df: pd.DataFrame
@@ -208,7 +201,6 @@ def clean_aqi_dataset(
     stats = compute_station_statistics(final_cleaned)
 
     return final_cleaned, outliers, stats
-
 
 def run_pipeline(
     raw_dir: Union[str, Path] = "data/raw/cpcb",
@@ -241,7 +233,6 @@ def run_pipeline(
         if hourly_path.exists():
             logging.info(f"Repository processed hourly dataset available at {hourly_path}.")
         return pd.DataFrame(), pd.DataFrame()
-
 
 if __name__ == "__main__":
     run_pipeline()

@@ -38,7 +38,6 @@ plt.rcParams["font.sans-serif"] = "DejaVu Sans"
 plt.rcParams["axes.edgecolor"] = "#cccccc"
 plt.rcParams["axes.linewidth"] = 0.8
 
-
 def analyze_seasonal_and_diurnal(daily_df: pd.DataFrame, hourly_df: pd.DataFrame) -> dict:
     """Finding 1: Seasonal and diurnal patterns."""
     logging.info("Analyzing Finding 1: Seasonal and Diurnal Dynamics...")
@@ -101,7 +100,6 @@ def analyze_seasonal_and_diurnal(daily_df: pd.DataFrame, hourly_df: pd.DataFrame
         "fig_path": fig_path,
     }
 
-
 def analyze_station_heterogeneity(daily_df: pd.DataFrame) -> dict:
     """Finding 2: Spatial differences across stations (coastal vs inland, highway vs park)."""
     logging.info("Analyzing Finding 2: Spatial Heterogeneity and Micro-Environments...")
@@ -149,7 +147,6 @@ def analyze_station_heterogeneity(daily_df: pd.DataFrame) -> dict:
         "fig_path": fig_path,
     }
 
-
 def analyze_weather_relationships(daily_df: pd.DataFrame) -> dict:
     """Finding 3: Weather couplings (wind vector, humidity, precipitation)."""
     logging.info("Analyzing Finding 3: Weather & Ventilation Mechanics...")
@@ -190,7 +187,6 @@ def analyze_weather_relationships(daily_df: pd.DataFrame) -> dict:
         "high_wind_unhealthy_pct": float(unhealthy_by_wind.iloc[-1]),
         "fig_path": fig_path,
     }
-
 
 def analyze_events_diwali(daily_df: pd.DataFrame) -> dict:
     """Finding 4: Diwali episodic impact vs seasonal baseline."""
@@ -242,7 +238,6 @@ def analyze_events_diwali(daily_df: pd.DataFrame) -> dict:
         "fig_path": fig_path,
     }
 
-
 def analyze_weekday_weekend(daily_df: pd.DataFrame) -> dict:
     """Finding 5: Weekday vs Weekend patterns."""
     logging.info("Analyzing Finding 5: Weekly Anthropogenic Cycles...")
@@ -282,7 +277,6 @@ def analyze_weekday_weekend(daily_df: pd.DataFrame) -> dict:
         "diff_units": round(weekday_mean - weekend_mean, 1),
         "fig_path": fig_path,
     }
-
 
 def write_eda_findings_report(findings: dict):
     """Outputs the rigorous exploratory analysis document with charts and caveats."""
@@ -384,7 +378,6 @@ Attribution: Central Pollution Control Board (CPCB), Open-Meteo (CC BY 4.0), (C)
         f.write(content)
     logging.info(f"Wrote {REPORTS_DIR / 'eda_findings.md'}")
 
-
 def main():
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -408,7 +401,6 @@ def main():
     print("\nPhase 2 Exploratory Data Analysis Complete!")
     print(f"Generated 5 figures in {FIGURES_DIR}")
     print(f"Generated comprehensive report in {REPORTS_DIR / 'eda_findings.md'}")
-
 
 if __name__ == "__main__":
     main()

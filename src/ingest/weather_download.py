@@ -46,7 +46,6 @@ HOURLY_VARS = [
 RAW_DIR = Path("data/raw/weather")
 API_URL = "https://archive-api.open-meteo.com/v1/archive"
 
-
 def download_weather_chunk(lat: float, lon: float,
                            start_date: str, end_date: str) -> pd.DataFrame:
     """Download one chunk of weather data from Open-Meteo."""
@@ -71,7 +70,6 @@ def download_weather_chunk(lat: float, lon: float,
     df["latitude"] = data.get("latitude", lat)
     df["longitude"] = data.get("longitude", lon)
     return df
-
 
 def download_weather(location_name: str, lat: float, lon: float,
                      start: str, end: str, chunk_months: int = 3) -> pd.DataFrame:
@@ -116,7 +114,6 @@ def download_weather(location_name: str, lat: float, lon: float,
         return pd.concat(all_frames, ignore_index=True)
     return pd.DataFrame()
 
-
 def main():
     parser = argparse.ArgumentParser(description="Download Open-Meteo weather data for Mumbai")
     parser.add_argument("--start", default="2023-01-01", help="Start date YYYY-MM-DD")
@@ -149,7 +146,6 @@ def main():
         print(f"Date range: {combined['time'].min()} to {combined['time'].max()}")
     else:
         print("\nNo weather data downloaded!")
-
 
 if __name__ == "__main__":
     main()

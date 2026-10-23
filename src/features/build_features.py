@@ -37,7 +37,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 PROCESSED_DAILY = Path("data/processed/mumbai_aqi_daily_clean.parquet")
 FEATURES_DIR = Path("data/processed")
 
-
 def construct_features(df: pd.DataFrame) -> pd.DataFrame:
     """Build feature table for all stations."""
     logging.info("Building leak-free feature set across monitoring stations...")
@@ -117,7 +116,6 @@ def construct_features(df: pd.DataFrame) -> pd.DataFrame:
     logging.info(f"Constructed feature table with {len(feature_df_clean):,} valid rows and {len(feature_df_clean.columns)} columns")
     return feature_df_clean
 
-
 def main():
     FEATURES_DIR.mkdir(parents=True, exist_ok=True)
     daily_df = pd.read_parquet(PROCESSED_DAILY)
@@ -126,7 +124,6 @@ def main():
     out_path = FEATURES_DIR / "mumbai_features_model_ready.parquet"
     feature_df.to_parquet(out_path, index=False)
     logging.info(f"Saved model-ready features to {out_path}")
-
 
 if __name__ == "__main__":
     main()

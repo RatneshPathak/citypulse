@@ -20,23 +20,20 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import forecast as fc  # reuses the exact same data prep and features
+import forecast as fc
 
 OUT = "data/processed"
 FIG = f"{OUT}/figures"
 LINES = []
 
-
 def say(s=""):
     print(s)
     LINES.append(str(s))
-
 
 def section(title):
     say("\n" + "=" * 72)
     say(title)
     say("=" * 72)
-
 
 def season(m):
     if m in (11, 12, 1, 2):
@@ -47,16 +44,12 @@ def season(m):
         return "Monsoon (Jun-Sep)"
     return "Post-monsoon (Oct)"
 
-
 def mae(a, b):
     return float(np.mean(np.abs(a - b)))
-
 
 def rmse(a, b):
     return float(np.sqrt(np.mean((a - b) ** 2)))
 
-
-# ----------------------------------------------------------------- 1. audit
 def audit(raw):
     section("1. DATA QUALITY AUDIT (hourly cleaned file)")
     say(f"Rows: {len(raw)}   Stations: {raw['Station'].nunique()}")
@@ -89,8 +82,6 @@ def audit(raw):
     say("\nHow to read: 'same_as_prev_hour_%' and 'longest_identical_run_h' help detect "
         "forward-filled or stuck-sensor values. Large values suggest filled/stuck data.")
 
-
-# ----------------------------------------------------------------- 2. EDA
 def eda(raw, daily, figs):
     section("2. EXPLORATORY FINDINGS (daily station means, PM2.5 in ug/m3)")
     d = daily.dropna(subset=["PM2.5"]).copy()
@@ -142,8 +133,6 @@ def eda(raw, daily, figs):
         plt.savefig(f"{FIG}/pm25_by_hour.png", dpi=150)
         plt.close()
 
-
-# ----------------------------------------------------------------- 3. rolling
 def rolling_eval(feats, cols, min_train_days=120):
     lab = feats.dropna(subset=["target", "pm_today"]).copy()
     lab["tm"] = lab["target_date"].dt.to_period("M")
@@ -165,7 +154,6 @@ def rolling_eval(feats, cols, min_train_days=120):
     res = pd.concat(out) if out else pd.DataFrame()
     return res, checks
 
-
 def detection(df, thr=60):
     y = df["target"] >= thr
     out = {}
@@ -176,7 +164,6 @@ def detection(df, thr=60):
                      "precision": round(tp / (tp + fp), 2) if tp + fp else float("nan"),
                      "recall": round(tp / (tp + fn), 2) if tp + fn else float("nan")}
     return pd.DataFrame(out).T
-
 
 def report_rolling(res, checks, figs):
     section("3. ROLLING-ORIGIN (walk-forward) VALIDATION - tests every month after enough history")
@@ -228,8 +215,6 @@ def report_rolling(res, checks, figs):
         plt.savefig(f"{FIG}/rolling_mae_by_month.png", dpi=150)
         plt.close()
 
-
-# ----------------------------------------------------------------- 4. sensitivity
 def sensitivity(cols):
     section("4. SENSITIVITY CHECK - minimum valid hours required per day")
     rows = []
@@ -248,8 +233,6 @@ def sensitivity(cols):
     say("\nHow to read: if the conclusion (which method is better) stays the same across "
         "rows, the result is not an artefact of this one cleaning choice.")
 
-
-# ----------------------------------------------------------------- main
 def main():
     os.makedirs(OUT, exist_ok=True)
     raw = pd.read_csv(fc.DATA)
@@ -277,7 +260,6 @@ def main():
     with open(f"{OUT}/evaluation_report.txt", "w", encoding="utf-8") as fh:
         fh.write("\n".join(LINES))
     print(f"\nSaved report to {OUT}/evaluation_report.txt and charts to {FIG}/")
-
 
 if __name__ == "__main__":
     main()

@@ -39,7 +39,6 @@ MUMBAI_OPENAQ_LOCATIONS = {
     8707: ("Navi Mumbai - MPCB", 19.0368, 73.0158),
 }
 
-
 def download_s3_location(location_id: int, year: int) -> pd.DataFrame:
     """
     Download data for one OpenAQ location from the S3 archive.
@@ -87,7 +86,6 @@ def download_s3_location(location_id: int, year: int) -> pd.DataFrame:
         print(f"  S3 error for location {location_id}, year {year}: {e}")
         return pd.DataFrame()
 
-
 def download_openaq_http_fallback(location_id: int, station_name: str,
                                   start_date: str, end_date: str) -> pd.DataFrame:
     """
@@ -113,7 +111,6 @@ def download_openaq_http_fallback(location_id: int, station_name: str,
         print(f"  HTTP fallback failed for {station_name}: {e}")
 
     return pd.DataFrame()
-
 
 def main():
     parser = argparse.ArgumentParser(description="Download OpenAQ Mumbai data from S3")
@@ -154,7 +151,6 @@ def main():
         print("\nNo OpenAQ data downloaded. Falling back to CPCB source.")
         print("The OpenAQ S3 archive may not have data for these Mumbai locations.")
         print("Run: python -m src.ingest.cpcb_download instead.")
-
 
 if __name__ == "__main__":
     main()

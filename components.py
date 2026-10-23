@@ -8,14 +8,12 @@ from theme import COLORS, AQI_PALETTE, get_aqi_category_color
 from icons import ICONS
 from config import EVENT_NAME, TEAM_MEMBERS, DISCLAIMER_TEXT
 
-
 def render_compact_banner():
     """Renders a concise, professional regulatory disclaimer banner."""
     st.warning(
         "**Decision-Support Prototype:** For municipal environmental planning (BMC/MPCB role). Not an official statutory emergency warning system. Grounded in verified CPCB and Open-Meteo public data.",
         icon=":material/warning:",
     )
-
 
 def render_header(station_name: str, date_str: str, total_stations: int = 37):
     """Renders the compact hero header with data freshness and station chips."""
@@ -27,11 +25,9 @@ def render_header(station_name: str, date_str: str, total_stations: int = 37):
         f"{ICONS['location']} **Station:** {station_name}"
     )
 
-
 def render_takeaway(text: str, highlight: str = "Key Decision Takeaway:"):
     """Renders a prominent, plain-language 'So what?' takeaway box at the top of each tab."""
     st.info(f"**{highlight}** {text}", icon=":material/lightbulb:")
-
 
 def render_kpi_card(
     label: str,
@@ -53,7 +49,6 @@ def render_kpi_card(
         f'</div>'
     )
     st.markdown(html, unsafe_allow_html=True)
-
 
 def render_action_strip(priority_df, top_n: int = 5):
     """Renders a compact horizontal action cards strip for top priority zones."""
@@ -92,7 +87,6 @@ def render_action_strip(priority_df, top_n: int = 5):
             )
             st.markdown(card_html, unsafe_allow_html=True)
 
-
 def render_action_dossier(st_data: dict, allocated: bool = True):
     """Renders the comprehensive action dossier for the selected zone."""
     cat_name, cat_col = get_aqi_category_color(st_data["latest_aqi"])
@@ -129,7 +123,6 @@ def render_action_dossier(st_data: dict, allocated: bool = True):
     )
     st.markdown(dossier_html, unsafe_allow_html=True)
 
-
 def render_source_card(
     name: str,
     provider: str,
@@ -165,7 +158,6 @@ def render_source_card(
         f'</div>'
     )
     st.markdown(card_html, unsafe_allow_html=True)
-
 
 def render_footer():
     """Renders the persistent HackAMatch credit & data provenance footer."""

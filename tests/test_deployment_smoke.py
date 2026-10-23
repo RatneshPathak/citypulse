@@ -22,7 +22,6 @@ import charts
 import components
 import theme
 
-
 class TestDeploymentSmoke(unittest.TestCase):
 
     @classmethod
@@ -53,7 +52,6 @@ class TestDeploymentSmoke(unittest.TestCase):
         self.assertFalse(preds_df.empty)
         self.assertFalse(priority_df.empty)
 
-        # Ensure required columns for app rendering
         self.assertIn("canonical_station", daily_df.columns)
         self.assertIn("aqi_mean", daily_df.columns)
         self.assertIn("date", daily_df.columns)
@@ -90,30 +88,24 @@ class TestDeploymentSmoke(unittest.TestCase):
 
         sample_station = priority_df["station"].iloc[0]
 
-        # 1. Spatial Priority Map
         fig_map = charts.plot_priority_map(priority_df, selected_station=sample_station)
         self.assertIsInstance(fig_map, go.Figure)
 
-        # 2. Score Breakdown Bar
         default_weights = {"w_exp": 0.30, "w_pers": 0.25, "w_trend": 0.15, "w_fore": 0.20, "w_gap": 0.10}
         fig_score = charts.plot_score_breakdown(priority_df.iloc[0].to_dict(), default_weights)
         self.assertIsInstance(fig_score, go.Figure)
 
-        # 3. Time-series Trajectory
         st_daily = daily_df[daily_df["canonical_station"] == sample_station]
         fig_ts = charts.plot_timeseries_trajectory(st_daily, sample_station)
         self.assertIsInstance(fig_ts, go.Figure)
 
-        # 4. Holdout Forecast
         st_preds = preds_df[preds_df["canonical_station"] == sample_station]
         fig_fore = charts.plot_holdout_forecast(st_preds, sample_station)
         self.assertIsInstance(fig_fore, go.Figure)
 
-        # 5. Reliability and Calibration Diagram
         fig_cal = charts.plot_calibration_and_pr(preds_df)
         self.assertIsInstance(fig_cal, go.Figure)
 
-        # 6. Parity Scatter
         fig_parity = charts.plot_predicted_vs_actual(preds_df)
         self.assertIsInstance(fig_parity, go.Figure)
 
@@ -121,7 +113,6 @@ class TestDeploymentSmoke(unittest.TestCase):
         """Verify app.py and streamlit_app.py compile without syntax errors."""
         py_compile.compile("app.py", doraise=True)
         py_compile.compile("streamlit_app.py", doraise=True)
-
 
 if __name__ == "__main__":
     unittest.main()

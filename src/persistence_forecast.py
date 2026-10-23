@@ -21,20 +21,17 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "citypulse_cleaned.csv"
 OUT = ROOT / "data" / "processed"
 
-MIN_HOURS = 18                      # valid hours needed for a usable day
-BIN_EDGES = [0, 30, 60, 90, np.inf]  # bands are estimated per today's-level bin
-MIN_N = 40                          # min past days per bin, else merge with lower bin
-Q_LO, Q_HI = 0.10, 0.90             # nominal 80% band
-EVAL_START = pd.Timestamp("2025-07-01")  # first target date scored walk-forward
-HIGH = 60                           # "high day" threshold used for detection stats
+MIN_HOURS = 18
+BIN_EDGES = [0, 30, 60, 90, np.inf]
+MIN_N = 40
+Q_LO, Q_HI = 0.10, 0.90
+EVAL_START = pd.Timestamp("2025-07-01")
+HIGH = 60
 
-# Heuristic PM2.5 category cut-offs (ug/m3). VERIFY against the CPCB document
-# and cite it in DATA_STATEMENT.md. This is NOT the full AQI and NOT a probability.
 TIERS = [(30, "Good"), (60, "Satisfactory"), (90, "Moderate"),
          (120, "Poor"), (250, "Very Poor"), (np.inf, "Severe")]
 TIER_ORDER = [n for _, n in TIERS]
 
-# Illustrative suggestions for the decision interface, NOT official guidance.
 ACTIONS = {
     "Good": "Routine monitoring.",
     "Satisfactory": "Routine monitoring.",
@@ -44,12 +41,10 @@ ACTIONS = {
     "Severe": "Top priority: emergency measures and health advisory.",
 }
 
-
 def tier(x):
     for cut, name in TIERS:
         if x <= cut:
             return name
-
 
 def load_daily():
     df = pd.read_csv(DATA, parse_dates=["From Date", "To Date"])
@@ -59,7 +54,6 @@ def load_daily():
     daily = daily[daily["n_hours"] >= MIN_HOURS].copy()
     last_ts = df.dropna(subset=["PM2.5"]).groupby("Station")["To Date"].max()
     return daily, last_ts
-
 
 def make_pairs(daily):
     rows = []
@@ -74,7 +68,6 @@ def make_pairs(daily):
     out["resid"] = out["target"] - out["today"]
     return out
 
-
 def band(hist, level):
     """Residual quantiles from past (today, tomorrow) pairs with similar level."""
     i = min(int(np.searchsorted(BIN_EDGES, level, side="right")) - 1,
@@ -87,7 +80,7 @@ def band(hist, level):
             break
         lo_i -= 1
     basis = f"past days with today's PM2.5 in [{BIN_EDGES[lo_i]}, {hi_edge})"
-    if m.sum() < MIN_N:          # even the merged bins are thin: use everything
+    if m.sum() < MIN_N:
         m = pd.Series(True, index=hist.index)
         basis = "all past days (too few similar-level days)"
     if m.sum() < 5:
@@ -96,11 +89,9 @@ def band(hist, level):
     return (float(np.quantile(r, Q_LO)), float(np.quantile(r, Q_HI)),
             int(m.sum()), basis)
 
-
 def walk_forward(pairs):
     rows = []
     for _, r in pairs[pairs["target_date"] >= EVAL_START].iterrows():
-        # only outcomes already known at the end of day r.date (no leakage)
         hist = pairs[pairs["target_date"] <= r["date"]]
         b = band(hist, r["today"])
         if b is None:
@@ -113,7 +104,6 @@ def walk_forward(pairs):
     wf["abs_err"] = (wf["target"] - wf["today"]).abs()
     wf["level_bin"] = pd.cut(wf["today"], BIN_EDGES, right=False)
     return wf
-
 
 def metrics(wf):
     th, pr = wf["today"] >= HIGH, wf["target"] >= HIGH
@@ -134,7 +124,6 @@ def metrics(wf):
             for k, g in wf.groupby("level_bin", observed=True)},
     }
     return m
-
 
 def latest(daily, last_ts, pairs):
     data_end = daily["date"].max()
@@ -164,7 +153,6 @@ def latest(daily, last_ts, pairs):
                         "PM2.5 category, not a probability."))
     return pd.DataFrame(rows)
 
-
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     daily, last_ts = load_daily()
@@ -182,7 +170,6 @@ def main():
     print(json.dumps(m, indent=2))
     print(lf[["station_short", "as_of_date", "estimate_pm25", "low_80",
               "high_80", "tier_heuristic", "tier_at_upper_bound"]].to_string(index=False))
-
 
 if __name__ == "__main__":
     main()

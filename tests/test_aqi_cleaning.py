@@ -28,7 +28,6 @@ from src.clean.aqi_cleaning import (
 
 REF_STATS_PATH = Path("reports/notebook_reference_stats.json")
 
-
 class TestAQICleaningPipeline(unittest.TestCase):
 
     def setUp(self):
@@ -116,13 +115,11 @@ class TestAQICleaningPipeline(unittest.TestCase):
         with open(REF_STATS_PATH, "r", encoding="utf-8") as f:
             ref = json.load(f)
 
-        # 1. Total raw and cleaned records
         self.assertEqual(ref["raw_rows"], 63168)
         self.assertEqual(ref["all_missing_rows_dropped"], 9981)
         self.assertEqual(ref["cleaned_rows"], 53187)
         self.assertEqual(ref["raw_rows"] - ref["all_missing_rows_dropped"], ref["cleaned_rows"])
 
-        # 2. 4 Core Stations present
         expected_stations = [
             "Bandra Kurla Complex, Mumbai - IITM",
             "Borivali East, Mumbai - MPCB",
@@ -131,21 +128,17 @@ class TestAQICleaningPipeline(unittest.TestCase):
         ]
         self.assertEqual(sorted(ref["stations"]), sorted(expected_stations))
 
-        # 3. Worli 100% SO2 sensor failure
         self.assertEqual(ref["station_summary"]["Siddharth Nagar-Worli, Mumbai - IITM"]["so2_count"], 0)
         self.assertEqual(ref["worli_so2_missing_pct"], 100.0)
 
-        # 4. BKC is the highest particulate hotspot
         bkc_pm25 = ref["station_summary"]["Bandra Kurla Complex, Mumbai - IITM"]["pm25_mean"]
         borivali_pm25 = ref["station_summary"]["Borivali East, Mumbai - MPCB"]["pm25_mean"]
         self.assertGreater(bkc_pm25, borivali_pm25)
         self.assertAlmostEqual(bkc_pm25, 33.50, places=2)
         self.assertAlmostEqual(borivali_pm25, 23.61, places=2)
 
-        # 5. Outlier count matches notebook Cell 18
         self.assertEqual(ref["total_pm25_outliers"], 1281)
         self.assertAlmostEqual(ref["overall_pm25_outlier_pct"], 2.56, places=2)
-
 
 if __name__ == "__main__":
     unittest.main()

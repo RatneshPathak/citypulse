@@ -42,7 +42,6 @@ ICONS = {
     "history": ":material/history:",
     "schedule": ":material/schedule:",
 
-
     "takeaway": ":blue[:material/lightbulb:]",
     "banner_warning": ":orange[:material/warning:]",
     "warning": ":orange[:material/warning:]",

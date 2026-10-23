@@ -68,7 +68,6 @@ STATION_METADATA = {
 
 HOUR_COLS = [f"{h:02d}:00:00" for h in range(24)]
 
-
 def load_raw_cpcb(start_date: str = "2021-01-01") -> pd.DataFrame:
     """Load raw CPCB parquet and filter for Mumbai stations."""
     logging.info(f"Loading raw CPCB data from {RAW_CPCB_PATH}...")
@@ -80,7 +79,6 @@ def load_raw_cpcb(start_date: str = "2021-01-01") -> pd.DataFrame:
     mumbai_df = mumbai_df[mumbai_df["Date"] >= start_date].copy()
     logging.info(f"Filtered {len(mumbai_df)} daily station records for Mumbai (>= {start_date})")
     return mumbai_df
-
 
 def reshape_to_hourly(df: pd.DataFrame) -> pd.DataFrame:
     """Reshape wide hourly columns (00:00:00 - 23:00:00) to long hourly records."""
@@ -121,7 +119,6 @@ def reshape_to_hourly(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return melted
-
 
 def clean_air_quality_series(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """
@@ -187,7 +184,6 @@ def clean_air_quality_series(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     df_cleaned = pd.concat(cleaned_frames, ignore_index=True)
     return df_cleaned, metrics
 
-
 def load_and_merge_weather(df: pd.DataFrame) -> pd.DataFrame:
     """Load Open-Meteo hourly weather files and join with air quality data."""
     logging.info("Merging hourly weather features (Open-Meteo ERA5 / Reanalysis)...")
@@ -232,7 +228,6 @@ def load_and_merge_weather(df: pd.DataFrame) -> pd.DataFrame:
 
     logging.info(f"Weather joined. Match rate: {merged['temperature_2m'].notna().mean() * 100:.1f}%")
     return merged
-
 
 def compute_daily_station_aggregates(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -312,7 +307,6 @@ def compute_daily_station_aggregates(df: pd.DataFrame) -> pd.DataFrame:
 
     return daily_df
 
-
 def generate_quality_report(hourly_df: pd.DataFrame, daily_df: pd.DataFrame, metrics: dict):
     """Generates markdown audit report and coverage heatmap matrix."""
     logging.info("Generating data quality audit report and coverage matrices...")
@@ -383,7 +377,6 @@ Stations with valid day coverage >= 70% are selected for primary predictive mode
     coverage_matrix.to_csv(REPORTS_DIR / "station_coverage_matrix_monthly.csv")
     logging.info(f"Report written to {REPORTS_DIR / 'data_quality_report.md'}")
 
-
 def main():
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -412,7 +405,6 @@ def main():
     print(f"Hourly records: {len(merged_hourly):,}")
     print(f"Daily records:  {len(daily_df):,}")
     print(f"Valid CPCB days: {daily_df['is_cpcb_valid'].sum():,} ({daily_df['is_cpcb_valid'].mean()*100:.1f}%)")
-
 
 if __name__ == "__main__":
     main()

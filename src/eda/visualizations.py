@@ -33,7 +33,6 @@ THEME = {
     ],
 }
 
-
 def _apply_dark_layout(fig: go.Figure, title: str, subtitle: Optional[str] = None, height: int = 400) -> go.Figure:
     """Applies cohesive dark-theme formatting to any Plotly figure."""
     full_title = f"<b>{title}</b>"
@@ -84,7 +83,6 @@ def _apply_dark_layout(fig: go.Figure, title: str, subtitle: Optional[str] = Non
     )
     return fig
 
-
 def plot_station_comparison(
     df: pd.DataFrame,
     pollutants: Optional[List[str]] = None,
@@ -129,7 +127,6 @@ def plot_station_comparison(
         subtitle="BKC records highest particulate exposure; Borivali East cleanest. Source: CPCB continuous data.",
         height=height,
     )
-
 
 def plot_monthly_trends(
     df: pd.DataFrame,
@@ -192,7 +189,6 @@ def plot_monthly_trends(
         subtitle="Pronounced U-shape: Monsoon washout (Jul–Aug <15 µg/m³) vs. Winter inversion peak (Nov–Dec >70 µg/m³).",
         height=height,
     )
-
 
 def plot_diurnal_cycle(
     df: pd.DataFrame,
@@ -259,7 +255,6 @@ def plot_diurnal_cycle(
         height=height,
     )
 
-
 def plot_distribution_boxplots(
     df: pd.DataFrame,
     pollutant: str = "PM2.5",
@@ -300,7 +295,6 @@ def plot_distribution_boxplots(
         subtitle="Long positive tails show frequent acute episodic spikes exceeding 200 µg/m³.",
         height=height,
     )
-
 
 def plot_outlier_summary(
     df_or_outliers: pd.DataFrame,

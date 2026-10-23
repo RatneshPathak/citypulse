@@ -24,7 +24,6 @@ COLORS = {
     "success": "#2ECC71",
 }
 
-
 AQI_PALETTE = {
     "Good": "#2ECC71",
     "Satisfactory": "#A3D86B",
@@ -44,7 +43,6 @@ AQI_BREAKPOINTS = [
     (400, 700, "Severe", "#8E2BA8"),
 ]
 
-
 def get_aqi_category_color(aqi_val: float) -> tuple[str, str]:
     """Returns (category_name, hex_color) for any numeric AQI value."""
     if aqi_val is None or (isinstance(aqi_val, float) and (aqi_val != aqi_val)):
@@ -55,7 +53,6 @@ def get_aqi_category_color(aqi_val: float) -> tuple[str, str]:
     if aqi_val > 400:
         return ("Severe", AQI_PALETTE["Severe"])
     return ("Good", AQI_PALETTE["Good"])
-
 
 def register_plotly_theme():
     """Configures and registers the CityPulse dark theme in Plotly."""
@@ -113,9 +110,7 @@ def register_plotly_theme():
     pio.templates["citypulse_dark"] = template
     pio.templates.default = "citypulse_dark"
 
-
 register_plotly_theme()
-
 
 def inject_custom_css():
     """Injects high-end, responsive custom styling into Streamlit."""

@@ -61,7 +61,6 @@ PROCESSED_DIR = Path("data/processed")
 FIGURES_DIR = Path("reports/figures")
 REPORTS_DIR = Path("reports")
 
-
 def get_feature_columns() -> list[str]:
     """Define explicit numeric and categorical feature list."""
     return [
@@ -74,7 +73,6 @@ def get_feature_columns() -> list[str]:
         "is_weekend", "is_monsoon", "is_winter", "is_diwali_window",
         "is_coastal", "latitude", "longitude"
     ]
-
 
 def run_chronological_evaluation() -> dict:
     """Executes full chronological training, baseline comparisons, and diagnostics."""
@@ -321,7 +319,6 @@ def run_chronological_evaluation() -> dict:
         "clf_gb": clf_gb,
     }
 
-
 def write_evaluation_document(results: dict):
     """Outputs the rigorous EVALUATION.md document."""
     logging.info("Writing comprehensive EVALUATION.md...")
@@ -445,7 +442,6 @@ Intended Decision: Alerting municipal officers 24 hours prior to crossing regula
         json.dump(metrics_summary, f, indent=2)
     logging.info(f"Wrote {REPORTS_DIR / 'EVALUATION.md'}")
 
-
 def main():
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     res = run_chronological_evaluation()
@@ -453,7 +449,6 @@ def main():
     print(f"Gradient Boosting MAE: {res['metrics_gb']['MAE']} (Persistence: {res['metrics_persistence']['MAE']})")
     print(f"Prediction Interval Empirical Coverage: {res['empirical_coverage']:.1f}%")
     print(f"Classification PR-AUC: {res['clf_gb']['PR_AUC']}")
-
 
 if __name__ == "__main__":
     main()

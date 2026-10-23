@@ -37,3 +37,5 @@ Thumbs.db
 # Logs & Temporary Files
 *.log
 *.tmp
+
+data/raw/synthetic/

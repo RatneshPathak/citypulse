@@ -9,7 +9,6 @@ import pandas as pd
 import streamlit as st
 from typing import Dict, Tuple
 
-
 @st.cache_data(ttl=3600)
 def backtest_prioritization_strategy(
     daily_df: pd.DataFrame,
@@ -50,11 +49,9 @@ def backtest_prioritization_strategy(
     """
     from src.models.prioritization import compute_station_priority_scores
     
-    # Use 2023 test period
     test_start = pd.to_datetime("2023-01-01")
     test_end = preds_df["date"].max()
     
-    # Generate weekly decision points
     decision_dates = pd.date_range(
         start=test_start + pd.Timedelta(days=lookback_days),
         end=test_end - pd.Timedelta(days=lookahead_days),
@@ -66,7 +63,6 @@ def backtest_prioritization_strategy(
     total_opportunities = 0
     
     for decision_date in decision_dates:
-        # Compute priority for this decision date
         recent_data = preds_df[
             (preds_df["date"] >= decision_date - pd.Timedelta(days=lookback_days)) &
             (preds_df["date"] <= decision_date)
@@ -75,7 +71,6 @@ def backtest_prioritization_strategy(
         if recent_data.empty:
             continue
         
-        # Get top-N stations
         priority = compute_station_priority_scores(
             recent_data,
             as_of_date=decision_date.strftime("%Y-%m-%d")
@@ -87,7 +82,6 @@ def backtest_prioritization_strategy(
         top_stations = priority.head(top_n)["station"].tolist()
         all_stations = priority["station"].tolist()
         
-        # Check actual outcomes in next week
         future_start = decision_date + pd.Timedelta(days=1)
         future_end = decision_date + pd.Timedelta(days=lookahead_days)
         
@@ -99,7 +93,6 @@ def backtest_prioritization_strategy(
         if future_data.empty:
             continue
         
-        # Count high-AQI station-days for top-N
         top_high_days = future_data[
             (future_data["canonical_station"].isin(top_stations)) &
             (future_data["aqi_mean"] > threshold)
@@ -109,7 +102,6 @@ def backtest_prioritization_strategy(
             future_data["canonical_station"].isin(top_stations)
         ].shape[0]
         
-        # Count for all stations (baseline)
         all_high_days = future_data[future_data["aqi_mean"] > threshold].shape[0]
         all_total_days = len(future_data)
         
@@ -144,7 +136,6 @@ def backtest_prioritization_strategy(
         "hit_rate_std": np.std(hits) if len(hits) > 1 else 0.0
     }
 
-
 def compute_interval_coverage(preds_df: pd.DataFrame, confidence: float = 0.80) -> Dict:
     """
     Computes empirical coverage of prediction intervals.
@@ -171,7 +162,6 @@ def compute_interval_coverage(preds_df: pd.DataFrame, confidence: float = 0.80) 
             "n_predictions": 0
         }
     
-    # Check if actual falls within interval
     within_interval = (
         (valid_preds["target_next_day_aqi"] >= valid_preds["pred_p10"]) &
         (valid_preds["target_next_day_aqi"] <= valid_preds["pred_p90"])
@@ -186,7 +176,6 @@ def compute_interval_coverage(preds_df: pd.DataFrame, confidence: float = 0.80) 
         "undercoverage_pct": undercoverage,
         "n_predictions": len(valid_preds)
     }
-
 
 def compute_skill_scores(
     preds_df: pd.DataFrame,
@@ -221,7 +210,6 @@ def compute_skill_scores(
     model_rmse = np.sqrt((model_errors ** 2).mean())
     baseline_rmse = np.sqrt((baseline_errors ** 2).mean())
     
-    # Skill score: (baseline - model) / baseline * 100
     skill_pct = ((baseline_mae - model_mae) / baseline_mae * 100) if baseline_mae > 0 else 0.0
     
     return {
@@ -232,7 +220,6 @@ def compute_skill_scores(
         "skill_pct": skill_pct,
         "n_samples": len(valid)
     }
-
 
 def render_validation_panel(
     daily_df: pd.DataFrame,
@@ -251,7 +238,6 @@ def render_validation_panel(
         icon=":material/science:"
     )
     
-    # Compute metrics
     with st.spinner("Computing backtest metrics..."):
         backtest = backtest_prioritization_strategy(
             daily_df, preds_df, top_n=capacity_n, threshold=150.0
@@ -259,7 +245,6 @@ def render_validation_panel(
         interval_cov = compute_interval_coverage(preds_df, confidence=0.80)
         skill = compute_skill_scores(preds_df)
     
-    # Display metrics in columns
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -298,7 +283,6 @@ def render_validation_panel(
             help=f"Model MAE: {skill['model_mae']:.1f}, Persistence MAE: {skill['baseline_mae']:.1f}"
         )
     
-    # Detailed findings
     st.markdown("#### Key Validation Findings")
     
     findings_col1, findings_col2 = st.columns(2)
@@ -337,7 +321,6 @@ def render_validation_panel(
         
         st.markdown("\n".join(limitations))
     
-    # Interpretation
     st.markdown("---")
     st.markdown("#### Interpretation for Judges")
     st.markdown(

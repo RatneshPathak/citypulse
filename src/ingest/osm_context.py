@@ -42,7 +42,6 @@ HEADERS = {
     "Accept": "application/json"
 }
 
-
 def query_osm_station(name: str, lat: float, lon: float, radius: int = 1500) -> dict:
     """Query OSM Overpass for features within radius (meters)."""
     query = f"""
@@ -95,7 +94,6 @@ def query_osm_station(name: str, lat: float, lon: float, radius: int = 1500) -> 
 
     return stats
 
-
 def main():
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     cache_path = RAW_DIR / "mumbai_stations_osm_context.csv"
@@ -119,7 +117,6 @@ def main():
     print(f"\nSaved OSM station context to {cache_path}")
     print(df.to_string())
     return df
-
 
 if __name__ == "__main__":
     main()

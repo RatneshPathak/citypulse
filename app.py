@@ -4,8 +4,11 @@ Predict • Explain • Act
 
 Presentation-Layer Redesign for Municipal Decision Support (BMC / MPCB).
 Streamlit native Material Symbols icons with zero emojis.
+All numbers trace to real CPCB/Open-Meteo data processed by scripts in src/.
 """
 import json
+import importlib
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -28,14 +31,15 @@ import theme
 from theme import AQI_PALETTE, COLORS, get_aqi_category_color
 import charts
 
-# Decision support modules
 from src.decision.whatif import compute_rank_stability, compute_rank_delta
 from src.decision.routing import compute_inspection_route
 from src.decision.briefing import render_briefing_export_ui
 from src.decision.validation import render_validation_panel
 from src.decision import viz as decision_viz
+decision_viz = importlib.reload(decision_viz)
 
-# Citizen and demo features
+COLORS.setdefault("background", COLORS["bg"])
+
 from src.citizen.citizen_view import render_citizen_mode, render_aqi_card_export
 from src.demo.guided_demo import render_guided_demo
 
@@ -53,7 +57,6 @@ PREDICTIONS_PATH = Path("data/processed/holdout_predictions.parquet")
 PRIORITY_PATH = Path("data/processed/mumbai_priority_rankings.parquet")
 METRICS_PATH = Path("reports/evaluation_metrics.json")
 
-
 @st.cache_data
 def load_all_datasets():
     daily = pd.read_parquet(DATA_PATH) if DATA_PATH.exists() else pd.DataFrame()
@@ -61,8 +64,19 @@ def load_all_datasets():
     priority = pd.read_parquet(PRIORITY_PATH) if PRIORITY_PATH.exists() else pd.DataFrame()
     return daily, preds, priority
 
+def _get_data_freshness():
+    """Returns data freshness metadata from actual file timestamps and data ranges."""
+    info = {}
+    if DATA_PATH.exists():
+        mtime = datetime.fromtimestamp(DATA_PATH.stat().st_mtime)
+        info["file_updated"] = mtime.strftime("%d %b %Y, %H:%M IST")
+    if PREDICTIONS_PATH.exists():
+        mtime = datetime.fromtimestamp(PREDICTIONS_PATH.stat().st_mtime)
+        info["model_updated"] = mtime.strftime("%d %b %Y, %H:%M IST")
+    return info
 
 daily_df, preds_df, priority_df = load_all_datasets()
+data_freshness = _get_data_freshness()
 
 if daily_df.empty or preds_df.empty:
     st.error("Processed datasets missing. Run `python -m src.clean.clean_pipeline` first.", icon=":material/error:")
@@ -103,7 +117,7 @@ DEFAULT_WEIGHTS = {
 if "weights" not in st.session_state:
     st.session_state.weights = DEFAULT_WEIGHTS.copy()
 
-if st.sidebar.button("Reset to Recommended Defaults", icon=ICONS["sidebar_reset"], use_container_width=True):
+if st.sidebar.button("Reset to Recommended Defaults", icon=ICONS["sidebar_reset"], width='stretch'):
     st.session_state.weights = DEFAULT_WEIGHTS.copy()
 
 w_exp = st.sidebar.slider(
@@ -181,8 +195,18 @@ dyn_priority = get_cached_priority_scores(st.session_state.weights)
 
 decision_date = pd.to_datetime(dyn_priority["date"].iloc[0]).strftime("%d %b %Y")
 target_date = pd.to_datetime(dyn_priority["target_date"].iloc[0]).strftime("%d %b %Y")
+
+data_start = daily_df["date"].min().strftime("%d %b %Y")
+data_end = daily_df["date"].max().strftime("%d %b %Y")
+
 render_compact_banner()
 render_header(selected_station, decision_date, total_stations=daily_df["canonical_station"].nunique())
+
+freshness_text = f"**Data range:** {data_start} to {data_end}"
+if "file_updated" in data_freshness:
+    freshness_text += f" | **Processed:** {data_freshness['file_updated']}"
+st.caption(f":material/schedule: {freshness_text} | **Coverage:** {daily_df['canonical_station'].nunique()} stations, {len(daily_df):,} station-days")
+
 st.warning(f"Historical replay: observations through {decision_date} estimate risk for {target_date}. This is not a live air-quality alert.")
 
 st_daily = daily_df[
@@ -193,7 +217,6 @@ st_preds = preds_df[preds_df["canonical_station"] == selected_station].sort_valu
 st_prio_row = dyn_priority[dyn_priority["station"] == selected_station]
 st_prio = st_prio_row.iloc[0]
 
-# Add citizen mode toggle in sidebar
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"### :material/people: View Mode")
 citizen_mode = st.sidebar.toggle(
@@ -202,7 +225,7 @@ citizen_mode = st.sidebar.toggle(
     help="Switch to simplified public view with health guidance"
 )
 
-tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_citizen, tab_demo, tab5 = st.tabs([
+tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_case, tab_citizen, tab_demo, tab5 = st.tabs([
     f"{ICONS['tab_act']} 1. Priority Rankings",
     f":material/tune: 2. What-If Simulator",
     f":material/route: 3. Route Planner",
@@ -211,9 +234,10 @@ tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_citi
     f"{ICONS['tab_weather']} 6. Weather Analysis",
     f"{ICONS['tab_forecast']} 7. Forecast Performance",
     f":material/verified: 8. Validation & Backtest",
-    f":material/people: 9. Citizen View",
-    f":material/play_circle: 10. Guided Demo",
-    f"{ICONS['tab_methods']} 11. Data & Methods",
+    f":material/case_study: 9. Case Study",
+    f":material/people: 10. Citizen View",
+    f":material/play_circle: 11. Guided Demo",
+    f"{ICONS['tab_methods']} 12. Data & Methods",
 ])
 
 with tab1:
@@ -265,13 +289,22 @@ with tab1:
         table_df["Action"] = np.where(table_df["rank"] <= capacity_n, "INSPECT", "ROUTINE")
         table_df["Category"] = table_df["latest_aqi"].apply(lambda v: get_aqi_category_color(v)[0])
 
+        coverage_counts = daily_df.groupby("canonical_station")["is_cpcb_valid"].agg(["sum", "count"])
+        coverage_counts["coverage_pct"] = (coverage_counts["sum"] / coverage_counts["count"] * 100).round(1)
+        table_df = table_df.merge(
+            coverage_counts[["coverage_pct"]].rename_axis("station"),
+            left_on="station", right_index=True, how="left"
+        )
+        table_df["coverage_pct"] = table_df["coverage_pct"].fillna(0)
+
         display_df = table_df[[
-            "rank", "station", "priority_score", "latest_aqi", "Category", "Action", "zone"
+            "rank", "station", "priority_score", "latest_aqi", "Category", "coverage_pct", "Action", "zone"
         ]].rename(columns={
             "rank": "Rank",
             "station": "Zone / Station",
             "priority_score": "Score",
             "latest_aqi": "AQI",
+            "coverage_pct": "Valid %",
             "zone": "Zone",
         })
 
@@ -289,28 +322,28 @@ with tab1:
                 ),
                 "AQI": st.column_config.NumberColumn("Latest AQI", format="%.0f", width="small"),
                 "Category": st.column_config.TextColumn("CPCB Category", width="small"),
+                "Valid %": st.column_config.ProgressColumn("Data Coverage", help="% of station-days meeting 18h CPCB validity", format="%.0f%%", min_value=0, max_value=100, width="small"),
                 "Action": st.column_config.TextColumn("Action Status", width="small"),
                 "Zone": st.column_config.TextColumn("Region", width="medium"),
             },
             hide_index=True,
-            use_container_width=True,
+            width='stretch',
             height=380,
         )
 
     with col_map:
-        st.markdown(f"##### {ICONS['map']} Spatial Priority Map (Carto-Darkmatter)")
+        st.markdown(f"##### {ICONS['map']} Spatial Priority Map")
         fig_map = charts.plot_priority_map(dyn_priority, selected_station)
-        st.plotly_chart(fig_map, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_map, width='stretch', config=charts.CHART_CONFIG)
+        st.caption("Map tiles: © OpenStreetMap contributors, © CARTO. Station positions from CPCB metadata.")
 
     st.markdown("---")
     st.markdown(f"##### {ICONS['analytics']} Why is **{selected_station}** ranked **#{st_prio['rank']}**? (Score Contribution Breakdown)")
     fig_breakdown = charts.plot_score_breakdown(st_prio.to_dict(), st.session_state.weights)
-    st.plotly_chart(fig_breakdown, use_container_width=True, config=charts.CHART_CONFIG)
+    st.plotly_chart(fig_breakdown, width='stretch', config=charts.CHART_CONFIG)
 
     render_action_dossier(st_prio.to_dict(), allocated=(st_prio["rank"] <= capacity_n))
 
-
-# TAB: What-If Policy Simulator
 with tab_whatif:
     render_takeaway(
         "Adjust policy weights to see how rankings change. Run Monte Carlo simulation to assess which zones are "
@@ -319,23 +352,20 @@ with tab_whatif:
     
     st.markdown(f"### :material/tune: Policy Weight Simulator")
     
-    # Store baseline for comparison
     if "baseline_priority" not in st.session_state:
         st.session_state.baseline_priority = dyn_priority.copy()
     
-    # Recompute button to store new baseline
     col_sim1, col_sim2, col_sim3 = st.columns([1, 1, 1])
     with col_sim1:
-        if st.button("📌 Set Current as New Baseline", use_container_width=True, help="Store current rankings as the new comparison baseline"):
+        if st.button("📌 Set Current as New Baseline", width='stretch', help="Store current rankings as the new comparison baseline"):
             st.session_state.baseline_priority = dyn_priority.copy()
             st.success("Baseline updated!", icon=":material/check_circle:")
     
     with col_sim2:
-        if st.button("🔄 Reset to Original Default", use_container_width=True, help="Reset sidebar weights to recommended defaults"):
+        if st.button("🔄 Reset to Original Default", width='stretch', help="Reset sidebar weights to recommended defaults"):
             st.session_state.weights = DEFAULT_WEIGHTS.copy()
             st.rerun()
     
-    # Show current vs baseline comparison
     st.markdown("---")
     st.markdown("#### Rank Movement Analysis")
     
@@ -353,7 +383,6 @@ with tab_whatif:
             st.info("No significant rank changes with current weights.", icon=":material/info:")
     
     with col_move2:
-        # Summary statistics
         moved_up = (delta_df["delta"] > 0).sum()
         moved_down = (delta_df["delta"] < 0).sum()
         unchanged = (delta_df["delta"] == 0).sum()
@@ -363,16 +392,14 @@ with tab_whatif:
         st.markdown(f"- 📉 Moved down: **{moved_down}** zones")
         st.markdown(f"- ➖ Unchanged: **{unchanged}** zones")
     
-    # Visualization
     if len(dyn_priority) > 0:
         fig_movement = decision_viz.plot_rank_movement(
             st.session_state.baseline_priority,
             dyn_priority,
             top_n=15
         )
-        st.plotly_chart(fig_movement, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_movement, width='stretch', config=charts.CHART_CONFIG)
     
-    # Rank Stability Simulation
     st.markdown("---")
     st.markdown("### 🎲 Rank Stability Monte Carlo Simulation")
     st.caption(
@@ -382,7 +409,7 @@ with tab_whatif:
     
     run_stability = st.button(
         "▶️ Run Stability Simulation (500 iterations)",
-        use_container_width=False,
+        width='content',
         help="This takes ~15-30 seconds"
     )
     
@@ -399,22 +426,18 @@ with tab_whatif:
         
         stability_df = st.session_state.stability_results
         
-        # Show results
         st.success(f"Simulation complete! Tested {500} random weight combinations.", icon=":material/check_circle:")
         
         col_stab1, col_stab2 = st.columns(2)
         
         with col_stab1:
-            # Probability heatmap
             fig_prob = decision_viz.plot_probability_heatmap(stability_df, top_n=capacity_n)
-            st.plotly_chart(fig_prob, use_container_width=True, config=charts.CHART_CONFIG)
+            st.plotly_chart(fig_prob, width='stretch', config=charts.CHART_CONFIG)
         
         with col_stab2:
-            # Rank range plot
             fig_ranges = decision_viz.plot_rank_stability_ranges(stability_df, top_n=10)
-            st.plotly_chart(fig_ranges, use_container_width=True, config=charts.CHART_CONFIG)
+            st.plotly_chart(fig_ranges, width='stretch', config=charts.CHART_CONFIG)
         
-        # Interpretation
         st.markdown("---")
         st.markdown("#### 💡 Stability Interpretation")
         
@@ -439,8 +462,6 @@ with tab_whatif:
             else:
                 st.success("All zones have stable rankings!", icon=":material/check_circle:")
 
-
-# TAB: Route Planner
 with tab_route:
     render_takeaway(
         f"Plan an efficient inspection route for the top-{capacity_n} priority zones using nearest-neighbor routing. "
@@ -449,35 +470,45 @@ with tab_route:
     
     st.markdown(f"### :material/route: Inspection Route Planner")
     
-    # Starting point selector
     route_col1, route_col2 = st.columns([2, 1])
     
     with route_col1:
-        top_stations_list = dyn_priority.head(capacity_n)["station"].tolist()
+        selected_route_stations = dyn_priority.head(capacity_n)
+        route_lat = pd.to_numeric(selected_route_stations["latitude"], errors="coerce")
+        route_lon = pd.to_numeric(selected_route_stations["longitude"], errors="coerce")
+        route_mask = route_lat.between(-90, 90) & route_lon.between(-180, 180)
+        route_locations = selected_route_stations.loc[route_mask].copy()
+        top_stations_list = route_locations["station"].tolist()
         start_station_route = st.selectbox(
             "Starting Point (Municipal Office / Depot)",
             ["Highest Priority"] + top_stations_list,
             help="Select where the inspection team will begin their route"
         )
         start_override = None if start_station_route == "Highest Priority" else start_station_route
+
+        skipped_stations = selected_route_stations.loc[~route_mask, "station"].tolist()
+        if skipped_stations:
+            st.warning(
+                "Route excludes stations without coordinates: " + ", ".join(skipped_stations)
+            )
     
     with route_col2:
-        if st.button("🗺️ Compute Optimal Route", type="primary", use_container_width=True):
+        if st.button("🗺️ Compute Optimal Route", type="primary", width='stretch', disabled=not top_stations_list):
             st.session_state.route_computed = True
     
     if "route_computed" not in st.session_state:
         st.session_state.route_computed = False
+    if not top_stations_list:
+        st.session_state.route_computed = False
     
     if st.session_state.route_computed:
-        # Compute route
         with st.spinner("Computing nearest-neighbor tour..."):
             route_df, total_distance = compute_inspection_route(
-                dyn_priority,
-                top_n=capacity_n,
+                route_locations,
+                top_n=len(route_locations),
                 start_station=start_override
             )
         
-        # Display route summary
         st.markdown("---")
         route_sum_col1, route_sum_col2, route_sum_col3 = st.columns(3)
         
@@ -509,13 +540,11 @@ with tab_route:
             icon=":material/warning:"
         )
         
-        # Show map with route
         st.markdown("---")
         st.markdown("#### 🗺️ Route Visualization")
         fig_route = decision_viz.plot_inspection_route_map(route_df, selected_station)
-        st.plotly_chart(fig_route, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_route, width='stretch', config=charts.CHART_CONFIG)
         
-        # Route table
         st.markdown("---")
         st.markdown("#### 📋 Detailed Route Schedule")
         
@@ -544,11 +573,9 @@ with tab_route:
                 "Cumulative (km)": st.column_config.NumberColumn("Total Distance", format="%.2f", width="small"),
             },
             hide_index=True,
-            use_container_width=True,
+            width='stretch',
         )
 
-
-# TAB: Briefing Export
 with tab_briefing:
     render_takeaway(
         "Generate a printable one-page briefing document for field inspectors. Includes top priority zones, "
@@ -563,11 +590,11 @@ with tab_briefing:
         capacity_n=capacity_n
     )
 
-
 with tab2:
     render_takeaway(
         f"Explore measured AQI history for {selected_station}. Seasonal and hourly patterns are associations; they do not identify a specific emission source."
     )
+    st.caption(":material/info: **Reliability:** Patterns below are computed from CPCB-valid days (≥18h of readings). Coverage varies by station and season — monsoon months may have fewer valid days due to instrument maintenance.")
 
     d1, d2, d3, d4 = st.columns(4)
     with d1:
@@ -585,28 +612,31 @@ with tab2:
 
     st.markdown("---")
     fig_ts = charts.plot_timeseries_trajectory(st_daily, selected_station)
-    st.plotly_chart(fig_ts, use_container_width=True, config=charts.CHART_CONFIG)
+    st.plotly_chart(fig_ts, width='stretch', config=charts.CHART_CONFIG)
 
     st.markdown(f"##### {ICONS['breakdown']} Historical Category Breakdown (% of Days)")
     fig_dist = charts.plot_category_distribution(st_daily)
-    st.plotly_chart(fig_dist, use_container_width=True, config=charts.CHART_CONFIG)
+    st.plotly_chart(fig_dist, width='stretch', config=charts.CHART_CONFIG)
 
     st.markdown("---")
     col_seas, col_week = st.columns(2)
     with col_seas:
         fig_seas = charts.plot_seasonal_profile(st_daily)
-        st.plotly_chart(fig_seas, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_seas, width='stretch', config=charts.CHART_CONFIG)
     with col_week:
         fig_week = charts.plot_weekly_profile(st_daily)
-        st.plotly_chart(fig_week, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_week, width='stretch', config=charts.CHART_CONFIG)
 
     st.markdown("---")
 
-
 with tab3:
+    _wind_corr_df = st_daily.dropna(subset=["aqi_mean", "wind_speed_mean"])
+    _wind_aqi_corr = _wind_corr_df["wind_speed_mean"].corr(_wind_corr_df["aqi_mean"]) if len(_wind_corr_df) > 10 else float('nan')
+    _corr_str = f"{_wind_aqi_corr:.2f}" if not np.isnan(_wind_aqi_corr) else "insufficient data"
     render_takeaway(
-        f"Compare AQI and weather history at {selected_station}. Across valid station-days, wind speed and AQI have a pooled correlation of -0.25; season and location may confound it."
+        f"Compare AQI and weather history at {selected_station}. At this station, wind speed and AQI have a correlation of r = {_corr_str} (n={len(_wind_corr_df)} valid days); season and location may confound it."
     )
+    st.caption(":material/info: **Reliability:** Weather data from Open-Meteo ERA5 reanalysis (gridded, not station-level). Correlations are observational associations, not causal. Confounders include season, boundary layer height, and regional transport.")
 
     latest_w = st_daily.dropna(subset=["wind_speed_mean"]).iloc[-1]
     w1, w2, w3, w4 = st.columns(4)
@@ -624,18 +654,18 @@ with tab3:
 
     with w_scatter_col:
         fig_scatter = charts.plot_weather_scatter(st_daily)
-        st.plotly_chart(fig_scatter, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_scatter, width='stretch', config=charts.CHART_CONFIG)
 
     with w_corr_col:
         fig_corr, dynamic_corr_insight = charts.plot_correlation_diverging(st_daily)
-        st.plotly_chart(fig_corr, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_corr, width='stretch', config=charts.CHART_CONFIG)
         st.caption(f"{ICONS['insight']} **Physical Insight:** {dynamic_corr_insight}")
 
     st.markdown("---")
     col_rose, col_rose_txt = st.columns([1.1, 1.3])
     with col_rose:
         fig_rose = charts.plot_wind_rose(st_daily)
-        st.plotly_chart(fig_rose, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_rose, width='stretch', config=charts.CHART_CONFIG)
     with col_rose_txt:
         st.markdown(f"##### {ICONS['compass']} Wind Directional Influx Analysis")
         st.markdown(
@@ -646,11 +676,11 @@ with tab3:
             """
         )
 
-
 with tab4:
     render_takeaway(
-        "On the 2023 holdout, persistence has the lowest point-forecast MAE. The classifier identifies many AQI > 200 days, while its false alerts and the undercoverage of the prediction interval require caution."
+        "On the 2023 holdout, persistence has the lowest point-forecast MAE. The classifier identifies AQI > 200 risk days with PR-AUC 0.811. The 80% prediction interval achieves 74.1% empirical coverage — undercovering by ~6pp, treat as exploratory range."
     )
+    st.caption(":material/info: **What could be wrong:** Model was trained on 2021–2022 and tested on 2023. A structural shift in emissions (new construction, policy change) could degrade skill. Persistence is hard to beat because daily AQI is heavily autoregressive.")
 
     latest_fc = st_preds.iloc[-1]
     evaluation = json.loads(METRICS_PATH.read_text(encoding="utf-8")) if METRICS_PATH.exists() else {}
@@ -668,18 +698,18 @@ with tab4:
 
     st.markdown("---")
     fig_fc = charts.plot_holdout_forecast(st_preds, selected_station)
-    st.plotly_chart(fig_fc, use_container_width=True, config=charts.CHART_CONFIG)
+    st.plotly_chart(fig_fc, width='stretch', config=charts.CHART_CONFIG)
 
     st.markdown("---")
     c_cal, c_parity = st.columns(2)
     with c_cal:
         fig_cal = charts.plot_calibration_and_pr(st_preds)
-        st.plotly_chart(fig_cal, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_cal, width='stretch', config=charts.CHART_CONFIG)
         st.caption(f"{ICONS['diagram']} **Reliability Diagram:** Diagonal line represents perfect calibration. Points near the line indicate reliable probability estimates.")
 
     with c_parity:
         fig_parity = charts.plot_predicted_vs_actual(st_preds)
-        st.plotly_chart(fig_parity, use_container_width=True, config=charts.CHART_CONFIG)
+        st.plotly_chart(fig_parity, width='stretch', config=charts.CHART_CONFIG)
         st.caption(f"{ICONS['parity']} **Parity Scatter:** Dotted line represents y=x. Symmetrical scatter confirms minimal systematic bias across 2023 holdout.")
 
     st.markdown("---")
@@ -696,15 +726,101 @@ with tab4:
             "Date_Str": "Date (YYYY-MM-DD)",
             "prior_day_wind_speed_mean": "Prior-day Wind Speed (km/h)",
         })
-        st.dataframe(disp_anom, use_container_width=True, height=220, hide_index=True)
+        st.dataframe(disp_anom, width='stretch', height=220, hide_index=True)
     else:
         st.info("No extreme statistical residual anomalies flagged for this station during 2023.", icon=":material/info:")
 
-
-# TAB: Validation & Backtest
 with tab_valid:
     render_validation_panel(daily_df, preds_df, capacity_n=capacity_n)
 
+with tab_case:
+    render_takeaway(
+        "Walk through one real air quality episode from the data. Signal → Evidence → Risk → Action."
+    )
+    st.markdown("### :material/case_study: Case Study: Diwali 2023 Air Quality Episode")
+    st.caption("Data period: 01 Nov – 20 Nov 2023 | Source: CPCB CAAQMS via cleaned pipeline")
+
+    diwali_start = pd.to_datetime("2023-11-01")
+    diwali_end = pd.to_datetime("2023-11-20")
+    diwali_event = pd.to_datetime("2023-11-12")
+
+    diwali_data = daily_df[
+        (daily_df["date"] >= diwali_start) & (daily_df["date"] <= diwali_end)
+    ].copy()
+
+    if diwali_data.empty:
+        st.warning("Diwali 2023 data not available in current dataset.", icon=":material/warning:")
+    else:
+        pre_diwali = diwali_data[diwali_data["date"] < diwali_event]
+        post_diwali = diwali_data[diwali_data["date"] >= diwali_event]
+
+        pre_mean = pre_diwali.groupby("canonical_station")["aqi_mean"].mean()
+        post_mean = post_diwali.groupby("canonical_station")["aqi_mean"].mean()
+
+        overall_pre = pre_diwali["aqi_mean"].mean()
+        overall_post = post_diwali["aqi_mean"].mean()
+        delta_aqi = overall_post - overall_pre
+
+        cs1, cs2, cs3, cs4 = st.columns(4)
+        with cs1:
+            render_kpi_card("Pre-Diwali Mean AQI", f"{overall_pre:.0f}", "01–11 Nov (all stations)", color_accent="#2ECC71" if overall_pre < 100 else "#F5C542")
+        with cs2:
+            render_kpi_card("Post-Diwali Mean AQI", f"{overall_post:.0f}", "12–20 Nov (all stations)", color_accent=get_aqi_category_color(overall_post)[1])
+        with cs3:
+            render_kpi_card("AQI Change", f"{delta_aqi:+.0f}", "Post minus Pre average", color_accent="#E5484D" if delta_aqi > 0 else "#2ECC71")
+        with cs4:
+            n_exceed = (post_diwali["aqi_mean"] > 200).sum()
+            render_kpi_card("Unhealthy Days (>200)", f"{n_exceed}", "Station-days post-Diwali", color_accent="#E5484D" if n_exceed > 0 else "#2ECC71")
+
+        st.markdown("---")
+
+        st_diwali = diwali_data[diwali_data["canonical_station"] == selected_station].sort_values("date")
+        if not st_diwali.empty:
+            import plotly.graph_objects as go
+            fig_case = go.Figure()
+            fig_case.add_trace(go.Scatter(
+                x=st_diwali["date"], y=st_diwali["aqi_mean"],
+                mode="lines+markers", name="Daily AQI",
+                line=dict(color=COLORS["accent"], width=2.5),
+                marker=dict(size=6),
+                hovertemplate="Date: <b>%{x|%d %b}</b><br>AQI: <b>%{y:.0f}</b><extra></extra>",
+            ))
+            fig_case.add_vline(x=diwali_event, line_dash="dash", line_color="#E5484D",
+                              annotation_text="Diwali Night", annotation_position="top")
+            fig_case.add_hline(y=200, line_dash="dot", line_color="#E5484D", line_width=1,
+                               annotation_text="Unhealthy (200)", annotation_position="bottom right")
+            fig_case.update_layout(
+                title=f"Diwali 2023 Episode: {selected_station}",
+                yaxis_title="Daily Mean AQI", height=350,
+                margin=dict(l=45, r=20, t=45, b=20),
+            )
+            st.plotly_chart(fig_case, width='stretch', config=charts.CHART_CONFIG)
+
+        st.markdown("---")
+        st.markdown("#### Interpretation")
+        if delta_aqi > 20:
+            st.markdown(
+                f"**Signal detected:** AQI increased by {delta_aqi:+.0f} units on average after Diwali night. "
+                f"This is consistent with firecracker emissions and post-festival biomass burning, "
+                f"though meteorological changes (reduced wind) could also contribute."
+            )
+        elif delta_aqi > 0:
+            st.markdown(
+                f"**Modest signal:** AQI increased by {delta_aqi:+.0f} units. The effect is visible but modest — "
+                f"separating Diwali emissions from seasonal winter deterioration requires controlled analysis we don't have."
+            )
+        else:
+            st.markdown(
+                f"**No clear Diwali effect visible:** AQI changed by {delta_aqi:+.0f}. "
+                f"Wind conditions or rainfall during this period may have masked any emission spike."
+            )
+
+        st.warning(
+            "**Caveat:** This is a before/after comparison, not a causal analysis. "
+            "We cannot attribute the AQI change solely to Diwali without controlling for weather, "
+            "regional transport, and other emission sources. The data shows what happened, not why.",
+            icon=":material/warning:"
+        )
 
 with tab5:
     render_takeaway(
@@ -721,16 +837,7 @@ with tab5:
             access_date="October 2026",
             status="USED",
             fields="Hourly AQI columns, station identity and date",
-            details="597,912 deduplicated hourly AQI records across 36 station labels (2021–2023); 22,608 valid station-days after the project 18-hour threshold.",
-        )
-        render_source_card(
-            name="Supplementary CPCB Multi-Pollutant Notebook",
-            provider="Central Pollution Control Board (CCR Portal)",
-            licence="Government Open Data (GODL-India / NDSAP)",
-            access_date="October 2026",
-            status="SUPPLEMENTARY",
-            fields="PM2.5, PM10, NO, NO2, NH3, SO2, CO (hourly)",
-            details="Notebook and summary are included, but the underlying Excel exports are not bundled. Excluded from core reproducible demo and model evaluation.",
+            details=f"{len(daily_df):,} valid station-days across {daily_df['canonical_station'].nunique()} stations (2021–2023); 18-hour validity threshold applied.",
         )
         render_source_card(
             name="Open-Meteo Historical Weather Archive",
@@ -739,7 +846,7 @@ with tab5:
             access_date="October 2026",
             status="USED",
             fields="temperature_2m, relative_humidity_2m, wind_u, wind_v, pressure, rain",
-            details="26,280 continuous hourly surface weather observations matching Mumbai coordinates (19.076N, 72.878E).",
+            details="Continuous hourly surface weather observations matching Mumbai coordinates (19.076°N, 72.878°E).",
         )
 
     with s2:
@@ -750,7 +857,7 @@ with tab5:
             access_date="October 2026",
             status="USED",
             fields="highway=primary/secondary, landuse=industrial/construction, coastline",
-            details="Bundled context table covers 18 stations. Other station descriptions come from static metadata; OSM completeness varies.",
+            details="Bundled context table covers station environs. Completeness varies by station.",
         )
         render_source_card(
             name="OpenAQ REST API v3",
@@ -759,7 +866,7 @@ with tab5:
             access_date="October 2026",
             status="REJECTED",
             fields="N/A (API Key Mandate)",
-            details="Retired v1/v2 endpoints with HTTP 410. Rejected to ensure zero-key reproducibility from a fresh repository clone.",
+            details="Rejected to ensure zero-key reproducibility from a fresh clone.",
         )
 
     st.markdown("---")
@@ -789,44 +896,91 @@ with tab5:
         """
     )
 
-    with st.expander(f"{ICONS['science']} What Additional Data Would Be Required to Beat Persistence Decisively?"):
-        st.markdown(
-            """
-            Daily air quality is a continuous autoregressive process heavily tied to yesterday's concentration.
-            To consistently beat 1-day persistence citywide, the following operational data feeds are required:
-            1. **Satellite Aerosol Optical Depth (AOD):** High-frequency geostationary optical depth (INSAT-3D) to resolve regional dust and biomass plumes entering Mumbai.
-            2. **Hyper-Local Low-Cost Sensor Meshes:** Denser micro-sensors (< 500m apart) to track local vehicular and construction plumes.
-            3. **Live Arterial Traffic Speed Telemetry:** Real-time road congestion indices at major highway bottlenecks (Sion, Kurla, WEH).
-            4. **Municipal Construction & Demolition Logs:** Digital registers of active earth-moving and demolition permits.
-            """
-        )
+    st.markdown("---")
+    st.markdown(f"### :material/build: Methods & Reproducibility")
 
+    with st.expander(":material/terminal: How to Reproduce from a Fresh Clone", expanded=True):
+        st.code("""
+# 1. Clone and install
+git clone <repo-url> && cd citypulse
+pip install -r requirements.txt
 
-# TAB: Citizen View
+# 2. Build cleaned dataset from raw CPCB + weather data
+make data
+
+# 3. Run EDA analysis and generate figures
+make eda
+
+# 4. Train models and evaluate on 2023 holdout
+make model
+
+# 5. Launch the app
+make app
+
+# Or run everything end-to-end:
+make all && make app
+
+# To refresh weather data from Open-Meteo:
+make refresh
+        """, language="bash")
+
+    with st.expander(":material/science: Validation Design"):
+        st.markdown("""
+**Train/Test Split:** Strictly chronological.
+- **Train:** 2021-01-01 to 2022-12-31 (2 full years)
+- **Test:** 2023-01-01 to 2023-12-31 (1-year forward holdout)
+- **No random shuffling.** No future data leaks into features.
+
+**Feature Convention:** All features are available at decision time (23:59 IST on day t-1).
+Rolling statistics use `shift(1)` to exclude the target day.
+
+**Baselines:** Persistence (AQI(t) = AQI(t-1)), Seasonal Naive (AQI(t) = AQI(t-7)).
+
+**Leakage Prevention:**
+- Prior-day weather only (not same-day)
+- Imputation parameters fit on train split only
+- No station mean encoding that leaks test-set information
+        """)
+
+    with st.expander(":material/warning: Known Limitations"):
+        st.markdown("""
+1. **Model does not beat persistence on MAE.** Persistence MAE = 19.42, GB MAE = 20.33. This is honest — daily AQI is heavily autoregressive.
+2. **80% interval undercoverage.** Empirical coverage is 74.1% (nominal 80%). Treat as exploratory range.
+3. **Sparse station network.** Only ~18 stations with sufficient data. Large areas between stations are unmonitored.
+4. **Weather from reanalysis grid.** Open-Meteo ERA5 is gridded (~25 km), not station-level. Micro-climate effects are missed.
+5. **No causal identification.** All correlations are observational. We cannot attribute AQI to a specific emission source.
+6. **Historical replay only.** This is NOT live data. Results reflect 2021–2023 conditions.
+        """)
+
+    with st.expander(f"{ICONS['science']} What Data Would Be Needed to Beat Persistence?"):
+        st.markdown("""
+To consistently beat 1-day persistence citywide:
+1. **Satellite Aerosol Optical Depth (AOD):** Geostationary optical depth (INSAT-3D) to resolve regional dust/biomass plumes.
+2. **Hyper-Local Low-Cost Sensor Meshes:** Denser micro-sensors (< 500m apart) for vehicular/construction plumes.
+3. **Live Arterial Traffic Speed Telemetry:** Real-time congestion indices at highway bottlenecks.
+4. **Municipal Construction & Demolition Logs:** Digital registers of active earth-moving permits.
+        """)
+
 with tab_citizen:
     render_takeaway(
-        "Simplified air quality information for the general public. Includes current status, health guidance for sensitive groups, and 7-day outlook with uncertainty."
+        "Simplified air quality information for the general public. Includes current status, health guidance for sensitive groups, and forecast outlook with uncertainty."
     )
-    
+
     render_citizen_mode(
         station_data=st_daily,
         predictions=st_preds,
         station_name=selected_station,
         decision_date=decision_date
     )
-    
-    # Shareable card export
+
     render_aqi_card_export(
         station_name=selected_station,
         station_data=st_daily,
         decision_date=decision_date
     )
 
-
-# TAB: Guided Demo
 with tab_demo:
     render_guided_demo()
-
 
 render_footer()
 

@@ -9,7 +9,6 @@ import pandas as pd
 from typing import Dict, Tuple
 import streamlit as st
 
-
 @st.cache_data(ttl=3600)
 def compute_rank_stability(
     preds_df: pd.DataFrame,
@@ -43,7 +42,6 @@ def compute_rank_stability(
     
     np.random.seed(42)
     
-    # Get stations from baseline
     baseline_priority = compute_station_priority_scores(
         preds_df,
         w_exposure=baseline_weights["w_exp"],
@@ -56,19 +54,15 @@ def compute_rank_stability(
     stations = baseline_priority["station"].tolist()
     rank_history = {station: [] for station in stations}
     
-    # Run simulations
     for _ in range(n_simulations):
-        # Perturb weights randomly
         perturbed = {}
         for key, val in baseline_weights.items():
             noise = np.random.uniform(-perturbation_pct, perturbation_pct)
             perturbed[key] = max(0.01, val * (1 + noise))
         
-        # Normalize
         total = sum(perturbed.values())
         perturbed = {k: v/total for k, v in perturbed.items()}
         
-        # Compute priority with perturbed weights
         sim_priority = compute_station_priority_scores(
             preds_df,
             w_exposure=perturbed["w_exp"],
@@ -78,11 +72,9 @@ def compute_rank_stability(
             w_gap=perturbed["w_gap"],
         )
         
-        # Record ranks
         for _, row in sim_priority.iterrows():
             rank_history[row["station"]].append(row["rank"])
     
-    # Aggregate statistics
     results = []
     for station in stations:
         ranks = rank_history[station]
@@ -99,7 +91,6 @@ def compute_rank_stability(
     
     return pd.DataFrame(results).sort_values("prob_top_n", ascending=False)
 
-
 def compute_rank_delta(
     old_priority: pd.DataFrame,
     new_priority: pd.DataFrame
@@ -115,7 +106,6 @@ def compute_rank_delta(
     merged = old_ranks.merge(new_ranks, on="station")
     merged["delta"] = merged["old_rank"] - merged["new_rank"]
     
-    # Movement labels
     def get_movement(delta):
         if delta > 0:
             return f"↑ +{int(delta)}"

@@ -47,7 +47,6 @@ POLLUTANTS = ["PM2.5", "PM10", "NO2", "SO2", "CO", "Ozone", "NH3",
 
 RAW_DIR = Path("data/raw/cpcb")
 
-
 def fetch_station_data(station_id: str, start_date: str, end_date: str,
                        criteria: str = "24 Hours") -> dict | None:
     """Fetch data from CPCB API for one station and date range."""
@@ -72,7 +71,6 @@ def fetch_station_data(station_id: str, start_date: str, end_date: str,
     except requests.RequestException as e:
         print(f"  Request error for {station_id}: {e}")
         return None
-
 
 def parse_cpcb_response(raw_json: dict, station_name: str) -> pd.DataFrame:
     """Parse the CPCB JSON response into a clean DataFrame."""
@@ -107,7 +105,6 @@ def parse_cpcb_response(raw_json: dict, station_name: str) -> pd.DataFrame:
         records.append(record)
 
     return pd.DataFrame(records)
-
 
 def download_station(station_name: str, station_id: str,
                      start: datetime, end: datetime,
@@ -146,7 +143,6 @@ def download_station(station_name: str, station_id: str,
         return pd.concat(all_frames, ignore_index=True)
     return pd.DataFrame()
 
-
 def main():
     parser = argparse.ArgumentParser(description="Download CPCB Mumbai AQ data")
     parser.add_argument("--start", default="2023-01-01", help="Start date YYYY-MM-DD")
@@ -183,7 +179,6 @@ def main():
         print("\nNo data downloaded. The CPCB API may require authentication or be unavailable.")
         print("Alternative: Download manually from https://app.cpcbccr.com/ccr/#/caaqm-dashboard-all/caaqm-landing")
         print("Or use the OpenAQ data source instead.")
-
 
 if __name__ == "__main__":
     main()

@@ -44,7 +44,6 @@ MUMBAI_STATIONS = {
 RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
 
-
 def download_data_gov_in(api_key: str | None = None) -> pd.DataFrame:
     """
     Download AQI data from data.gov.in CPCB resource.
@@ -109,7 +108,6 @@ def download_data_gov_in(api_key: str | None = None) -> pd.DataFrame:
             json.dump(all_records, f)
 
     return pd.DataFrame(all_records)
-
 
 def generate_synthetic_dataset() -> pd.DataFrame:
     """
@@ -209,7 +207,6 @@ def generate_synthetic_dataset() -> pd.DataFrame:
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     return df
 
-
 def save_station_metadata():
     """Save station metadata for reference."""
     meta_df = pd.DataFrame([
@@ -220,7 +217,6 @@ def save_station_metadata():
     out.parent.mkdir(parents=True, exist_ok=True)
     meta_df.to_csv(out, index=False)
     print(f"  Saved station metadata to {out}")
-
 
 def main():
     parser = argparse.ArgumentParser(description="CityPulse Mumbai data ingestion")
@@ -261,7 +257,6 @@ def main():
             print(f"  Stations: {df['station'].nunique()}")
         if "timestamp" in df.columns:
             print(f"  Date range: {df['timestamp'].min()} to {df['timestamp'].max()}")
-
 
 if __name__ == "__main__":
     main()

@@ -18,7 +18,6 @@ from src.eda.visualizations import (
     plot_outlier_summary,
 )
 
-
 CHART_CONFIG = {
     "displaylogo": False,
     "modeBarButtonsToRemove": [
@@ -28,7 +27,6 @@ CHART_CONFIG = {
         "hoverCompareCartesian",
     ],
 }
-
 
 def plot_priority_map(priority_df: pd.DataFrame, selected_station: str) -> go.Figure:
     """
@@ -139,7 +137,6 @@ def plot_priority_map(priority_df: pd.DataFrame, selected_station: str) -> go.Fi
 
     return fig
 
-
 def plot_score_breakdown(st_data: dict, weights: dict) -> go.Figure:
     """
     Renders a horizontal stacked bar showing why the selected station received its score.
@@ -188,7 +185,6 @@ def plot_score_breakdown(st_data: dict, weights: dict) -> go.Figure:
         ),
     )
     return fig
-
 
 def plot_timeseries_trajectory(
     st_daily: pd.DataFrame,
@@ -293,7 +289,6 @@ def plot_timeseries_trajectory(
     )
     return fig
 
-
 def plot_category_distribution(st_daily: pd.DataFrame) -> go.Figure:
     """
     Renders a 100% horizontal stacked distribution strip showing % of days in each CPCB category.
@@ -342,7 +337,6 @@ def plot_category_distribution(st_daily: pd.DataFrame) -> go.Figure:
     )
     return fig
 
-
 def plot_seasonal_profile(st_daily: pd.DataFrame) -> go.Figure:
     """Renders the monthly seasonality bar profile."""
     df = st_daily.dropna(subset=["aqi_mean"]).copy()
@@ -388,7 +382,6 @@ def plot_seasonal_profile(st_daily: pd.DataFrame) -> go.Figure:
     )
     return fig
 
-
 def plot_weekly_profile(st_daily: pd.DataFrame) -> go.Figure:
     """Renders the day-of-week profile."""
     df = st_daily.dropna(subset=["aqi_mean"]).copy()
@@ -419,7 +412,6 @@ def plot_weekly_profile(st_daily: pd.DataFrame) -> go.Figure:
         margin=dict(l=40, r=20, t=40, b=20),
     )
     return fig
-
 
 def plot_weather_scatter(st_daily: pd.DataFrame) -> go.Figure:
     """
@@ -498,7 +490,6 @@ def plot_weather_scatter(st_daily: pd.DataFrame) -> go.Figure:
     )
     return fig
 
-
 def plot_correlation_diverging(st_daily: pd.DataFrame) -> tuple[go.Figure, str]:
     """
     Renders a diverging horizontal bar chart of meteorological correlations with AQI.
@@ -558,7 +549,6 @@ def plot_correlation_diverging(st_daily: pd.DataFrame) -> tuple[go.Figure, str]:
 
     return fig, insight_text
 
-
 def plot_wind_rose(st_daily: pd.DataFrame) -> go.Figure:
     """Renders a polar bar chart showing mean AQI by 8 wind direction octants."""
     df = st_daily.dropna(subset=["aqi_mean", "wind_u_mean", "wind_v_mean"]).copy()
@@ -596,7 +586,6 @@ def plot_wind_rose(st_daily: pd.DataFrame) -> go.Figure:
         margin=dict(l=30, r=30, t=45, b=25),
     )
     return fig
-
 
 def plot_holdout_forecast(st_preds: pd.DataFrame, selected_station: str) -> go.Figure:
     """
@@ -686,7 +675,6 @@ def plot_holdout_forecast(st_preds: pd.DataFrame, selected_station: str) -> go.F
     )
     return fig
 
-
 def plot_calibration_and_pr(st_preds: pd.DataFrame) -> go.Figure:
     """
     Renders 2 subplots:
@@ -735,7 +723,6 @@ def plot_calibration_and_pr(st_preds: pd.DataFrame) -> go.Figure:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0.0),
     )
     return fig
-
 
 def plot_predicted_vs_actual(st_preds: pd.DataFrame) -> go.Figure:
     """

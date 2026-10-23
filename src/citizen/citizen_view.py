@@ -10,8 +10,6 @@ import pandas as pd
 import streamlit as st
 from theme import get_aqi_category_color, COLORS
 
-
-# CPCB Health Guidance by Category (Official Guidelines)
 HEALTH_GUIDANCE = {
     "Good": {
         "general": "Air quality is satisfactory, and air pollution poses little or no risk.",
@@ -51,12 +49,10 @@ HEALTH_GUIDANCE = {
     }
 }
 
-
 def get_health_guidance(aqi: float) -> Dict:
     """Returns health guidance for a given AQI value."""
     category_name, _ = get_aqi_category_color(aqi)
     return HEALTH_GUIDANCE.get(category_name, HEALTH_GUIDANCE["Moderate"])
-
 
 def render_citizen_mode(
     station_data: pd.DataFrame,
@@ -81,7 +77,6 @@ def render_citizen_mode(
     st.markdown("### 🏘️ Air Quality in Your Area")
     st.caption(f"**Location:** {station_name} • **Data as of:** {decision_date}")
     
-    # Get latest and forecast
     latest_row = station_data.iloc[-1]
     forecast_row = predictions.iloc[-1] if not predictions.empty else None
     
@@ -89,14 +84,12 @@ def render_citizen_mode(
     category_name, category_color = get_aqi_category_color(current_aqi)
     guidance = get_health_guidance(current_aqi)
     
-    # Current Status Card
     st.markdown("---")
     st.markdown("#### Current Air Quality Status")
     
     col_status1, col_status2 = st.columns([1, 2])
     
     with col_status1:
-        # Big AQI display
         st.markdown(
             f"""
             <div style="
@@ -127,7 +120,6 @@ def render_citizen_mode(
         st.markdown("**For sensitive groups (children, elderly, respiratory conditions):**")
         st.warning(guidance["sensitive"], icon=":material/health_and_safety:")
     
-    # 7-Day Outlook
     if forecast_row is not None:
         st.markdown("---")
         st.markdown("#### 7-Day Outlook")
@@ -167,7 +159,6 @@ def render_citizen_mode(
             "Check official CPCB sources for current conditions."
         )
     
-    # Health Tips
     st.markdown("---")
     st.markdown("#### 💚 Health Protection Tips")
     
@@ -200,14 +191,12 @@ def render_citizen_mode(
             icon=":material/warning:"
         )
     
-    # Disclaimer
     st.markdown("---")
     st.caption(
         "**Disclaimer:** This is an educational decision-support tool, not a medical device or official health advisory. "
         "For authoritative air quality data, visit [CPCB's official portal](https://cpcb.nic.in/). "
         "If you experience health symptoms, consult a qualified healthcare provider."
     )
-
 
 def generate_aqi_card_html(
     station_name: str,
@@ -321,7 +310,6 @@ def generate_aqi_card_html(
 """
     return html
 
-
 def render_aqi_card_export(
     station_name: str,
     station_data: pd.DataFrame,
@@ -335,7 +323,6 @@ def render_aqi_card_export(
     current_aqi = latest_row["aqi_mean"]
     category_name, category_color = get_aqi_category_color(current_aqi)
     
-    # Determine trend
     if len(station_data) >= 2:
         prev_aqi = station_data.iloc[-2]["aqi_mean"]
         if current_aqi > prev_aqi + 10:
@@ -361,7 +348,6 @@ def render_aqi_card_export(
         st.caption("Download a shareable card to post on social media or send via WhatsApp.")
     
     with col_card2:
-        # Generate card HTML
         card_html = generate_aqi_card_html(
             station_name=station_name,
             aqi_value=current_aqi,
@@ -378,6 +364,6 @@ def render_aqi_card_export(
             data=card_html,
             file_name=f"aqi_card_{station_name.replace(' ', '_')}_{timestamp}.html",
             mime="text/html",
-            use_container_width=True,
+            width='stretch',
             help="Save and open in browser to screenshot for sharing"
         )
