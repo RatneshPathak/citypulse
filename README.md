@@ -213,7 +213,15 @@ _Reproduce:_ `python Evaluate.py --quick`
 A transparent weighted average of five normalised criteria, scaled 0-100:
 
 ```
-score = (w_exp*S_exp + w_pers*S_pers + w_trend*S_trend + w_fore*S_fore + w_gap*S_gap) / sum(w)
+score = (
+    w_exp   * S_exp
+  + w_pers  * S_pers
+  + w_trend * S_trend
+  + w_fore  * S_fore
+  + w_gap   * S_gap
+) / sum(w)
+
+sum(w) = w_exp + w_pers + w_trend + w_fore + w_gap
 ```
 
 ```mermaid
