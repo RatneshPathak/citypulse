@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://citypulse-mumbai.streamlit.app"><b>Live demo</b></a> &nbsp;|&nbsp;
+  <a href="https://citypulseaweb.streamlit.app/"><b>Live demo</b></a> &nbsp;|&nbsp;
   <a href="#results-at-a-glance">Results</a> &nbsp;|&nbsp;
   <a href="#quick-start">Quick start</a> &nbsp;|&nbsp;
   <a href="reports/EVALUATION.md">Evaluation report</a> &nbsp;|&nbsp;

@@ -1,6 +1,6 @@
 # CityPulse: Mumbai — Deployment Guide & Operational Runbook
 
-> **Live Demo URL:** [https://citypulse-mumbai.streamlit.app](https://citypulse-mumbai.streamlit.app)  
+> **Live Demo URL:** [https://citypulseaweb.streamlit.app/](https://citypulseaweb.streamlit.app/)  
 > **Fallback Mirror (Hugging Face Spaces):** `https://huggingface.co/spaces/<your-username>/citypulse-mumbai`  
 > **Repository:** [https://github.com/RishiBuilds/CityPulse](https://github.com/RishiBuilds/CityPulse)  
 > **Built for:** HackAMatch 1.0 by Ratnesh, Rishi & Shreya  
@@ -77,7 +77,7 @@ Confirm the repository is accessible at [https://github.com/RishiBuilds/CityPuls
    - **Branch:** `main`
    - **Main file path:** `app.py` (or `streamlit_app.py`, both work)
    - **App URL (Custom subdomain):** Enter `citypulse-mumbai`
-     *(This provisions the clean shareable URL: `https://citypulse-mumbai.streamlit.app`)*
+     *(This provisions the clean shareable URL: `https://citypulseaweb.streamlit.app/`)*
 
 ### Step 3.4: Configure Advanced Settings
 1. Click **"Advanced settings"** before clicking Deploy.
@@ -159,7 +159,7 @@ Both Streamlit Community Cloud and Hugging Face Spaces enforce automatic inactiv
 ### Recommended Pre-Demo Checklist:
 > [!IMPORTANT]
 > **Open the live URL 10 minutes prior to your presentation or judging session:**
-> 1. Visit `https://citypulse-mumbai.streamlit.app` from your phone or laptop.
+> 1. Visit `https://citypulseaweb.streamlit.app/` from your phone or laptop.
 > 2. If asleep, click **"Yes, get this app back up!"**.
 > 3. Verify that the map loads, the KPIs display `#1 Mazgaon`, and the 5 tabs toggle smoothly.
 > 4. Once awake, the container remains hot and active for 12 continuous hours.
