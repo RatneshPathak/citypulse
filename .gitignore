@@ -30,3 +30,4 @@ Thumbs.db
 *.tmp
 
 data/raw/synthetic/
+venv_old/
