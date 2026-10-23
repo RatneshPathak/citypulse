@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-10-24 01:06:59 IST",
+  "environment": {
+    "Python Version": "3.13.7",
+    "Platform": "win32",
+    "Random Seed": 42,
+    "NumPy Version": "2.3.5",
+    "Pandas Version": "2.3.3",
+    "Scikit-Learn Version": "1.7.2",
+    "LightGBM Version": "4.7.0",
+    "Hourly AQI Parquet Rows": "597,912",
+    "Hourly Weather Rows": "26,280",
+    "Daily AQI Clean Rows": "24,913",
+    "Model-Ready Features Rows": "20,997",
+    "Feature Date Range": "2021-01-02 to 2023-12-31",
+    "Total Stations / Filtered Active (>=150d)": "36 / 30",
+    "CV Training Window": "2021-01-01 to 2022-12-31 (24 months)",
+    "Holdout Window": "2023-01-01 to 2023-12-31 (12 months forward)"
+  },
+  "test_results": {
+    "status": "PASS",
+    "total": 40,
+    "passed": 40,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "runtime": 4.479
+  },
+  "leakage_passed": true,
+  "cv_winner": {
+    "model": "LightGBM_L1_Residual",
+    "mae": 22.989,
+    "skill_pct": 3.87,
+    "ci": [
+      -1.562,
+      -0.311
+    ]
+  },
+  "holdout": {
+    "best_mae": 18.83,
+    "persistence_mae": 19.415641640042598,
+    "date_bootstrap_ci_95": [
+      -1.0,
+      -0.07
+    ],
+    "verdict": "beats persistence",
+    "station_beats": 23,
+    "total_stations": 29
+  },
+  "classification": {
+    "recall": 0.87,
+    "precision": 0.595,
+    "pr_auc": 0.812,
+    "brier": 0.0758
+  },
+  "interval_coverage": {
+    "empirical_pct": 73.8,
+    "nominal_pct": 80.0,
+    "mean_width": 55.6
+  },
+  "backtest": {
+    "weeks_tested": 51,
+    "lift_vs_random": 42.9,
+    "ci_vs_random": [
+      30.3,
+      60.2
+    ],
+    "lift_vs_persistence": -1.9,
+    "ci_vs_persistence": [
+      -5.4,
+      1.7
+    ],
+    "lift_vs_last_week": -6.0,
+    "ci_vs_last_week": [
+      -11.9,
+      -0.3
+    ]
+  },
+  "robustness": {
+    "n_sims": 100,
+    "robust_stations_count": 5
+  }
+}
