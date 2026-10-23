@@ -348,7 +348,7 @@
 
 3. **Citizen health guidance:** Uses CPCB official categories. Not medical advice — includes disclaimer.
 
-4. **Backtest limited by data:** Only 2023 holdout available. More years would strengthen validation.
+4. **Backtest limited by data:** Evaluated on latest chronological holdout period. More historical years would further strengthen validation.
 
 5. **OSM facility counts:** Not implemented due to time. Using `env_type` proxy instead.
 

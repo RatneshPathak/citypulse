@@ -1,0 +1,58 @@
+{
+  "ablation": [
+    {
+      "group": "old",
+      "features": 28,
+      "MAE": 23.316,
+      "alpha_by_fold": [
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "group": "long_history",
+      "features": 31,
+      "MAE": 23.379,
+      "alpha_by_fold": [
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "group": "recent_change",
+      "features": 30,
+      "MAE": 23.277,
+      "alpha_by_fold": [
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "group": "station_history",
+      "features": 29,
+      "MAE": 23.247,
+      "alpha_by_fold": [
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "group": "calendar",
+      "features": 30,
+      "MAE": 23.412,
+      "alpha_by_fold": [
+        100.0,
+        100.0,
+        100.0
+      ]
+    }
+  ],
+  "retained_groups": [
+    "recent_change",
+    "station_history"
+  ]
+}

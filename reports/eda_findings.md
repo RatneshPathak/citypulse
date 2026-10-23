@@ -1,7 +1,7 @@
 # Exploratory Data Analysis & Empirical Findings — CityPulse: Mumbai
 
 Regulatory Decision-Support Synthesis for Municipal Officers (BMC / MPCB)  
-Data Basis: 22,608 valid daily station observations across 36 station labels + 26,280 hourly weather observations (2021–2023).  
+Data Basis: 22,608 valid daily station observations across 36 station labels + 26,280 hourly weather observations (Latest Dataset).  
 Attribution: Central Pollution Control Board (CPCB), Open-Meteo (CC BY 4.0), (C) OpenStreetMap contributors (ODbL).
 
 ---
@@ -62,7 +62,7 @@ Attribution: Central Pollution Control Board (CPCB), Open-Meteo (CC BY 4.0), (C)
 ![Diwali Episode Effect](figures/fig4_diwali_episode_effect.png)
 
 ### 1. What We Observed
-- **Observed Peak:** During the multi-day Diwali festival windows across 2021–2023, mean AQI climbed to **159.4**, compared to the post-monsoon seasonal baseline of **139.2**, reflecting a mean elevation of **+20.3 AQI units (+14.6%)**, with 90th percentile spikes reaching **235.6 AQI**.
+- **Observed Peak:** During the multi-day Diwali festival windows across the latest multi-year dataset, mean AQI climbed to **159.4**, compared to the post-monsoon seasonal baseline of **139.2**, reflecting a mean elevation of **+20.3 AQI units (+14.6%)**, with 90th percentile spikes reaching **235.6 AQI**.
 
 ### 2. How Reliable Is It?
 - Replicated across all 3 monitoring years with sharp spikes during the exact festival dates.

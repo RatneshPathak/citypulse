@@ -274,7 +274,7 @@ def plot_timeseries_trajectory(
     )
 
     fig.update_layout(
-        title=f"Air Quality Trajectory at {selected_station} (2021–2023)",
+        title=f"Air Quality Trajectory at {selected_station} (Latest Dataset)",
         xaxis=dict(
             title="",
             rangeselector=rangeselector,

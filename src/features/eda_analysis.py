@@ -68,7 +68,7 @@ def analyze_seasonal_and_diurnal(daily_df: pd.DataFrame, hourly_df: pd.DataFrame
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
     sns.barplot(data=monthly_stats, x="month_name", y="aqi_mean", ax=axes[0], palette="coolwarm")
-    axes[0].set_title("Mumbai Monthly Mean AQI (2021-2023)\nMonsoon Washout vs Winter Inversion", fontsize=12, fontweight="bold")
+    axes[0].set_title("Mumbai Monthly Mean AQI (Latest Dataset)\nMonsoon Washout vs Winter Inversion", fontsize=12, fontweight="bold")
     axes[0].set_xlabel("Month")
     axes[0].set_ylabel("Mean AQI")
     axes[0].axhline(100, color="green", linestyle="--", alpha=0.7, label="Satisfactory (100)")
@@ -124,7 +124,7 @@ def analyze_station_heterogeneity(daily_df: pd.DataFrame) -> dict:
     colors = ["#3182bd" if c == 1 else "#e6550d" for c in top_stations["is_coastal"]]
 
     bars = ax.barh(top_stations["canonical_station"], top_stations["mean_aqi"], color=colors, height=0.65)
-    ax.set_title("Mean AQI by Monitoring Station: Inland/Industrial vs Coastal (2021-2023)\nBlue = Coastal Proximity (<2 km) | Orange = Inland / Transit / Industrial", fontsize=12, fontweight="bold")
+    ax.set_title("Mean AQI by Monitoring Station: Inland/Industrial vs Coastal (Latest Dataset)\nBlue = Coastal Proximity (<2 km) | Orange = Inland / Transit / Industrial", fontsize=12, fontweight="bold")
     ax.set_xlabel("Mean Daily AQI")
     ax.axvline(coastal_mean, color="#3182bd", linestyle="--", linewidth=1.5, label=f"Coastal Mean: {coastal_mean:.1f}")
     ax.axvline(inland_mean, color="#e6550d", linestyle="--", linewidth=1.5, label=f"Inland Mean: {inland_mean:.1f}")
@@ -210,7 +210,7 @@ def analyze_events_diwali(daily_df: pd.DataFrame) -> dict:
 
     fig, ax = plt.subplots(figsize=(9, 5))
     comparison = pd.DataFrame({
-        "Period": ["Post-Monsoon Baseline (Oct-Nov)", "Diwali Festival Windows (2021-2023)"],
+        "Period": ["Post-Monsoon Baseline (Oct-Nov)", "Diwali Festival Windows (Latest Multi-Year)"],
         "Mean AQI": [baseline_post_monsoon, diwali_mean]
     })
     bars = sns.barplot(data=comparison, x="Period", y="Mean AQI", ax=ax, palette=["#74a9cf", "#de2d26"])
@@ -290,7 +290,7 @@ def write_eda_findings_report(findings: dict):
     content = f"""# Exploratory Data Analysis & Empirical Findings — CityPulse: Mumbai
 
 Regulatory Decision-Support Synthesis for Municipal Officers (BMC / MPCB)  
-Data Basis: {f1['valid_daily_count']:,} valid daily station observations across {f1['station_count']} station labels + 26,280 hourly weather observations (2021–2023).  
+Data Basis: {f1['valid_daily_count']:,} valid daily station observations across {f1['station_count']} station labels + 26,280 hourly weather observations (Latest Dataset).  
 Attribution: Central Pollution Control Board (CPCB), Open-Meteo (CC BY 4.0), (C) OpenStreetMap contributors (ODbL).
 
 ---
@@ -351,7 +351,7 @@ Attribution: Central Pollution Control Board (CPCB), Open-Meteo (CC BY 4.0), (C)
 ![Diwali Episode Effect](figures/fig4_diwali_episode_effect.png)
 
 ### 1. What We Observed
-- **Observed Peak:** During the multi-day Diwali festival windows across 2021–2023, mean AQI climbed to **{f4['diwali_mean']}**, compared to the post-monsoon seasonal baseline of **{f4['baseline_mean']}**, reflecting a mean elevation of **+{f4['elevation_units']} AQI units (+{f4['elevation_pct']:.1f}%)**, with 90th percentile spikes reaching **{f4['diwali_p90']} AQI**.
+- **Observed Peak:** During the multi-day Diwali festival windows across the latest multi-year dataset, mean AQI climbed to **{f4['diwali_mean']}**, compared to the post-monsoon seasonal baseline of **{f4['baseline_mean']}**, reflecting a mean elevation of **+{f4['elevation_units']} AQI units (+{f4['elevation_pct']:.1f}%)**, with 90th percentile spikes reaching **{f4['diwali_p90']} AQI**.
 
 ### 2. How Reliable Is It?
 - Replicated across all 3 monitoring years with sharp spikes during the exact festival dates.

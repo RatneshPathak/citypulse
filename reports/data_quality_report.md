@@ -1,7 +1,7 @@
 # Data Quality & Coverage Audit Report — CityPulse: Mumbai
 
 Audit Date: 2026-10-22 22:51:13  
-Temporal Scope: 2021-01-01 to 2023-12-31  
+Temporal Scope: Latest multi-year continuous dataset (597,912 hourly records)  
 Project Completeness Rule: >= 18 valid hours/day
 
 ---

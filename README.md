@@ -12,7 +12,7 @@ Air quality decision-support prototype for the Mumbai Metropolitan Region. CityP
 
 **Decision supported:** which zones should be prioritised this week, given a capacity of N zones?
 
-**Data:** 597,912 deduplicated hourly AQI records from 36 station labels and 26,280 hourly weather observations, covering 2021-2023.
+**Data:** 597,912 deduplicated hourly AQI records from 36 station labels and 26,280 hourly weather observations, covering the latest multi-year baseline dataset.
 
 ## Features
 
@@ -34,7 +34,9 @@ Calculations: [`reports/eda_findings.md`](reports/eda_findings.md).
 
 ## Validation
 
-Models are trained on 2021-2022 and tested forward on 2023, with no shuffling or target leakage.
+The Phase 1b comparison uses three expanding date-based folds within 2021–2022. Ridge tuning uses inner date splits, with preprocessing fitted inside each training split. [Pooled, fold, season, ablation and date-bootstrap results](reports/phase1b_cv.md) are reproducible with `python -m src.models.phase1b_cv --stage candidates`. The CV-selected LightGBM L1 residual model has not yet been evaluated on the 2023 holdout.
+
+The table below is the earlier Phase 1a 2023 evaluation. That holdout was viewed during earlier development, so it is not a pristine first look for Phase 1b.
 
 **Next-day mean AQI**
 
@@ -42,17 +44,17 @@ Models are trained on 2021-2022 and tested forward on 2023, with no shuffling or
 | :-------------------------- | --------: | --------: | --------: | -------------------: |
 | Persistence (t-1)           | **19.42** |     30.38 |     0.820 |                 0.0% |
 | Seasonal naive (t-7)        |     34.57 |     50.01 |     0.513 |               -78.0% |
-| Ridge regression            |     19.46 | **28.62** | **0.841** |                -0.2% |
-| Histogram gradient boosting |     20.33 |     29.97 |     0.825 |                -4.7% |
+| Ridge regression            |     19.58 | **28.65** | **0.840** |                -0.8% |
+| Histogram gradient boosting |     20.35 |     29.92 |     0.826 |                -4.8% |
 
 **AQI > 200 event classification**
 
 | Model             | Precision |    Recall |        F1 |    PR-AUC |   ROC-AUC |     Brier |
 | :---------------- | --------: | --------: | --------: | --------: | --------: | --------: |
 | State persistence | **0.716** |     0.717 | **0.717** |       N/A |       N/A |       N/A |
-| Gradient boosting |     0.592 | **0.877** |     0.707 | **0.811** | **0.954** | **0.077** |
+| Gradient boosting |     0.593 | **0.872** |     0.706 | **0.811** | **0.955** | **0.076** |
 
-Neither trained point model beats persistence on citywide MAE, so the dashboard is a historical decision replay rather than a live forecast. Nominal 80% prediction intervals reach 74.1% empirical coverage and should not be treated as calibrated.
+Neither Phase 1a trained point model beats persistence on citywide 2023 MAE, so the dashboard is a historical decision replay rather than a live forecast. Nominal 80% prediction intervals reach 74.9% empirical coverage and should not be treated as calibrated. The Phase 1b CV result is provisional until its 2023 evaluation.
 
 ## Priority score
 
@@ -72,7 +74,7 @@ Requires Python 3.10 or newer. No API keys are needed.
 git clone https://github.com/RishiBuilds/CityPulse.git
 cd CityPulse
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
 python -m unittest discover tests
 streamlit run app.py

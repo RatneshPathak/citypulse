@@ -599,7 +599,7 @@ with tab2:
     d1, d2, d3, d4 = st.columns(4)
     with d1:
         mean_aqi = st_daily["aqi_mean"].mean()
-        render_kpi_card("Multi-Year Mean AQI", f"{mean_aqi:.1f}", "2021–2023 Station Average", color_accent=get_aqi_category_color(mean_aqi)[1])
+        render_kpi_card("Multi-Year Mean AQI", f"{mean_aqi:.1f}", "Latest Multi-Year Station Average", color_accent=get_aqi_category_color(mean_aqi)[1])
     with d2:
         max_aqi = st_daily["aqi_mean"].max()
         render_kpi_card("All-Time Peak AQI", f"{max_aqi:.0f}", f"Observed on {st_daily.loc[st_daily['aqi_mean'].idxmax()]['date'].strftime('%d %b %Y')}", color_accent="#E5484D")
@@ -837,7 +837,7 @@ with tab5:
             access_date="October 2026",
             status="USED",
             fields="Hourly AQI columns, station identity and date",
-            details=f"{len(daily_df):,} valid station-days across {daily_df['canonical_station'].nunique()} stations (2021–2023); 18-hour validity threshold applied.",
+            details=f"{len(daily_df):,} valid station-days across {daily_df['canonical_station'].nunique()} stations (Latest Multi-Year Dataset); 18-hour validity threshold applied.",
         )
         render_source_card(
             name="Open-Meteo Historical Weather Archive",
@@ -901,26 +901,19 @@ with tab5:
 
     with st.expander(":material/terminal: How to Reproduce from a Fresh Clone", expanded=True):
         st.code("""
-# 1. Clone and install
 git clone <repo-url> && cd citypulse
 pip install -r requirements.txt
 
-# 2. Build cleaned dataset from raw CPCB + weather data
 make data
 
-# 3. Run EDA analysis and generate figures
 make eda
 
-# 4. Train models and evaluate on 2023 holdout
 make model
 
-# 5. Launch the app
 make app
 
-# Or run everything end-to-end:
 make all && make app
 
-# To refresh weather data from Open-Meteo:
 make refresh
         """, language="bash")
 
@@ -949,7 +942,7 @@ Rolling statistics use `shift(1)` to exclude the target day.
 3. **Sparse station network.** Only ~18 stations with sufficient data. Large areas between stations are unmonitored.
 4. **Weather from reanalysis grid.** Open-Meteo ERA5 is gridded (~25 km), not station-level. Micro-climate effects are missed.
 5. **No causal identification.** All correlations are observational. We cannot attribute AQI to a specific emission source.
-6. **Historical replay only.** This is NOT live data. Results reflect 2021–2023 conditions.
+6. **Historical replay only.** This is NOT live data. Results reflect latest available benchmark dataset conditions.
         """)
 
     with st.expander(f"{ICONS['science']} What Data Would Be Needed to Beat Persistence?"):

@@ -1,6 +1,10 @@
 {
+  "phase": "1a",
   "holdout_start": "2023-01-01",
   "holdout_end": "2023-12-31",
+  "n_features": 36,
+  "best_cv_model": "Ridge",
+  "ridge_alpha": 12.12,
   "persistence": {
     "MAE": 19.42,
     "RMSE": 30.38,
@@ -8,25 +12,68 @@
     "Skill_vs_Persistence_%": 0.0
   },
   "ridge": {
-    "MAE": 19.46,
-    "RMSE": 28.62,
-    "R2": 0.841,
-    "Skill_vs_Persistence_%": -0.2
+    "MAE": 19.58,
+    "RMSE": 28.65,
+    "R2": 0.84,
+    "Skill_vs_Persistence_%": -0.8,
+    "Bootstrap_CI_MAE_diff_95": [
+      -0.10752001021501635,
+      0.4262173972381644
+    ]
   },
   "gradient_boosting": {
-    "MAE": 20.33,
-    "RMSE": 29.97,
-    "R2": 0.825,
-    "Skill_vs_Persistence_%": -4.7
+    "MAE": 20.35,
+    "RMSE": 29.92,
+    "R2": 0.826,
+    "Skill_vs_Persistence_%": -4.8,
+    "Bootstrap_CI_MAE_diff_95": [
+      0.595814614570567,
+      1.2398025519934128
+    ]
   },
   "classifier": {
-    "Precision": 0.592,
-    "Recall": 0.877,
-    "F1": 0.707,
-    "ROC_AUC": 0.954,
+    "Precision": 0.593,
+    "Recall": 0.872,
+    "F1": 0.706,
+    "ROC_AUC": 0.955,
     "PR_AUC": 0.811,
-    "Brier_Score": 0.077
+    "Brier_Score": 0.076
   },
-  "interval_coverage_pct": 74.1,
-  "interval_nominal_pct": 80
+  "interval_coverage_pct": 74.9,
+  "interval_nominal_pct": 80,
+  "cv_agg": {
+    "Persistence": {
+      "MAE": 23.91,
+      "RMSE": 37.68,
+      "R2": 0.749,
+      "Skill_vs_Persistence_%": 0.0,
+      "fold_MAEs": [
+        31.86,
+        16.36,
+        23.11
+      ]
+    },
+    "Ridge": {
+      "MAE": 23.22,
+      "RMSE": 35.46,
+      "R2": 0.777,
+      "Skill_vs_Persistence_%": 2.9,
+      "fold_MAEs": [
+        30.08,
+        16.45,
+        22.76
+      ]
+    },
+    "HistGB_MSE": {
+      "MAE": 25.04,
+      "RMSE": 37.55,
+      "R2": 0.75,
+      "Skill_vs_Persistence_%": -4.7,
+      "fold_MAEs": [
+        31.66,
+        20.06,
+        23.17
+      ]
+    }
+  }
 }

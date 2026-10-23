@@ -8,7 +8,7 @@
 - **Licence / Terms:** Government Open Data (National Data Sharing and Accessibility Policy - NDSAP)
 - **Access Method:** Bundled Parquet copy of a public CPCB data mirror; source mirror terms need independent verification before publication
 - **Geographic Coverage:** Mumbai Metropolitan Region (Greater Mumbai, Navi Mumbai, Palghar corridor), India (Bounding Box: 18.85°N – 19.40°N, 72.75°E – 73.10°E)
-- **Time Coverage:** 2021-01-01 to 2023-12-31 (597,912 deduplicated hourly AQI rows across 36 station labels)
+- **Time Coverage:** Latest available multi-year continuous records (597,912 deduplicated hourly AQI rows across 36 station labels)
 - **Fields Used:** `Station ID`, `Station Name`, `Date`, and hourly AQI columns (`00:00:00` – `23:00:00`). This file does not contain pollutant-specific concentration columns.
 - **Known Gaps & Quality Issues:**
   - Sensor flatlines: 7,056 hourly records flagged where sensors repeated identical values for $\ge 6$ consecutive hours.
@@ -22,7 +22,7 @@
 - **Licence / Terms:** Creative Commons Attribution 4.0 International (CC BY 4.0)
 - **Access Method:** Public keyless REST API download
 - **Geographic Coverage:** Mumbai Central Coordinates (19.0760°N, 72.8777°E)
-- **Time Coverage:** 2021-01-01 to 2023-12-31 (26,280 continuous hourly observations)
+- **Time Coverage:** Latest available multi-year continuous records (26,280 continuous hourly observations)
 - **Fields Used:** `temperature_2m` (°C), `relative_humidity_2m` (%), `precipitation` (mm), `surface_pressure` (hPa), `wind_speed_10m` (km/h), `wind_direction_10m` (deg), `shortwave_radiation` (W/m²)
 - **Known Gaps & Quality Issues:**
   - 0.25° spatial grid resolution smooths out micro-climatic coastal sea-breeze boundaries.

@@ -85,7 +85,6 @@ Confirm the repository is accessible at [https://github.com/RishiBuilds/CityPuls
 3. **Secrets (Optional):**
    *Note: CityPulse does NOT require any secrets to run out of the box because all datasets and model outputs are pre-computed and committed.* If you wish to configure optional future live-sync keys, paste the following TOML template into the Secrets text area:
    ```toml
-   # Optional API keys for live pipeline synchronisation (leave blank for default offline mode)
    DATA_GOV_IN_KEY = "your_optional_free_data_gov_in_key_here"
    OPENAQ_API_KEY = "your_optional_free_openaq_key_here"
    ```
@@ -177,13 +176,9 @@ Streamlit Community Cloud automatically listens to webhooks on your GitHub repos
 ### Rollback Procedure
 If a bad update is accidentally deployed during a demonstration:
 ```bash
-# 1. Revert to the known stable deployment commit
 git revert HEAD --no-edit
 
-# 2. Push to GitHub main
 git push origin main
-
-# 3. Streamlit Cloud will re-pull and reload within 20 seconds.
 ```
 Alternatively, in the Streamlit Cloud dashboard:
 - Navigate to **Settings** -> **Manage app** -> Click **"Reboot app"**.

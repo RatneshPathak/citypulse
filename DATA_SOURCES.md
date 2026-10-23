@@ -13,7 +13,7 @@ Data sources audit improved · MD
 
 ## 1. Summary
 
-The reproducible 2021–2023 core uses bundled CPCB AQI, Open-Meteo weather, and a partial OpenStreetMap context table. CPCB bulletins and a later pollutant notebook are supplementary. The licence and terms for third-party mirrors remain to be verified before public submission.
+The reproducible latest core dataset uses bundled CPCB AQI, Open-Meteo weather, and a partial OpenStreetMap context table. CPCB bulletins and a later pollutant notebook are supplementary. The licence and terms for third-party mirrors remain to be verified before public submission.
 
 | Role                   | Source                         | Key needed          | Decision                     |
 | ---------------------- | ------------------------------ | ------------------- | ---------------------------- |
@@ -35,9 +35,9 @@ The reproducible 2021–2023 core uses bundled CPCB AQI, Open-Meteo weather, and
 
 | Source                                     | Provider / endpoint                                                 | Licence / terms                                                                                                        | Coverage                                                                                              | Role                                                          |
 | ------------------------------------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **CPCB CAAQMS historical station archive** | CPCB data, accessed through the open mirror `Vonter/india-cpcb-aqi` | Government of India open data. Mirror licence and redistribution terms **[verify]** | 38 source station names in Mumbai-area raw data; 36 canonical labels in the 2021–2023 processed data. Hourly AQI values, not pollutant concentrations. | Primary ground truth |
+| **CPCB CAAQMS historical station archive** | CPCB data, accessed through the open mirror `Vonter/india-cpcb-aqi` | Government of India open data. Mirror licence and redistribution terms **[verify]** | 38 source station names in Mumbai-area raw data; 36 canonical labels in the latest processed dataset. Hourly AQI values, not pollutant concentrations. | Primary ground truth |
 | **CPCB official daily AQI bulletins**      | CPCB / MoEFCC via `urbanemissionsinfo/AQI_bulletins`                | CC BY-SA 4.0 as stated by the repo **[verify]**. Share-alike applies to derivatives                                    | Daily AQI, prominent pollutant, station counts, Mumbai and Navi Mumbai, 2015–2025                     | Calibration and category validation only (not model features) |
-| **Open-Meteo Historical Weather API**      | `archive-api.open-meteo.com`                                        | Data: CC BY 4.0. API: free tier is **non-commercial use only**, attribution required                                   | Bundled core weather: 26,280 hourly rows for 2021–2023 at one Mumbai point | Meteorological drivers |
+| **Open-Meteo Historical Weather API**      | `archive-api.open-meteo.com`                                        | Data: CC BY 4.0. API: free tier is **non-commercial use only**, attribution required                                   | Bundled core weather: 26,280 hourly rows from the latest benchmark dataset at one Mumbai point | Meteorological drivers |
 | **OpenStreetMap via Overpass**             | `overpass-api.de`                                                   | ODbL 1.0, © OpenStreetMap contributors. Share-alike on derived databases                                               | Bundled static context table covers 18 stations | Partial land-use and road context |
 
 ### 2.2 Sources rejected
@@ -89,6 +89,7 @@ The reproducible 2021–2023 core uses bundled CPCB AQI, Open-Meteo weather, and
 - **Stagnation / inversion proxy:** high surface pressure + low wind + high humidity + night-time. This is a _proxy_, not a measured boundary-layer height. Describe it that way in all outputs.
 - **Time zone:** store everything in IST (UTC+5:30), or convert explicitly. Mixing UTC weather with IST station data silently shifts the diurnal cycle by 5.5 hours.
 - **Spatial limitation:** one weather point is applied to all stations. This ignores microclimate differences across the city.
+- **Phase 1b modelling:** CV experiments use prior-day weather, existing wind u/v components, and the station AQI expanding mean shifted by one day (minimum 14 past valid days). No boundary-layer height is measured or used, and Phase 1b adds no new data source.
 
 ### 3.3 Spatial / OSM features
 

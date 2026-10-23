@@ -66,7 +66,7 @@ def _get_demo_steps(stats: dict) -> list:
             "content": f"""
 **Mumbai's air quality challenge:**
 - {station_str} monitoring stations across Mumbai Metropolitan Region
-- {hourly_str} hourly AQI records (2021–2023)
+- {hourly_str} hourly AQI records (Latest Dataset)
 - Limited municipal resources: typically 5–10 inspection teams
 - **Decision challenge:** *Which zones need attention THIS WEEK?*
 
@@ -83,7 +83,7 @@ def _get_demo_steps(stats: dict) -> list:
             "content": f"""
 **100% free, open, verifiable data:**
 - ✅ CPCB/MPCB air quality ({hourly_str} hourly records)
-- ✅ Open-Meteo weather (ERA5 reanalysis, 2021–2023)
+- ✅ Open-Meteo weather (ERA5 reanalysis, Latest Dataset)
 - ✅ OpenStreetMap land use context (ODbL licence)
 - ❌ **NO** paid APIs, API keys, or synthetic data
 

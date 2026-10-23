@@ -1,0 +1,723 @@
+{
+  "features": [
+    "lag_1_aqi",
+    "lag_2_aqi",
+    "lag_3_aqi",
+    "lag_7_aqi",
+    "rolling_mean_7d",
+    "rolling_std_7d",
+    "rolling_min_7d",
+    "rolling_max_7d",
+    "trend_7d",
+    "prior_day_temp_mean",
+    "prior_day_humidity_mean",
+    "prior_day_wind_speed_mean",
+    "prior_day_wind_u_mean",
+    "prior_day_wind_v_mean",
+    "prior_day_rain_total_mm",
+    "prior_day_pressure_mean",
+    "prior_day_stagnation_index",
+    "doy_sin",
+    "doy_cos",
+    "dow_sin",
+    "dow_cos",
+    "is_weekend",
+    "is_monsoon",
+    "is_winter",
+    "is_diwali_window",
+    "is_coastal",
+    "latitude",
+    "longitude",
+    "aqi_delta_1d",
+    "aqi_delta_7d",
+    "station_expanding_mean_aqi"
+  ],
+  "retained_groups": [
+    "recent_change",
+    "station_history"
+  ],
+  "candidates": [
+    "Persistence",
+    "Ridge",
+    "HistGB_L1",
+    "LightGBM_L1",
+    "LightGBM_Huber",
+    "Ridge_Residual",
+    "HistGB_L1_Residual",
+    "LightGBM_L1_Residual",
+    "LightGBM_Huber_Residual",
+    "PerStation_LightGBM_L1"
+  ],
+  "config_count": 10,
+  "lightgbm_config_count": 5,
+  "winner": "LightGBM_L1_Residual",
+  "pooled": [
+    {
+      "model": "Persistence",
+      "n": 6418,
+      "MAE": 23.915,
+      "skill_pct": 0.0,
+      "date_bootstrap_CI_MAE_diff": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "Ridge",
+      "n": 6418,
+      "MAE": 23.208,
+      "skill_pct": 2.96,
+      "date_bootstrap_CI_MAE_diff": [
+        -1.513,
+        0.104
+      ]
+    },
+    {
+      "model": "HistGB_L1",
+      "n": 6418,
+      "MAE": 24.309,
+      "skill_pct": -1.65,
+      "date_bootstrap_CI_MAE_diff": [
+        -0.626,
+        1.423
+      ]
+    },
+    {
+      "model": "LightGBM_L1",
+      "n": 6418,
+      "MAE": 23.396,
+      "skill_pct": 2.17,
+      "date_bootstrap_CI_MAE_diff": [
+        -1.374,
+        0.324
+      ]
+    },
+    {
+      "model": "LightGBM_Huber",
+      "n": 6418,
+      "MAE": 58.301,
+      "skill_pct": -143.79,
+      "date_bootstrap_CI_MAE_diff": [
+        31.325,
+        37.559
+      ]
+    },
+    {
+      "model": "Ridge_Residual",
+      "n": 6418,
+      "MAE": 23.156,
+      "skill_pct": 3.17,
+      "date_bootstrap_CI_MAE_diff": [
+        -1.54,
+        0.041
+      ]
+    },
+    {
+      "model": "HistGB_L1_Residual",
+      "n": 6418,
+      "MAE": 23.429,
+      "skill_pct": 2.03,
+      "date_bootstrap_CI_MAE_diff": [
+        -1.352,
+        0.316
+      ]
+    },
+    {
+      "model": "LightGBM_L1_Residual",
+      "n": 6418,
+      "MAE": 22.989,
+      "skill_pct": 3.87,
+      "date_bootstrap_CI_MAE_diff": [
+        -1.643,
+        -0.234
+      ]
+    },
+    {
+      "model": "LightGBM_Huber_Residual",
+      "n": 6418,
+      "MAE": 23.67,
+      "skill_pct": 1.02,
+      "date_bootstrap_CI_MAE_diff": [
+        -0.315,
+        -0.174
+      ]
+    },
+    {
+      "model": "PerStation_LightGBM_L1",
+      "n": 6418,
+      "MAE": 26.256,
+      "skill_pct": -9.79,
+      "date_bootstrap_CI_MAE_diff": [
+        1.285,
+        3.394
+      ]
+    }
+  ],
+  "folds": [
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "Persistence",
+      "n": 2162,
+      "MAE": 31.861,
+      "skill_pct": 0.0
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "Persistence",
+      "n": 2037,
+      "MAE": 16.361,
+      "skill_pct": 0.0
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "Persistence",
+      "n": 2219,
+      "MAE": 23.106,
+      "skill_pct": 0.0
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "Ridge",
+      "n": 2162,
+      "MAE": 30.009,
+      "skill_pct": 5.82
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "Ridge",
+      "n": 2037,
+      "MAE": 16.267,
+      "skill_pct": 0.57
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "Ridge",
+      "n": 2219,
+      "MAE": 22.953,
+      "skill_pct": 0.66
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "HistGB_L1",
+      "n": 2162,
+      "MAE": 31.474,
+      "skill_pct": 1.22
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "HistGB_L1",
+      "n": 2037,
+      "MAE": 18.266,
+      "skill_pct": -11.64
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "HistGB_L1",
+      "n": 2219,
+      "MAE": 22.877,
+      "skill_pct": 0.99
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "LightGBM_L1",
+      "n": 2162,
+      "MAE": 30.317,
+      "skill_pct": 4.85
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "LightGBM_L1",
+      "n": 2037,
+      "MAE": 16.871,
+      "skill_pct": -3.11
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "LightGBM_L1",
+      "n": 2219,
+      "MAE": 22.642,
+      "skill_pct": 2.01
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "LightGBM_Huber",
+      "n": 2162,
+      "MAE": 53.031,
+      "skill_pct": -66.44
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "LightGBM_Huber",
+      "n": 2037,
+      "MAE": 58.16,
+      "skill_pct": -255.48
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "LightGBM_Huber",
+      "n": 2219,
+      "MAE": 63.567,
+      "skill_pct": -175.1
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "Ridge_Residual",
+      "n": 2162,
+      "MAE": 29.897,
+      "skill_pct": 6.16
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "Ridge_Residual",
+      "n": 2037,
+      "MAE": 16.259,
+      "skill_pct": 0.62
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "Ridge_Residual",
+      "n": 2219,
+      "MAE": 22.918,
+      "skill_pct": 0.81
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "HistGB_L1_Residual",
+      "n": 2162,
+      "MAE": 30.582,
+      "skill_pct": 4.02
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "HistGB_L1_Residual",
+      "n": 2037,
+      "MAE": 17.279,
+      "skill_pct": -5.61
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "HistGB_L1_Residual",
+      "n": 2219,
+      "MAE": 22.104,
+      "skill_pct": 4.34
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "LightGBM_L1_Residual",
+      "n": 2162,
+      "MAE": 29.752,
+      "skill_pct": 6.62
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "LightGBM_L1_Residual",
+      "n": 2037,
+      "MAE": 16.525,
+      "skill_pct": -1.0
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "LightGBM_L1_Residual",
+      "n": 2219,
+      "MAE": 22.334,
+      "skill_pct": 3.34
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "LightGBM_Huber_Residual",
+      "n": 2162,
+      "MAE": 31.469,
+      "skill_pct": 1.23
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "LightGBM_Huber_Residual",
+      "n": 2037,
+      "MAE": 16.224,
+      "skill_pct": 0.84
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "LightGBM_Huber_Residual",
+      "n": 2219,
+      "MAE": 22.908,
+      "skill_pct": 0.86
+    },
+    {
+      "fold": "Fold 1 (test 2022-Q1/Q2)",
+      "model": "PerStation_LightGBM_L1",
+      "n": 2162,
+      "MAE": 32.761,
+      "skill_pct": -2.82
+    },
+    {
+      "fold": "Fold 2 (test 2022-Q2/Q3)",
+      "model": "PerStation_LightGBM_L1",
+      "n": 2037,
+      "MAE": 18.411,
+      "skill_pct": -12.53
+    },
+    {
+      "fold": "Fold 3 (test 2022-Q3/Q4)",
+      "model": "PerStation_LightGBM_L1",
+      "n": 2219,
+      "MAE": 27.121,
+      "skill_pct": -17.37
+    }
+  ],
+  "seasons": [
+    {
+      "season": "monsoon",
+      "model": "Persistence",
+      "n": 1988,
+      "MAE": 12.467,
+      "skill_pct": 0.0
+    },
+    {
+      "season": "post_monsoon",
+      "model": "Persistence",
+      "n": 1158,
+      "MAE": 24.461,
+      "skill_pct": 0.0
+    },
+    {
+      "season": "summer",
+      "model": "Persistence",
+      "n": 1661,
+      "MAE": 26.827,
+      "skill_pct": 0.0
+    },
+    {
+      "season": "winter",
+      "model": "Persistence",
+      "n": 1611,
+      "MAE": 34.646,
+      "skill_pct": 0.0
+    },
+    {
+      "season": "monsoon",
+      "model": "Ridge",
+      "n": 1988,
+      "MAE": 12.747,
+      "skill_pct": -2.25
+    },
+    {
+      "season": "post_monsoon",
+      "model": "Ridge",
+      "n": 1158,
+      "MAE": 23.722,
+      "skill_pct": 3.02
+    },
+    {
+      "season": "summer",
+      "model": "Ridge",
+      "n": 1661,
+      "MAE": 24.62,
+      "skill_pct": 8.23
+    },
+    {
+      "season": "winter",
+      "model": "Ridge",
+      "n": 1611,
+      "MAE": 34.292,
+      "skill_pct": 1.02
+    },
+    {
+      "season": "monsoon",
+      "model": "HistGB_L1",
+      "n": 1988,
+      "MAE": 13.511,
+      "skill_pct": -8.37
+    },
+    {
+      "season": "post_monsoon",
+      "model": "HistGB_L1",
+      "n": 1158,
+      "MAE": 23.428,
+      "skill_pct": 4.22
+    },
+    {
+      "season": "summer",
+      "model": "HistGB_L1",
+      "n": 1661,
+      "MAE": 26.91,
+      "skill_pct": -0.31
+    },
+    {
+      "season": "winter",
+      "model": "HistGB_L1",
+      "n": 1611,
+      "MAE": 35.587,
+      "skill_pct": -2.72
+    },
+    {
+      "season": "monsoon",
+      "model": "LightGBM_L1",
+      "n": 1988,
+      "MAE": 12.82,
+      "skill_pct": -2.83
+    },
+    {
+      "season": "post_monsoon",
+      "model": "LightGBM_L1",
+      "n": 1158,
+      "MAE": 23.321,
+      "skill_pct": 4.66
+    },
+    {
+      "season": "summer",
+      "model": "LightGBM_L1",
+      "n": 1661,
+      "MAE": 25.348,
+      "skill_pct": 5.51
+    },
+    {
+      "season": "winter",
+      "model": "LightGBM_L1",
+      "n": 1611,
+      "MAE": 34.487,
+      "skill_pct": 0.46
+    },
+    {
+      "season": "monsoon",
+      "model": "LightGBM_Huber",
+      "n": 1988,
+      "MAE": 60.512,
+      "skill_pct": -385.38
+    },
+    {
+      "season": "post_monsoon",
+      "model": "LightGBM_Huber",
+      "n": 1158,
+      "MAE": 54.932,
+      "skill_pct": -124.57
+    },
+    {
+      "season": "summer",
+      "model": "LightGBM_Huber",
+      "n": 1661,
+      "MAE": 45.312,
+      "skill_pct": -68.9
+    },
+    {
+      "season": "winter",
+      "model": "LightGBM_Huber",
+      "n": 1611,
+      "MAE": 71.388,
+      "skill_pct": -106.05
+    },
+    {
+      "season": "monsoon",
+      "model": "Ridge_Residual",
+      "n": 1988,
+      "MAE": 12.73,
+      "skill_pct": -2.11
+    },
+    {
+      "season": "post_monsoon",
+      "model": "Ridge_Residual",
+      "n": 1158,
+      "MAE": 23.661,
+      "skill_pct": 3.27
+    },
+    {
+      "season": "summer",
+      "model": "Ridge_Residual",
+      "n": 1661,
+      "MAE": 24.603,
+      "skill_pct": 8.29
+    },
+    {
+      "season": "winter",
+      "model": "Ridge_Residual",
+      "n": 1611,
+      "MAE": 34.165,
+      "skill_pct": 1.39
+    },
+    {
+      "season": "monsoon",
+      "model": "HistGB_L1_Residual",
+      "n": 1988,
+      "MAE": 13.157,
+      "skill_pct": -5.54
+    },
+    {
+      "season": "post_monsoon",
+      "model": "HistGB_L1_Residual",
+      "n": 1158,
+      "MAE": 23.373,
+      "skill_pct": 4.45
+    },
+    {
+      "season": "summer",
+      "model": "HistGB_L1_Residual",
+      "n": 1661,
+      "MAE": 25.557,
+      "skill_pct": 4.74
+    },
+    {
+      "season": "winter",
+      "model": "HistGB_L1_Residual",
+      "n": 1611,
+      "MAE": 33.95,
+      "skill_pct": 2.01
+    },
+    {
+      "season": "monsoon",
+      "model": "LightGBM_L1_Residual",
+      "n": 1988,
+      "MAE": 12.512,
+      "skill_pct": -0.36
+    },
+    {
+      "season": "post_monsoon",
+      "model": "LightGBM_L1_Residual",
+      "n": 1158,
+      "MAE": 23.561,
+      "skill_pct": 3.68
+    },
+    {
+      "season": "summer",
+      "model": "LightGBM_L1_Residual",
+      "n": 1661,
+      "MAE": 25.14,
+      "skill_pct": 6.29
+    },
+    {
+      "season": "winter",
+      "model": "LightGBM_L1_Residual",
+      "n": 1611,
+      "MAE": 33.288,
+      "skill_pct": 3.92
+    },
+    {
+      "season": "monsoon",
+      "model": "LightGBM_Huber_Residual",
+      "n": 1988,
+      "MAE": 12.339,
+      "skill_pct": 1.03
+    },
+    {
+      "season": "post_monsoon",
+      "model": "LightGBM_Huber_Residual",
+      "n": 1158,
+      "MAE": 24.227,
+      "skill_pct": 0.95
+    },
+    {
+      "season": "summer",
+      "model": "LightGBM_Huber_Residual",
+      "n": 1661,
+      "MAE": 26.549,
+      "skill_pct": 1.04
+    },
+    {
+      "season": "winter",
+      "model": "LightGBM_Huber_Residual",
+      "n": 1611,
+      "MAE": 34.286,
+      "skill_pct": 1.04
+    },
+    {
+      "season": "monsoon",
+      "model": "PerStation_LightGBM_L1",
+      "n": 1988,
+      "MAE": 14.765,
+      "skill_pct": -18.43
+    },
+    {
+      "season": "post_monsoon",
+      "model": "PerStation_LightGBM_L1",
+      "n": 1158,
+      "MAE": 26.464,
+      "skill_pct": -8.19
+    },
+    {
+      "season": "summer",
+      "model": "PerStation_LightGBM_L1",
+      "n": 1661,
+      "MAE": 27.489,
+      "skill_pct": -2.47
+    },
+    {
+      "season": "winter",
+      "model": "PerStation_LightGBM_L1",
+      "n": 1611,
+      "MAE": 39.017,
+      "skill_pct": -12.62
+    }
+  ],
+  "params_by_fold": {
+    "Persistence": [
+      {},
+      {},
+      {}
+    ],
+    "Ridge": [
+      {
+        "alpha": 0.1
+      },
+      {
+        "alpha": 0.1
+      },
+      {
+        "alpha": 0.1
+      }
+    ],
+    "HistGB_L1": [
+      {},
+      {},
+      {}
+    ],
+    "LightGBM_L1": [
+      {},
+      {},
+      {}
+    ],
+    "LightGBM_Huber": [
+      {},
+      {},
+      {}
+    ],
+    "Ridge_Residual": [
+      {
+        "alpha": 100.0
+      },
+      {
+        "alpha": 100.0
+      },
+      {
+        "alpha": 100.0
+      }
+    ],
+    "HistGB_L1_Residual": [
+      {},
+      {},
+      {}
+    ],
+    "LightGBM_L1_Residual": [
+      {},
+      {},
+      {}
+    ],
+    "LightGBM_Huber_Residual": [
+      {},
+      {},
+      {}
+    ],
+    "PerStation_LightGBM_L1": [
+      {
+        "station_models": 20,
+        "fallback": "pooled LightGBM-L1"
+      },
+      {
+        "station_models": 23,
+        "fallback": "pooled LightGBM-L1"
+      },
+      {
+        "station_models": 22,
+        "fallback": "pooled LightGBM-L1"
+      }
+    ]
+  }
+}
