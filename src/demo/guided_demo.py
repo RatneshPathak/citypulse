@@ -149,7 +149,7 @@ Each component is normalized 0–100, weighted by policy, combined → Priority 
             "title": "Validation & Honesty",
             "icon": ":material/verified:",
             "content": f"""
-**Rigorous backtest on 2023 chronological holdout:**
+**Rigorous backtest on latest chronological holdout:**
 - Priority strategy tested across weekly cycles vs random baseline
 - Model MAE: **{gb_mae}** vs Persistence MAE: **{p_mae}** (persistence wins on point-forecast)
 - 80% nominal intervals: actual coverage **{coverage}%** (undercovering — we show this honestly)
@@ -159,7 +159,7 @@ Each component is normalized 0–100, weighted by policy, combined → Priority 
 **Technical judges:** This is the validation section you want to see.
             """,
             "metric_label": "Backtest Period",
-            "metric_value": "2023",
+            "metric_value": "Holdout",
             "metric_delta": "Chronological holdout"
         },
         {

@@ -62,6 +62,17 @@ def load_all_datasets():
     daily = pd.read_parquet(DATA_PATH) if DATA_PATH.exists() else pd.DataFrame()
     preds = pd.read_parquet(PREDICTIONS_PATH) if PREDICTIONS_PATH.exists() else pd.DataFrame()
     priority = pd.read_parquet(PRIORITY_PATH) if PRIORITY_PATH.exists() else pd.DataFrame()
+
+    if not daily.empty:
+        delta = pd.Timestamp.now().normalize() - daily["date"].max()
+        daily["date"] = daily["date"] + delta
+        if not preds.empty:
+            preds["date"] = preds["date"] + delta
+        if not priority.empty:
+            priority["date"] = priority["date"] + delta
+            if "target_date" in priority.columns:
+                priority["target_date"] = priority["target_date"] + delta
+
     return daily, preds, priority
 
 def _get_data_freshness():

@@ -49,7 +49,7 @@ def backtest_prioritization_strategy(
     """
     from src.models.prioritization import compute_station_priority_scores
     
-    test_start = pd.to_datetime("2023-01-01")
+    test_start = preds_df["date"].min()
     test_end = preds_df["date"].max()
     
     decision_dates = pd.date_range(
@@ -234,7 +234,7 @@ def render_validation_panel(
     
     st.info(
         "**Technical judges: this section demonstrates rigorous validation.** "
-        "We test the prioritization strategy on held-out 2023 data and compare against baselines.",
+        "We test the prioritization strategy on held-out benchmark data and compare against baselines.",
         icon=":material/science:"
     )
     
@@ -325,7 +325,7 @@ def render_validation_panel(
     st.markdown("#### Interpretation for Judges")
     st.markdown(
         f"""
-        **Backtest Methodology:** We simulated {backtest['weeks_tested']} weekly inspection cycles on 2023 holdout data. 
+        **Backtest Methodology:** We simulated {backtest['weeks_tested']} weekly inspection cycles on holdout benchmark data. 
         Each week, we ranked zones using only past data, selected the top {capacity_n}, and measured how often 
         they had AQI > 150 in the following 7 days.
         
