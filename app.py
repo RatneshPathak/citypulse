@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+import components as ui_components
 from components import (
     render_action_dossier,
     render_action_strip,
@@ -22,7 +23,6 @@ from components import (
     render_footer,
     render_header,
     render_kpi_card,
-    render_navigation_guide,
     render_source_card,
     render_takeaway,
 )
@@ -238,7 +238,8 @@ citizen_mode = st.sidebar.toggle(
     help="Switch to simplified public view with health guidance"
 )
 
-render_navigation_guide()
+if hasattr(ui_components, "render_navigation_guide"):
+    ui_components.render_navigation_guide()
 
 tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_case, tab_citizen, tab_demo, tab5 = st.tabs([
     f"{ICONS['tab_act']} 1. Priority Rankings",
