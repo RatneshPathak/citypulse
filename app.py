@@ -22,6 +22,7 @@ from components import (
     render_footer,
     render_header,
     render_kpi_card,
+    render_navigation_guide,
     render_source_card,
     render_takeaway,
 )
@@ -210,8 +211,8 @@ target_date = pd.to_datetime(dyn_priority["target_date"].iloc[0]).strftime("%d %
 data_start = daily_df["date"].min().strftime("%d %b %Y")
 data_end = daily_df["date"].max().strftime("%d %b %Y")
 
-render_compact_banner()
 render_header(selected_station, decision_date, total_stations=daily_df["canonical_station"].nunique())
+render_compact_banner()
 
 freshness_text = f"**Data range:** {data_start} to {data_end}"
 if "file_updated" in data_freshness:
@@ -236,6 +237,8 @@ citizen_mode = st.sidebar.toggle(
     value=False,
     help="Switch to simplified public view with health guidance"
 )
+
+render_navigation_guide()
 
 tab1, tab_whatif, tab_route, tab_briefing, tab2, tab3, tab4, tab_valid, tab_case, tab_citizen, tab_demo, tab5 = st.tabs([
     f"{ICONS['tab_act']} 1. Priority Rankings",
