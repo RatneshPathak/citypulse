@@ -21,6 +21,7 @@ from config import EVENT_NAME, TEAM_MEMBERS, DATA_ATTRIBUTION, DISCLAIMER_TEXT, 
 import charts
 import components
 import theme
+from src.demo.replay_dates import shift_date_columns
 
 class TestDeploymentSmoke(unittest.TestCase):
 
@@ -113,6 +114,17 @@ class TestDeploymentSmoke(unittest.TestCase):
         """Verify app.py and streamlit_app.py compile without syntax errors."""
         py_compile.compile("app.py", doraise=True)
         py_compile.compile("streamlit_app.py", doraise=True)
+
+    def test_07_priority_replay_accepts_arrow_string_dates(self):
+        priority = pd.read_parquet(self.priority_path).head(2)
+        priority["date"] = priority["date"].astype("string[pyarrow]")
+        priority["target_date"] = priority["target_date"].astype("string[pyarrow]")
+        before = pd.to_datetime(priority["date"]).copy()
+        delta = pd.Timedelta(days=3)
+        shift_date_columns(priority, ("date", "target_date"), delta)
+        self.assertTrue(pd.api.types.is_datetime64_any_dtype(priority["date"]))
+        self.assertTrue(pd.api.types.is_datetime64_any_dtype(priority["target_date"]))
+        pd.testing.assert_series_equal(priority["date"], before + delta)
 
 if __name__ == "__main__":
     unittest.main()

@@ -42,6 +42,7 @@ COLORS.setdefault("background", COLORS["bg"])
 
 from src.citizen.citizen_view import render_citizen_mode, render_aqi_card_export
 from src.demo.guided_demo import render_guided_demo
+from src.demo.replay_dates import shift_date_columns
 
 st.set_page_config(
     page_title="CityPulse: Mumbai — Air Quality Prioritisation",
@@ -64,14 +65,12 @@ def load_all_datasets():
     priority = pd.read_parquet(PRIORITY_PATH) if PRIORITY_PATH.exists() else pd.DataFrame()
 
     if not daily.empty:
-        delta = pd.Timestamp.now().normalize() - daily["date"].max()
-        daily["date"] = daily["date"] + delta
+        delta = pd.Timestamp.now().normalize() - pd.to_datetime(daily["date"], errors="raise").max()
+        shift_date_columns(daily, ("date",), delta)
         if not preds.empty:
-            preds["date"] = preds["date"] + delta
+            shift_date_columns(preds, ("date",), delta)
         if not priority.empty:
-            priority["date"] = priority["date"] + delta
-            if "target_date" in priority.columns:
-                priority["target_date"] = priority["target_date"] + delta
+            shift_date_columns(priority, ("date", "target_date"), delta)
 
     return daily, preds, priority
 
