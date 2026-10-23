@@ -1,146 +1,353 @@
-# CityPulse: Mumbai
+<p align="center">
+  <img src="assets/banner.svg" alt="CityPulse: Mumbai - air quality, ranked and explained" width="100%">
+</p>
 
-Air quality decision-support prototype for the Mumbai Metropolitan Region. CityPulse ranks monitoring zones by priority using public CPCB air quality and Open-Meteo weather data, and provides explainable, rule-based action dossiers showing why each zone ranked where it did.
+<p align="center">
+  <img alt="Status" src="https://img.shields.io/badge/status-prototype-orange">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue">
+  <img alt="Streamlit" src="https://img.shields.io/badge/app-Streamlit-ff4b4b">
+  <img alt="Data" src="https://img.shields.io/badge/data-CPCB%20%2B%20Open--Meteo-1b7f8c">
+  <img alt="Licence" src="https://img.shields.io/badge/licence-MIT-green">
+</p>
 
-[Live demo](https://citypulse-mumbai.streamlit.app) | [Evaluation report](reports/EVALUATION.md) | [CV evaluation report](reports/phase1b_cv.md) | [Deployment guide](DEPLOYMENT.md) | [Data sources](DATA_SOURCES.md)
+<p align="center">
+  <a href="https://citypulse-mumbai.streamlit.app"><b>Live demo</b></a> &nbsp;|&nbsp;
+  <a href="#results-at-a-glance">Results</a> &nbsp;|&nbsp;
+  <a href="#quick-start">Quick start</a> &nbsp;|&nbsp;
+  <a href="reports/EVALUATION.md">Evaluation report</a> &nbsp;|&nbsp;
+  <a href="reports/phase1b_cv.md">CV report</a> &nbsp;|&nbsp;
+  <a href="DEPLOYMENT.md">Deployment</a> &nbsp;|&nbsp;
+  <a href="DATA_SOURCES.md">Data sources</a>
+</p>
 
+CityPulse ranks Mumbai Metropolitan Region monitoring zones by inspection priority, using public CPCB air quality and Open-Meteo weather data. Every ranking comes with its reasons: a score breakdown for each zone and rule-based action dossiers.
+
+> [!NOTE]
 > **Status: prototype.** CityPulse supports municipal planning and prioritisation. It is not an official warning system and does not replace statutory monitoring by the CPCB or MPCB.
 
-## Overview
-
-**Intended user:** a municipal environment or public health officer (BMC / MPCB) allocating limited inspection, road sweeping, and dust-suppression resources.
-
-**Decision supported:** which zones should be prioritised this week, given an inspection capacity of N zones?
-
-**Data:** 597,912 deduplicated hourly AQI records from 36 station labels and 26,280 hourly weather observations, covering the latest multi-year baseline dataset.
-
 ---
 
-## Complete Feature Suite
+## At a glance
 
-CityPulse delivers a comprehensive 12-module operational console designed for rapid administrative triage:
+| Who it is for                                                                                                                         | Decision it supports                                                                 | Data                                                                                                                                         |
+| :------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| Municipal environment and public health officers (BMC / MPCB) with limited inspection teams, road sweepers and dust-suppression units | Which zones should be prioritised this week, given a capacity budget of **N** zones? | **597,912** deduplicated hourly AQI records, **36** station labels (**30** active), **26,280** hourly weather observations (ERA5), 2021-2023 |
 
-### 1. Decision & Operational Triage
-- **Priority Ranking & Triage (Tab 1):** Five-component composite score (exposure, persistence, trend, forecast, vulnerability) with dynamic top-N capacity flags and geospatial ward mapping.
-- **Action Dossiers (Tab 1):** Context-aware, rule-based municipal interventions (e.g., mechanical sweeping, wet-suppression, anti-smog guns) mapped to local environment types with explicit operational caveats.
-- **Why-This-Station Waterfall Explainer (Tab 1):** Stacked contribution charts showing point-by-point score decomposition across all five criteria for full decision auditability.
-- **What-If Policy Simulator (Tab 2):** Real-time interactive weight re-balancing with a **500-run Monte Carlo rank stability analysis** and perturbation heatmaps to test policy sensitivity.
-- **Inspection Route Planner (Tab 3):** Haversine-based nearest-neighbour TSP tour optimizer generating stop-by-stop schedules, leg distances, and cumulative travel budgets for field crews.
-- **Printable Briefing Export (Tab 4):** One-click executive summary generator exporting clean, print-optimised HTML reports (and optional PDF) for weekly administrative briefings.
+<details>
+<summary><b>How a ranking is produced</b> (click to expand)</summary>
 
-### 2. Empirical Insights & Environmental Diagnostics
-- **Historical Patterns (Tab 5):** Empirical analyses of diurnal traffic peaks, spatial station heterogeneity, and the dramatic monsoon washout vs winter inversion cycle.
-- **Meteorological Coupling (Tab 6):** ERA5 surface reanalysis diagnostics exploring wind speed/direction correlations, sea-breeze ventilation fronts, and atmospheric stagnation risks.
-- **Case Studies & Extreme Episodes (Tab 9):** Deep-dive empirical reviews of multi-day Diwali episode elevations, winter trapping episodes, and coastal vs inland transport gradients.
-
-### 3. Model Evaluation, Validation & Trust
-- **Forecast Performance (Tab 7):** Comprehensive point and probabilistic evaluation against persistent baselines, including parity plots, calibration curves, and PR-AUC/ROC-AUC curves.
-- **Honest Validation & Backtest (Tab 8):** Simulation of weekly inspection cycles demonstrating double-digit lift over random allocation, paired with empirical coverage tracking for 80% prediction intervals.
-- **Audit & Governance (Tab 12):** Public data provenance cards, licensing audits (CPCB NDSAP, Open-Meteo CC BY 4.0, OSM ODbL), and transparent disclosures of model limitations.
-
-### 4. Citizen Engagement & Pitch Walkthrough
-- **Citizen View (Tab 10):** Public-friendly view with official CPCB health guidance, sensitive group advisories, 7-day outlooks, and downloadable shareable social cards.
-- **Guided Demo Walkthrough (Tab 11):** 8-step interactive presentation pitch mode with metric counters and auto-advance capability designed for hackathon judges and stakeholders.
-
----
-
-## Key Empirical Findings
-
-- **Seasonal Dynamics:** Mean station-day AQI drops to 63.9 during the monsoon washout (June–September) and climbs to 185.0 during winter inversions (December–February).
-- **Spatial Heterogeneity:** Among stations with at least 150 valid days, Mazgaon averages 153.0 AQI while Borivali East averages 88.6 AQI.
-- **Wind Coupling:** Wind speed and daily AQI correlate at $r = -0.25$. AQI above 200 occurs on 16.2% of station-days in the lowest wind quintile versus 5.8% in the highest.
-
-Full analysis: [`reports/eda_findings.md`](reports/eda_findings.md).
-
----
-
-## Machine Learning & Model Validation
-
-CityPulse uses an expanding date-based evaluation strategy to prevent target leakage and simulate real-world municipal deployment:
-
-1. **Phase 1b Cross-Validation:** Three expanding date-based training folds with inner-split Ridge tuning and 10 candidate architectures. The winning candidate is **LightGBM L1 on Persistence Residuals** (`LightGBM_L1_Residual`), evaluated with paired date-block bootstrap 95% confidence intervals (2,000 resamples). Full results in [`reports/phase1b_cv.md`](reports/phase1b_cv.md).
-2. **Holdout Benchmark:** Evaluated on the chronological holdout window:
-
-**Next-Day Mean AQI Benchmark**
-
-| Model                       |       MAE |      RMSE |       R^2 | Skill vs Persistence |
-| :-------------------------- | --------: | --------: | --------: | -------------------: |
-| Persistence (t-1)           | **19.42** |     30.38 |     0.820 |                 0.0% |
-| Seasonal naive (t-7)        |     34.57 |     50.01 |     0.513 |               -78.0% |
-| Ridge regression            |     19.58 | **28.65** | **0.840** |                -0.8% |
-| Histogram gradient boosting |     20.35 |     29.92 |     0.826 |                -4.8% |
-
-**Severe Episode Risk Classification (AQI > 200)**
-
-| Model             | Precision |    Recall |        F1 |    PR-AUC |   ROC-AUC |     Brier |
-| :---------------- | --------: | --------: | --------: | --------: | --------: | --------: |
-| State persistence | **0.716** |     0.717 | **0.717** |       N/A |       N/A |       N/A |
-| Gradient boosting |     0.593 | **0.872** |     0.706 | **0.811** | **0.955** | **0.076** |
-
-**Honest Takeaway:** Daily ambient AQI is strongly autoregressive. While point models remain competitive with persistence, the machine learning models provide significant value in **probabilistic risk screening (PR-AUC 0.811, Recall 0.872)** and in driving the multi-criteria prioritization policy.
-
----
-
-## Priority Score Formulation
-
-The score (0–100) is a transparent, explainable weighted average across five normalised operational criteria:
-
-$$\text{Priority Score} = \frac{w_{\text{exp}} S_{\text{exp}} + w_{\text{pers}} S_{\text{pers}} + w_{\text{trend}} S_{\text{trend}} + w_{\text{fore}} S_{\text{fore}} + w_{\text{gap}} S_{\text{gap}}}{\sum w}$$
-
-- **$S_{\text{exp}}$ (Exposure):** Recent 7-day cumulative mean AQI relative to national ambient standards.
-- **$S_{\text{pers}}$ (Persistence):** Frequency of Moderate/Poor threshold exceedances (AQI > 150) in the past week.
-- **$S_{\text{trend}}$ (Acceleration):** 7-day rate of worsening (today vs rolling baseline).
-- **$S_{\text{fore}}$ (Forecast Risk):** Calibrated next-day probability of an AQI > 200 event.
-- **$S_{\text{gap}}$ (Vulnerability / Gap):** Transit corridor siting, micro-environment vulnerability, and regional monitoring sparsity.
-
----
-
-## Getting Started
-
-Requires Python 3.10 or newer. No external API keys or subscriptions are required.
-
-```bash
-# Clone the repository
-git clone https://github.com/RishiBuilds/CityPulse.git
-cd CityPulse
-
-# Set up virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run full test suite (36 unit & integration tests)
-python -m pytest
-
-# Launch the Streamlit dashboard
-streamlit run app.py
+```mermaid
+flowchart LR
+    A["CPCB / MPCB hourly AQI<br/>+ Open-Meteo weather"] --> B["Clean, validate,<br/>aggregate to daily"]
+    B --> C["Backward-looking<br/>features"]
+    C --> D["Next-day risk<br/>probability (AQI > 200)"]
+    B --> E["Exposure, persistence,<br/>trend, vulnerability"]
+    D --> F["Five-part<br/>priority score"]
+    E --> F
+    F --> G["Top-N zones flagged"]
+    G --> H["Score breakdown<br/>+ action dossiers"]
+    G --> I["Route plan<br/>+ weekly briefing"]
 ```
 
-The application runs locally at `http://localhost:8501`. Detailed hosting and container instructions for Streamlit Community Cloud and Hugging Face Spaces are provided in [DEPLOYMENT.md](DEPLOYMENT.md).
+</details>
 
 ---
 
-## Known Limitations
+## Results at a glance
 
-- **Autoregressive Baseline:** Ambient AQI is heavily driven by previous-day state. Beating persistence on pure MAE citywide would require live satellite AOD plumes, hyper-local sensor meshes (< 500m), real-time traffic telemetry, and active construction registers.
-- **Spatial Coverage:** Regulatory CAAQMS stations cluster near Western and Central Express highways; unmonitored wards require spatial proxy interpolation.
-- **Point Telemetry:** Station readings represent localized air basins and do not imply whole-ward homogeneity.
-- **Health Proxy:** Impact analyses reflect exposure concentration proxies, not clinical morbidity registries.
+| What we measured                 | Result                                     | Reading                                                                                    |
+| :------------------------------- | :----------------------------------------- | :----------------------------------------------------------------------------------------- |
+| Next-day AQI error, 2023 holdout | MAE **18.83** vs **19.42** for persistence | 3.0% better, 95% CI [-1.07, -0.13]. Small but real. Beats persistence at 23 of 29 stations |
+| Severe days (AQI > 200)          | Recall **0.870**, PR-AUC **0.812**         | Finds many more severe days than persistence (0.717), with more false alarms               |
+| Weekly inspection backtest       | **+43.0%** hit-rate lift over random       | Does **not** beat simple lag-based baselines. See the backtest section                     |
+| 80% prediction intervals         | **73.8%** empirical coverage               | Under-covers. Treat as rough ranges, not guarantees                                        |
+| Tests                            | **40** unit and integration tests          | Run with `python -m unittest discover tests`                                               |
 
-## Responsible Use
+> [!IMPORTANT]
+> Daily AQI is strongly autoregressive, so "yesterday's value" is a hard baseline. The gain over it is modest, and the 2023 holdout was viewed during earlier development. The more useful outputs are risk screening, explainable rankings and the decision tooling.
 
-CityPulse is an operational screening and resource triage tool. It is intended to guide physical inspections and supportive mitigation, not to serve as automated justification for punitive enforcement.
+---
 
-## Data Attribution & Licences
+## Dashboard
 
-| Data | Source | Licence |
-| :--- | :--- | :--- |
-| **Air Quality Telemetry** | CPCB & MPCB CAAQMS Archives | Government Open Data (NDSAP) — [DATA_SOURCES.md](DATA_SOURCES.md) |
-| **Surface Meteorology** | [Open-Meteo](https://open-meteo.com) (ERA5 Reanalysis) | Creative Commons Attribution 4.0 (CC BY 4.0) |
-| **Spatial Infrastructure** | [OpenStreetMap](https://www.openstreetmap.org) | Open Database License (ODbL) |
+Twelve tabs, grouped by what you are trying to do.
 
-## Authors & Licence
+|                | Tab                               | What it gives you                                                                                                                                                                                               |
+| :------------- | :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Decide**     | 1. Priority Ranking and Triage    | Five-part composite score, top-N capacity flags, ward map, rule-based action dossiers (mechanical sweeping, wet suppression, anti-smog guns) and a waterfall showing how each criterion built each zone's score |
+|                | 2. What-If Policy Simulator       | Re-balance the weights and see rank stability from a 500-run Monte Carlo analysis, with perturbation heatmaps                                                                                                   |
+|                | 3. Inspection Route Planner       | Nearest-neighbour tour (haversine distance) with stop-by-stop schedule, leg distances and cumulative travel                                                                                                     |
+|                | 4. Briefing Export                | Printable weekly summary as HTML, with optional PDF                                                                                                                                                             |
+| **Understand** | 5. Historical Patterns            | Diurnal traffic peaks, station differences, monsoon washout versus winter inversion                                                                                                                             |
+|                | 6. Meteorological Coupling        | Wind speed and direction, sea-breeze ventilation, stagnation risk                                                                                                                                               |
+|                | 9. Case Studies                   | Diwali episodes, winter trapping, coastal versus inland gradients                                                                                                                                               |
+| **Trust**      | 7. Forecast Performance           | Parity plots, calibration curves, PR and ROC curves against persistence baselines                                                                                                                               |
+|                | 8. Honest Validation and Backtest | Weekly inspection simulation and prediction-interval coverage                                                                                                                                                   |
+|                | 12. Audit and Governance          | Data provenance, licences and stated limitations                                                                                                                                                                |
+| **Share**      | 10. Citizen View                  | CPCB health guidance by category, sensitive-group advice, 7-day outlook, shareable cards                                                                                                                        |
+|                | 11. Guided Walkthrough            | Eight-step presentation mode with metric counters and optional auto-advance                                                                                                                                     |
 
-Built by **Ratnesh, Rishi, and Shreya** for **HackAMatch 1.0**. Released under the [MIT License](LICENSE).
+---
+
+## What the data shows
+
+| Finding                                                   | Number                                      |
+| :-------------------------------------------------------- | :------------------------------------------ |
+| Monsoon washout (Jun-Sep)                                 | mean station-day AQI **63.9**               |
+| Winter inversion (Dec-Feb)                                | mean station-day AQI **185.0**              |
+| Most polluted vs least polluted station (150+ valid days) | Mazgaon **153.0** vs Borivali East **88.6** |
+| Wind speed and daily AQI                                  | r = **-0.25**                               |
+| Days above AQI 200, calmest wind quintile                 | **16.2%** of station-days                   |
+| Days above AQI 200, windiest wind quintile                | **5.8%** of station-days                    |
+
+Season and location may confound the wind relationship. Full analysis: [`reports/eda_findings.md`](reports/eda_findings.md).
+
+---
+
+## How the models were validated
+
+```mermaid
+flowchart LR
+    A["Raw data<br/>2021-2023"] --> B["Backward-looking<br/>features only"]
+    B --> C["Model selection<br/>2021-2022 only<br/>3 expanding date-based folds<br/>10 candidates"]
+    C --> D["Winner picked on CV<br/>LightGBM L1 residual"]
+    D --> E["2023 holdout<br/>evaluated once"]
+    E --> F["Date-block bootstrap<br/>95% intervals"]
+```
+
+- **Splits are by date, not by row**, because several stations share each date.
+- **Residual target:** the winner predicts the change from yesterday's AQI, so the forecast is yesterday's value plus a predicted change.
+- **Cross-validation result:** OOF MAE 22.99, +3.87% skill vs persistence, paired date-block 95% CI `[-1.64, -0.23]`. Details in [`reports/phase1b_cv.md`](reports/phase1b_cv.md).
+
+### Next-day AQI, 2023 holdout
+
+| Model                                |    MAE    |   RMSE    |    R²     | Skill vs persistence | 95% CI (MAE difference) |
+| :----------------------------------- | :-------: | :-------: | :-------: | :------------------: | :---------------------: |
+| **LightGBM L1 residual (CV winner)** | **18.83** |   28.87   |   0.838   |      **+3.0%**       |   **[-1.07, -0.13]**    |
+| Persistence (t-1)                    |   19.42   |   30.38   |   0.820   |         0.0%         |           n/a           |
+| Ridge                                |   19.37   | **28.62** | **0.841** |        +0.2%         |     [-0.57, +0.49]      |
+| Histogram gradient boosting          |   20.58   |   30.28   |   0.822   |        -6.0%         |     [+0.44, +1.89]      |
+| Seasonal naive (t-7)                 |   34.57   |   50.01   |   0.513   |        -78.0%        |           n/a           |
+
+```
+MAE, lower is better
+LightGBM L1 residual  ████████████████████████████                           18.83
+Persistence           █████████████████████████████                          19.42
+Ridge                 █████████████████████████████                          19.37
+HistGB                ███████████████████████████████                        20.58
+Seasonal naive        ████████████████████████████████████████████████████   34.57
+```
+
+_Reproduce:_ `python Evaluate.py --full`
+
+> [!WARNING]
+> **Disclosure.** The winner was chosen from 10 candidates using 2021-2022 data only, but the 2023 holdout was viewed during earlier development. The 3.0% gain is modest, and its interval stays close to zero.
+
+### Severe days (AQI > 200), 2023 holdout
+
+| Model                            | Precision |  Recall   |    F1     |  PR-AUC   |  ROC-AUC  |   Brier    |
+| :------------------------------- | :-------: | :-------: | :-------: | :-------: | :-------: | :--------: |
+| **Gradient boosting classifier** |   0.595   | **0.870** |   0.707   | **0.812** | **0.955** | **0.0758** |
+| State persistence (t-1 > 200)    | **0.716** |   0.717   | **0.717** |    n/a    |    n/a    |    n/a     |
+| Logistic regression              |   0.565   |   0.890   |   0.691   |   0.816   |   0.955   |   0.0844   |
+
+The classifier catches more severe days but raises more false alarms. At the capacity-matched threshold (0.655), precision rises to 0.689 and recall is 0.774.
+
+<p align="center">
+  <img src="reports/figures/fig6_calibration_and_holdout.png" width="85%" alt="Calibration curve and holdout results">
+</p>
+
+_Reproduce:_ `python Evaluate.py --quick`
+
+### 80% prediction intervals
+
+Filled blocks are measured coverage; the lighter blocks show the shortfall to the 80% target.
+
+```
+Overall       ██████████████████████████████░░   73.8%
+Monsoon       ███████████████████████████████░   77.1%
+Summer        ██████████████████████████████░░   74.8%
+Post-monsoon  █████████████████████████████░░░   72.7%
+Winter        ████████████████████████████░░░░   69.5%
+```
+
+| Slice             | Nominal | Empirical |  Gap  | Mean width |
+| :---------------- | :-----: | :-------: | :---: | :--------: |
+| **Overall, 2023** |  80.0%  | **73.8%** | -6.2  |  55.6 AQI  |
+| Monsoon washout   |  80.0%  |   77.1%   | -2.9  |  32.9 AQI  |
+| Summer            |  80.0%  |   74.8%   | -5.2  |  56.9 AQI  |
+| Post-monsoon      |  80.0%  |   72.7%   | -7.3  |  71.4 AQI  |
+| Winter inversion  |  80.0%  |   69.5%   | -10.5 |  71.4 AQI  |
+
+Coverage is weakest in winter. Treat the intervals as exploratory ranges, not calibrated bounds.
+
+_Reproduce:_ `python Evaluate.py --quick`
+
+### Weekly inspection backtest
+
+Fifty-one weekly cycles in 2023, choosing the top 5 zones each week. A hit means an inspected zone had a daily AQI above 150 during the following 7 days.
+
+```
+Hit rate
+Last-week-worst     ███████████████████████████████████████████  43.1%
+Persistence-ranked  █████████████████████████████████████████    41.3%
+CityPulse           █████████████████████████████████████████    40.6%
+Uniform random      ████████████████████████████                 28.4%
+```
+
+| Strategy                     | Hit rate  | CityPulse lift |  Week-level 95% CI   |
+| :--------------------------- | :-------: | :------------: | :------------------: |
+| **CityPulse priority score** | **40.6%** |      n/a       |         n/a          |
+| Uniform random               |   28.4%   |   **+43.0%**   | **[+30.4%, +60.7%]** |
+| Persistence-ranked (lag-1)   |   41.3%   |     -1.8%      |    [-5.2%, +1.7%]    |
+| Last-week-worst (7-day mean) |   43.1%   |     -5.9%      |   [-11.9%, -0.3%]    |
+
+CityPulse clearly beats random selection. Against persistence the interval crosses zero, so the two are indistinguishable. Against last-week-worst the interval excludes zero, so CityPulse is slightly worse on raw hit rate. Its value lies in score attribution, route planning and context-specific dossiers, not in out-guessing lag-based rankings.
+
+_Reproduce:_ `python Evaluate.py --quick`
+
+---
+
+## Priority score
+
+A transparent weighted average of five normalised criteria, scaled 0-100:
+
+```
+score = (w_exp*S_exp + w_pers*S_pers + w_trend*S_trend + w_fore*S_fore + w_gap*S_gap) / sum(w)
+```
+
+```mermaid
+pie showData title Default criterion weights (percent)
+    "Exposure" : 30
+    "Persistence" : 25
+    "Forecast risk" : 20
+    "Trend" : 15
+    "Vulnerability and gap" : 10
+```
+
+| Criterion             | Weight | Measures                                                                    |
+| :-------------------- | :----: | :-------------------------------------------------------------------------- |
+| Exposure              |  0.30  | Recent 7-day mean AQI relative to national ambient standards                |
+| Persistence           |  0.25  | Frequency of AQI > 150 in the past week                                     |
+| Forecast risk         |  0.20  | Calibrated next-day probability of an AQI > 200 event                       |
+| Trend                 |  0.15  | 7-day rate of worsening against a rolling baseline                          |
+| Vulnerability and gap |  0.10  | Transit corridor siting, industrial micro-environments, monitoring sparsity |
+
+---
+
+## Quick start
+
+Requires Python 3.10 or newer. No API keys needed.
+
+```bash
+git clone https://github.com/RishiBuilds/CityPulse.git
+cd CityPulse
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+pip install -r requirements.txt   # dashboard
+streamlit run app.py              # opens at http://localhost:8501
+```
+
+| I want to...                          | Run                                                                    |
+| :------------------------------------ | :--------------------------------------------------------------------- |
+| Use the dashboard                     | `pip install -r requirements.txt` then `streamlit run app.py`          |
+| Run the tests (40)                    | `python -m unittest discover tests`                                    |
+| Reproduce every reported result       | `pip install -r requirements-dev.txt` then `python Evaluate.py --full` |
+| Do a fast live demo of the evaluation | `python Evaluate.py --quick`                                           |
+
+> [!TIP]
+> The deployed dashboard loads precomputed parquet files and does not import LightGBM, which is why `lightgbm` lives in `requirements-dev.txt`. Hosting steps for Streamlit Community Cloud and Hugging Face Spaces are in [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### Reproducing the evaluation
+
+[`Evaluate.py`](Evaluate.py) runs everything end to end and prints a scorecard.
+
+| Flag           | Effect                                                                        |
+| :------------- | :---------------------------------------------------------------------------- |
+| `--quick`      | Fewer bootstrap and Monte Carlo runs, 5 CV candidates. About 35 s             |
+| `--full`       | 10 CV candidates, 2,000 bootstrap resamples, 500 Monte Carlo runs. About 47 s |
+| `--skip-tests` | Skip the unit tests                                                           |
+| `--seed N`     | Set the random seed (default 42)                                              |
+
+Runtimes are approximate and machine-dependent. Outputs go to `reports/evaluate_summary.md`, `reports/evaluate_summary.json` and `reports/figures/`.
+
+<details>
+<summary><b>The ten stages</b></summary>
+
+1. **Environment:** Python and library versions, seed, data integrity.
+2. **Tests:** all 40 unit and integration tests.
+3. **Leakage audit:** six checks on lags, rolling statistics, expanding means, split ordering, shuffling and duplicates.
+4. **CV model selection:** expanding folds on 2021-2022 with date-block bootstrap intervals.
+5. **Holdout:** MAE, RMSE, R² and station-level comparison on 2023.
+6. **Classification:** AQI > 200 screening, calibration and capacity thresholding.
+7. **Prediction intervals:** coverage and width overall and by season.
+8. **Decision backtest:** 51 weekly top-5 cycles with week-level bootstrap intervals.
+9. **Robustness:** Monte Carlo weight perturbation of plus or minus 30%.
+10. **Summary:** scorecard, Markdown report and JSON.
+
+</details>
+
+<details>
+<summary><b>Repository structure</b></summary>
+
+```
+citypulse/
+├── app.py                  # 12-tab Streamlit dashboard
+├── Evaluate.py             # End-to-end evaluation and reproducibility script
+├── requirements.txt        # Runtime dependencies for the dashboard
+├── requirements-dev.txt    # Training, evaluation and test dependencies (incl. LightGBM)
+├── DATA_SOURCES.md         # Provenance, licences and schema
+├── DEPLOYMENT.md           # Streamlit Cloud and Hugging Face Spaces
+├── data/
+│   ├── raw/                # CPCB telemetry and Open-Meteo weather
+│   └── processed/          # Daily and hourly parquets, precomputed holdout predictions
+├── src/
+│   ├── data/               # Cleaning, 18-hour validity rule, hourly aggregation
+│   ├── features/           # Backward-looking lag and rolling features
+│   ├── models/             # Baselines, LightGBM CV pipeline, priority scoring
+│   ├── decision/           # What-if simulator, route planner, backtest
+│   └── demo/               # Guided walkthrough (Tab 11)
+├── tests/                  # 40 unit and integration tests
+└── reports/                # Generated reports, JSON and figures
+```
+
+</details>
+
+<details>
+<summary><b>Station counts explained</b></summary>
+
+- **36** raw station labels appear in the telemetry archives.
+- **30** stations pass our own quality threshold of at least 150 valid observation days across 2021-2023. This is an engineering threshold, not a statutory one.
+- **29** of those stations reported in 2023. `Bandra` had 152 valid days in 2021 and none in 2022 or 2023. The 29 each had at least 30 valid days in 2023.
+
+</details>
+
+---
+
+## Limitations
+
+- **Strong autoregression.** Daily AQI depends heavily on the previous day, so large gains over persistence would likely need satellite AOD, dense local sensors and live traffic data.
+- **Uneven coverage.** Stations cluster near major highways and industrial corridors, so unmonitored wards need proxy interpolation.
+- **Point measurements.** A station reading does not describe a whole ward.
+- **Exposure proxies only.** No clinical or health-outcome data is used.
+- **Holdout reuse.** 2023 was viewed during earlier development.
+
+> [!CAUTION]
+> **Responsible use.** CityPulse is a screening and triage tool. It should guide physical inspections and supportive mitigation, and must not be the sole basis for punitive enforcement.
+
+---
+
+## Data and licences
+
+| Data            | Source                                                      | Licence                                                              |
+| :-------------- | :---------------------------------------------------------- | :------------------------------------------------------------------- |
+| Air quality     | CPCB and MPCB CAAQMS archives                               | Government open data (NDSAP), see [DATA_SOURCES.md](DATA_SOURCES.md) |
+| Weather         | [Open-Meteo](https://open-meteo.com) (ERA5 reanalysis)      | CC BY 4.0                                                            |
+| Spatial context | [OpenStreetMap](https://www.openstreetmap.org) contributors | ODbL                                                                 |
+
+---
+
+<p align="center">
+  Built by <b>Ratnesh</b>, <b>Rishi</b> and <b>Shreya</b> for HackAMatch 1.0<br>
+  Released under the <a href="LICENSE">MIT License</a>
+</p>

@@ -32,14 +32,14 @@
     ]
   },
   "classifier": {
-    "Precision": 0.593,
-    "Recall": 0.872,
+    "Precision": 0.595,
+    "Recall": 0.870,
     "F1": 0.706,
     "ROC_AUC": 0.955,
-    "PR_AUC": 0.811,
-    "Brier_Score": 0.076
+    "PR_AUC": 0.812,
+    "Brier_Score": 0.0758
   },
-  "interval_coverage_pct": 74.9,
+  "interval_coverage_pct": 73.8,
   "interval_nominal_pct": 80,
   "cv_agg": {
     "Persistence": {

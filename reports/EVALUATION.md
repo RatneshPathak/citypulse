@@ -69,7 +69,7 @@ Features used: 36 (was 27 before Phase 1a).
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Persistence state** | 0.716 | 0.717 | 0.717 | N/A | N/A | N/A |
 | **Logistic Regression** | 0.573 | 0.887 | 0.696 | 0.815 | 0.955 | 0.0835 |
-| **GB Classifier** | **0.593** | **0.872** | **0.706** | **0.811** | **0.955** | **0.076** |
+| **GB Classifier** | **0.595** | **0.870** | **0.706** | **0.812** | **0.955** | **0.076** |
 
 ![Calibration and Holdout](figures/fig6_calibration_and_holdout.png)
 
@@ -78,8 +78,8 @@ Features used: 36 (was 27 before Phase 1a).
 ## 4. Uncertainty Quantification — 2023 Holdout
 
 - **Target interval:** 80% prediction interval ([p10, p90] via quantile GB).
-- **Empirical coverage:** **74.9%** (nominal: 80.0%).
-- **Mean interval width:** **55.5 AQI units**.
+- **Empirical coverage:** **73.8%** (nominal: 80.0%).
+- **Mean interval width:** **55.6 AQI units**.
 - **Practical note:** Coverage is below the 80% nominal target; treat as an
   exploratory range, not a calibrated guarantee.
 

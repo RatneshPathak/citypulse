@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" width="1200" height="280" role="img" aria-label="CityPulse: Mumbai banner"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f2233"/><stop offset="1" stop-color="#17384f"/></linearGradient></defs>
+<rect width="1200" height="280" rx="14" fill="url(#bg)"/>
+<text x="56" y="116" font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#ffffff">CityPulse</text>
+<text x="56" y="164" font-family="Helvetica, Arial, sans-serif" font-size="26" fill="#9fc3d6">Mumbai air quality, ranked and explained</text>
+<text x="56" y="206" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#7fa3b5">Decision-support prototype for inspection planning</text>
+<line x1="640" y1="235" x2="1219.2" y2="235" stroke="#4a6b80" stroke-width="1"/>
+<rect x="640.0" y="112.5" width="8" height="122.5" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="651.2" y="102.5" width="8" height="132.5" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="662.4" y="118.6" width="8" height="116.4" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="673.6" y="119.1" width="8" height="115.9" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="684.8" y="105.7" width="8" height="129.3" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="696.0" y="118.8" width="8" height="116.2" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="707.2" y="130.6" width="8" height="104.4" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="718.4" y="118.5" width="8" height="116.5" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="729.6" y="124.9" width="8" height="110.1" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="740.8" y="144.7" width="8" height="90.3" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="752.0" y="138.7" width="8" height="96.3" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="763.2" y="137.2" width="8" height="97.8" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="774.4" y="159.5" width="8" height="75.5" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="785.6" y="162.7" width="8" height="72.3" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="796.8" y="154.9" width="8" height="80.1" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="808.0" y="173.5" width="8" height="61.5" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="819.2" y="186.2" width="8" height="48.8" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="830.4" y="176.0" width="8" height="59.0" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="841.6" y="186.1" width="8" height="48.9" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="852.8" y="205.1" width="8" height="29.9" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="864.0" y="197.2" width="8" height="37.8" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="875.2" y="196.6" width="8" height="38.4" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="886.4" y="216.9" width="8" height="18.1" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="897.6" y="214.8" width="8" height="20.2" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="908.8" y="204.6" width="8" height="30.4" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="920.0" y="218.2" width="8" height="16.8" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="931.2" y="218.2" width="8" height="16.8" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="942.4" y="209.6" width="8" height="25.4" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="953.6" y="215.8" width="8" height="19.2" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="964.8" y="218.2" width="8" height="16.8" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="976.0" y="210.5" width="8" height="24.5" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="987.2" y="205.1" width="8" height="29.9" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="998.4" y="218.0" width="8" height="17.0" rx="2" fill="#00b050" opacity="0.92"/>
+<rect x="1009.6" y="206.4" width="8" height="28.6" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="1020.8" y="190.7" width="8" height="44.3" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="1032.0" y="200.6" width="8" height="34.4" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="1043.2" y="196.6" width="8" height="38.4" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="1054.4" y="174.9" width="8" height="60.1" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1065.6" y="177.5" width="8" height="57.5" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1076.8" y="181.5" width="8" height="53.5" rx="2" fill="#92d050" opacity="0.92"/>
+<rect x="1088.0" y="159.7" width="8" height="75.3" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1099.2" y="153.0" width="8" height="82.0" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1110.4" y="162.3" width="8" height="72.7" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1121.6" y="146.4" width="8" height="88.6" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1132.8" y="131.2" width="8" height="103.8" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1144.0" y="141.5" width="8" height="93.5" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1155.2" y="135.5" width="8" height="99.5" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1166.4" y="115.8" width="8" height="119.2" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="1177.6" y="122.5" width="8" height="112.5" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="1188.8" y="127.4" width="8" height="107.6" rx="2" fill="#ffd400" opacity="0.92"/>
+<rect x="1200.0" y="108.7" width="8" height="126.3" rx="2" fill="#ff9900" opacity="0.92"/>
+<rect x="1211.2" y="108.9" width="8" height="126.1" rx="2" fill="#ff9900" opacity="0.92"/>
+<text x="640" y="258" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#7fa3b5">Decorative: bars coloured by CPCB AQI category</text>
+</svg>

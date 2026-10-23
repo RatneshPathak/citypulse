@@ -688,7 +688,7 @@ with tab3:
 
 with tab4:
     render_takeaway(
-        "On the 2023 holdout, persistence has the lowest point-forecast MAE. The classifier identifies AQI > 200 risk days with PR-AUC 0.811. The 80% prediction interval achieves 74.1% empirical coverage — undercovering by ~6pp, treat as exploratory range."
+        "On the 2023 holdout, persistence has the lowest point-forecast MAE among standard baselines. The classifier identifies AQI > 200 risk days with PR-AUC 0.812. The 80% prediction interval achieves 73.8% empirical coverage — undercovering by ~6.2pp, treat as exploratory range."
     )
     st.caption(":material/info: **What could be wrong:** Model was trained on 2021–2022 and tested on 2023. A structural shift in emissions (new construction, policy change) could degrade skill. Persistence is hard to beat because daily AQI is heavily autoregressive.")
 
@@ -948,7 +948,7 @@ Rolling statistics use `shift(1)` to exclude the target day.
     with st.expander(":material/warning: Known Limitations"):
         st.markdown("""
 1. **Model does not beat persistence on MAE.** Persistence MAE = 19.42, GB MAE = 20.33. This is honest — daily AQI is heavily autoregressive.
-2. **80% interval undercoverage.** Empirical coverage is 74.1% (nominal 80%). Treat as exploratory range.
+2. **80% interval undercoverage.** Empirical coverage is 73.8% (nominal 80%). Treat as exploratory range.
 3. **Sparse station network.** Only ~18 stations with sufficient data. Large areas between stations are unmonitored.
 4. **Weather from reanalysis grid.** Open-Meteo ERA5 is gridded (~25 km), not station-level. Micro-climate effects are missed.
 5. **No causal identification.** All correlations are observational. We cannot attribute AQI to a specific emission source.
