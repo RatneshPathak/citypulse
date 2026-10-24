@@ -1,3 +1,5 @@
+> **Current app audit:** See [LIVE_DATA.md](LIVE_DATA.md). This document describes the retired historical modeling pipeline; its 2021–2023 files are not used for live metrics.
+
 Data sources audit improved · MD
 
 # Data Sources & Discovery Audit — CityPulse: Mumbai

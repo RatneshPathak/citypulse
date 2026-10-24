@@ -2,6 +2,8 @@
   <img src="assets/banner.svg" alt="CityPulse: Mumbai - air quality, ranked and explained" width="100%">
 </p>
 
+> **Live dashboard (October 2026):** `app.py` now fetches current Mumbai weather and modeled air quality at runtime. It shows record dates under charts and metrics. See [LIVE_DATA.md](LIVE_DATA.md) for source status, API key setup, and unavailable feeds. Bundled 2021–2023 modeling files do not drive current values.
+
 <p align="center">
   <img alt="Status" src="https://img.shields.io/badge/status-prototype-orange">
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue">
