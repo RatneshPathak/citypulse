@@ -194,7 +194,7 @@ def plot_inspection_route_map(route_df: pd.DataFrame, selected_station: str = No
             lat=route_df["latitude"],
             lon=route_df["longitude"],
             mode="lines",
-            line=dict(color="#00D2FF", width=3),
+            line=dict(color="#2DD4BF", width=3),
             name="Route",
             hoverinfo="skip",
         )
