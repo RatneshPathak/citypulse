@@ -28,78 +28,115 @@ CHART_CONFIG = {
     ],
 }
 
-def plot_priority_map(priority_df: pd.DataFrame, selected_station: str) -> go.Figure:
+def plot_priority_map(
+    priority_df: pd.DataFrame,
+    selected_station: str,
+    priority_filter: str = "All",
+    capacity_n: int = 5,
+) -> go.Figure:
     """
-    Renders the dark interactive map with:
+    Renders the dark interactive command center map with:
     - Dark basemap (carto-darkmatter, token-free)
-    - Marker size = latest AQI, color = priority score (YlOrRd)
-    - Selected station highlighted with an accent ring
-    - Only top-5 stations labeled directly
+    - Distinct Inspection Priority Scale (Highest = Red, Elevated = Amber, Moderate = Cyan, Routine = Slate)
+    - Separate from AQI scale (AQI shown via size and detailed hover metadata)
+    - Grouped traces for an intuitive priority tier legend
+    - Selected station highlighted with a prominent teal halo ring
+    - Top priority stations labeled directly
     """
     df = priority_df.dropna(subset=["latitude", "longitude"]).copy()
+    if df.empty:
+        return go.Figure()
 
     df["aqi_cat"] = df["latest_aqi"].apply(lambda v: get_aqi_category_color(v)[0])
+
+    def _tier(r):
+        if r <= capacity_n:
+            return "Highest Priority (Inspect)"
+        elif r <= capacity_n * 2:
+            return "Elevated Priority"
+        elif r <= capacity_n * 3:
+            return "Moderate Priority"
+        return "Routine Monitoring"
+
+    df["priority_tier"] = df["rank"].apply(_tier)
     df["label_text"] = np.where(df["rank"] <= 5, df["rank"].astype(str) + ". " + df["station"], "")
+
+    filtered_df = df.copy()
+    if priority_filter == "Highest Priority":
+        filtered_df = df[df["priority_tier"] == "Highest Priority (Inspect)"].copy()
+    elif priority_filter == "Elevated Priority":
+        filtered_df = df[df["priority_tier"].isin(["Highest Priority (Inspect)", "Elevated Priority"])].copy()
+    elif priority_filter == "Routine":
+        filtered_df = df[df["priority_tier"] == "Routine Monitoring"].copy()
+
+    if filtered_df.empty:
+        filtered_df = df.copy()
 
     use_modern_map = hasattr(go, "Scattermap")
     scatter_cls = go.Scattermap if use_modern_map else go.Scattermapbox
 
     fig = go.Figure()
 
-    fig.add_trace(
-        scatter_cls(
-            lat=df["latitude"],
-            lon=df["longitude"],
-            mode="markers+text",
-            marker=dict(
-                size=np.clip(df["latest_aqi"] / 8.0, 10, 32),
-                color=df["priority_score"],
-                colorscale="YlOrRd",
-                showscale=True,
-                colorbar=dict(
-                    title=dict(text="Priority Score", font=dict(color=COLORS["text"], size=11)),
-                    tickfont=dict(color=COLORS["text_muted"], size=10),
-                    len=0.75,
-                    thickness=12,
-                    outlinewidth=0,
-                ),
-                opacity=0.88,
-            ),
-            text=df["label_text"],
-            textposition="top right",
-            textfont=dict(family="Inter, sans-serif", size=11, color="#ffffff"),
-            customdata=np.stack(
-                (
-                    df["station"],
-                    df["rank"],
-                    df["priority_score"],
-                    df["latest_aqi"],
-                    df["aqi_cat"],
-                    df["zone"],
-                ),
-                axis=-1,
-            ),
-            hovertemplate=(
-                "<b>%{customdata[0]}</b><br>"
-                "Rank: <b>#%{customdata[1]}</b> • Priority Score: <b>%{customdata[2]:.1f}</b><br>"
-                "Latest AQI: <b>%{customdata[3]:.0f}</b> (%{customdata[4]})<br>"
-                "Zone: %{customdata[5]}"
-                "<extra></extra>"
-            ),
-            name="Stations",
-        )
-    )
+    tier_order = [
+        ("Highest Priority (Inspect)", "#EF4444", 20),
+        ("Elevated Priority", "#F59E0B", 16),
+        ("Moderate Priority", "#38BDF8", 14),
+        ("Routine Monitoring", "#64748B", 12),
+    ]
+
+    for tier_name, tier_col, default_size in tier_order:
+        tier_sub = filtered_df[filtered_df["priority_tier"] == tier_name]
+        if not tier_sub.empty:
+            marker_sizes = np.clip(tier_sub["latest_aqi"] / 8.5, default_size, 32)
+            fig.add_trace(
+                scatter_cls(
+                    lat=tier_sub["latitude"],
+                    lon=tier_sub["longitude"],
+                    mode="markers+text",
+                    marker=dict(
+                        size=marker_sizes,
+                        color=tier_col,
+                        opacity=0.90,
+                    ),
+                    text=tier_sub["label_text"],
+                    textposition="top right",
+                    textfont=dict(family="Inter, sans-serif", size=11, color="#ffffff"),
+                    customdata=np.stack(
+                        (
+                            tier_sub["station"],
+                            tier_sub["rank"],
+                            tier_sub["priority_score"],
+                            tier_sub["latest_aqi"],
+                            tier_sub["aqi_cat"],
+                            tier_sub["zone"],
+                            tier_sub["priority_tier"],
+                        ),
+                        axis=-1,
+                    ),
+                    hovertemplate=(
+                        "<b>%{customdata[0]}</b><br>"
+                        "Priority Status: <b>%{customdata[6]}</b><br>"
+                        "Rank: <b>#%{customdata[1]}</b> • Priority Score: <b>%{customdata[2]:.1f}/100</b><br>"
+                        "Observed AQI: <b>%{customdata[3]:.0f}</b> (Category: %{customdata[4]})<br>"
+                        "Zone: %{customdata[5]}"
+                        "<extra></extra>"
+                    ),
+                    name=tier_name,
+                )
+            )
 
     sel_df = df[df["station"] == selected_station]
     if not sel_df.empty:
+        sel_aqi = sel_df["latest_aqi"].iloc[0]
+        base_size = np.clip(sel_aqi / 8.5, 14, 32)
         fig.add_trace(
             scatter_cls(
                 lat=sel_df["latitude"],
                 lon=sel_df["longitude"],
                 mode="markers",
                 marker=dict(
-                    size=np.clip(sel_df["latest_aqi"].iloc[0] / 8.0, 10, 32) + 12,
-                    color="rgba(0, 210, 255, 0.2)",
+                    size=base_size + 14,
+                    color="rgba(45, 212, 191, 0.25)",
                     opacity=1.0,
                 ),
                 hoverinfo="none",
@@ -112,8 +149,8 @@ def plot_priority_map(priority_df: pd.DataFrame, selected_station: str) -> go.Fi
                 lon=sel_df["longitude"],
                 mode="markers",
                 marker=dict(
-                    size=np.clip(sel_df["latest_aqi"].iloc[0] / 8.0, 10, 32) + 4,
-                    color="#00D2FF",
+                    size=base_size + 6,
+                    color="#2DD4BF",
                     opacity=1.0,
                 ),
                 hoverinfo="none",
@@ -131,9 +168,39 @@ def plot_priority_map(priority_df: pd.DataFrame, selected_station: str) -> go.Fi
     )
 
     if use_modern_map:
-        fig.update_layout(map=map_config, margin=dict(l=0, r=0, t=10, b=0), height=420)
+        fig.update_layout(
+            map=map_config,
+            margin=dict(l=0, r=0, t=10, b=0),
+            height=440,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=0.02,
+                xanchor="left",
+                x=0.02,
+                bgcolor="rgba(11, 18, 32, 0.85)",
+                bordercolor=COLORS["border"],
+                borderwidth=1,
+                font=dict(size=10, color=COLORS["text"]),
+            ),
+        )
     else:
-        fig.update_layout(mapbox=map_config, margin=dict(l=0, r=0, t=10, b=0), height=420)
+        fig.update_layout(
+            mapbox=map_config,
+            margin=dict(l=0, r=0, t=10, b=0),
+            height=440,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=0.02,
+                xanchor="left",
+                x=0.02,
+                bgcolor="rgba(11, 18, 32, 0.85)",
+                bordercolor=COLORS["border"],
+                borderwidth=1,
+                font=dict(size=10, color=COLORS["text"]),
+            ),
+        )
 
     return fig
 
@@ -144,11 +211,11 @@ def plot_score_breakdown(st_data: dict, weights: dict) -> go.Figure:
     total_w = sum(weights.values()) or 1.0
 
     components = [
-        ("Exposure (7-day)", st_data.get("score_exposure", 0), weights["w_exp"] / total_w, "#E5484D"),
-        ("Persistence (>150)", st_data.get("score_persistence", 0), weights["w_pers"] / total_w, "#F08A3C"),
-        ("Trend Acceleration", st_data.get("score_trend", 0), weights["w_trend"] / total_w, "#F5C542"),
-        ("Forecast Risk", st_data.get("score_forecast", 0), weights["w_fore"] / total_w, "#4F8CFF"),
-        ("Vulnerability/Gap", st_data.get("score_vulnerability", 0), weights["w_gap"] / total_w, "#9D7BFF"),
+        ("Exposure (7-day)", st_data.get("score_exposure", 0), weights["w_exp"] / total_w, "#EF4444"),
+        ("Persistence (>150)", st_data.get("score_persistence", 0), weights["w_pers"] / total_w, "#F59E0B"),
+        ("Trend Acceleration", st_data.get("score_trend", 0), weights["w_trend"] / total_w, "#FCD34D"),
+        ("Forecast Risk", st_data.get("score_forecast", 0), weights["w_fore"] / total_w, "#2DD4BF"),
+        ("Vulnerability/Gap", st_data.get("score_vulnerability", 0), weights["w_gap"] / total_w, "#38BDF8"),
     ]
 
     fig = go.Figure()
@@ -606,7 +673,7 @@ def plot_holdout_forecast(st_preds: pd.DataFrame, selected_station: str) -> go.F
             x=pd.concat([df["date"], df["date"][::-1]]),
             y=pd.concat([df["pred_p90"], df["pred_p10"][::-1]]),
             fill="toself",
-            fillcolor="rgba(79, 140, 255, 0.16)",
+            fillcolor="rgba(45, 212, 191, 0.15)",
             line=dict(color="rgba(255,255,255,0)"),
             hoverinfo="none",
             showlegend=True,

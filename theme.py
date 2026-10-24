@@ -8,40 +8,58 @@ import streamlit as st
 
 COLORS = {
     "bg": "#0B1220",
-    "surface": "#111A2B",
-    "surface_raised": "#172238",
-    "surface_hover": "#1E2C48",
-    "border": "#24324D",
-    "border_focus": "#3B527A",
-    "text": "#E6EDF7",
-    "text_muted": "#8FA1BD",
-    "accent": "#4F8CFF",
-    "accent_subtle": "rgba(79, 140, 255, 0.15)",
-    "accent_secondary": "#00D2FF",
-    "warning": "#F5C542",
-    "info": "#00D2FF",
-    "critical": "#E5484D",
-    "success": "#2ECC71",
+    "background": "#0B1220",
+    "surface": "#162235",
+    "surface_raised": "#1C2B42",
+    "surface_hover": "#223552",
+    "border": "#24364F",
+    "border_focus": "#2DD4BF",
+    "text": "#F1F5F9",
+    "text_muted": "#94A3B8",
+    "accent": "#2DD4BF",          
+    "accent_subtle": "rgba(45, 212, 191, 0.12)",
+    "accent_secondary": "#38BDF8", 
+    "warning": "#F59E0B",           
+    "info": "#38BDF8",              
+    "critical": "#EF4444",       
+    "success": "#10B981",           
 }
 
 AQI_PALETTE = {
-    "Good": "#2ECC71",
-    "Satisfactory": "#A3D86B",
-    "Moderate": "#F5C542",
-    "Poor": "#F08A3C",
-    "Very Poor": "#E5484D",
-    "Severe": "#8E2BA8",
-    "Missing": "#64748B"
+    "Good": "#10B981",
+    "Satisfactory": "#84CC16",
+    "Moderate": "#F59E0B",
+    "Poor": "#F97316",
+    "Very Poor": "#EF4444",
+    "Severe": "#A855F7",
+    "Missing": "#64748B",
 }
 
 AQI_BREAKPOINTS = [
-    (0, 50, "Good", "#2ECC71"),
-    (50, 100, "Satisfactory", "#A3D86B"),
-    (100, 200, "Moderate", "#F5C542"),
-    (200, 300, "Poor", "#F08A3C"),
-    (300, 400, "Very Poor", "#E5484D"),
-    (400, 700, "Severe", "#8E2BA8"),
+    (0, 50, "Good", "#10B981"),
+    (50, 100, "Satisfactory", "#84CC16"),
+    (100, 200, "Moderate", "#F59E0B"),
+    (200, 300, "Poor", "#F97316"),
+    (300, 400, "Very Poor", "#EF4444"),
+    (400, 700, "Severe", "#A855F7"),
 ]
+
+PRIORITY_PALETTE = {
+    "Highest": "#EF4444",      
+    "Elevated": "#F59E0B",     
+    "Moderate": "#38BDF8",   
+    "Routine": "#64748B",     
+}
+
+def get_priority_tier(rank: int, capacity_n: int = 5) -> tuple[str, str]:
+    """Returns (tier_label, hex_color) for an inspection priority rank."""
+    if rank <= capacity_n:
+        return ("Highest Priority", PRIORITY_PALETTE["Highest"])
+    elif rank <= capacity_n * 2:
+        return ("Elevated Priority", PRIORITY_PALETTE["Elevated"])
+    elif rank <= capacity_n * 3:
+        return ("Moderate Priority", PRIORITY_PALETTE["Moderate"])
+    return ("Routine Monitoring", PRIORITY_PALETTE["Routine"])
 
 def get_aqi_category_color(aqi_val: float) -> tuple[str, str]:
     """Returns (category_name, hex_color) for any numeric AQI value."""
@@ -55,7 +73,7 @@ def get_aqi_category_color(aqi_val: float) -> tuple[str, str]:
     return ("Good", AQI_PALETTE["Good"])
 
 def register_plotly_theme():
-    """Configures and registers the CityPulse dark theme in Plotly."""
+    """Configures and registers the CityPulse command center dark theme in Plotly."""
     template = go.layout.Template()
     template.layout = go.Layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -66,22 +84,22 @@ def register_plotly_theme():
             size=12,
         ),
         title=dict(
-            font=dict(size=16, color=COLORS["text"], weight=600),
+            font=dict(size=15, color=COLORS["text"], weight=600),
             x=0.0,
             xanchor="left",
             pad=dict(b=10),
         ),
         xaxis=dict(
-            gridcolor="rgba(143, 161, 189, 0.08)",
+            gridcolor="rgba(148, 163, 184, 0.08)",
             linecolor=COLORS["border"],
-            zerolinecolor="rgba(143, 161, 189, 0.12)",
+            zerolinecolor="rgba(148, 163, 184, 0.12)",
             tickfont=dict(color=COLORS["text_muted"], size=11),
             title=dict(font=dict(color=COLORS["text_muted"], size=12)),
         ),
         yaxis=dict(
-            gridcolor="rgba(143, 161, 189, 0.08)",
+            gridcolor="rgba(148, 163, 184, 0.08)",
             linecolor=COLORS["border"],
-            zerolinecolor="rgba(143, 161, 189, 0.12)",
+            zerolinecolor="rgba(148, 163, 184, 0.12)",
             tickfont=dict(color=COLORS["text_muted"], size=11),
             title=dict(font=dict(color=COLORS["text_muted"], size=12)),
         ),
@@ -92,18 +110,18 @@ def register_plotly_theme():
         ),
         legend=dict(
             font=dict(color=COLORS["text"], size=11),
-            bgcolor="rgba(17, 26, 43, 0.6)",
+            bgcolor="rgba(22, 34, 53, 0.8)",
             bordercolor=COLORS["border"],
             borderwidth=1,
         ),
         colorway=[
             COLORS["accent"],
-            "#00D2FF",
-            "#F5C542",
-            "#2ECC71",
-            "#E5484D",
-            "#A3D86B",
-            "#9D7BFF",
+            COLORS["accent_secondary"],
+            COLORS["warning"],
+            COLORS["success"],
+            COLORS["critical"],
+            "#84CC16",
+            "#A855F7",
         ],
         margin=dict(l=45, r=20, t=45, b=40),
     )
@@ -113,10 +131,10 @@ def register_plotly_theme():
 register_plotly_theme()
 
 def inject_custom_css():
-    """Injects high-end, responsive custom styling into Streamlit."""
+    """Injects command center custom styling into Streamlit."""
     css = f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         html, body, [class*="css"], [data-testid="stAppViewContainer"] {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -130,116 +148,211 @@ def inject_custom_css():
         [data-testid="stToolbar"] {{display: none;}}
 
         .block-container {{
-            padding-top: 1.5rem !important;
+            padding-top: 1.25rem !important;
             padding-bottom: 3rem !important;
-            max-width: 1350px !important;
+            max-width: 1400px !important;
         }}
 
         [data-testid="stSidebar"] {{
-            background-color: {COLORS["surface"]};
+            background-color: #0E1726;
             border-right: 1px solid {COLORS["border"]};
         }}
         [data-testid="stSidebar"] hr {{
-            margin: 1rem 0;
+            margin: 0.9rem 0;
             border-color: {COLORS["border"]};
         }}
 
-        .cp-hero {{
-            background: linear-gradient(135deg, {COLORS["surface"]} 0%, {COLORS["surface_raised"]} 100%);
+        .cp-cmd-header {{
+            background: linear-gradient(135deg, {COLORS["surface"]} 0%, #111D30 100%);
             border: 1px solid {COLORS["border"]};
-            border-radius: 14px;
-            padding: 20px 26px;
-            margin-bottom: 1.25rem;
+            border-radius: 12px;
+            padding: 18px 24px;
+            margin-bottom: 0.9rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
         }}
-        .cp-hero-copy {{
-            min-width: 250px;
-            flex: 1 1 380px;
+        .cp-cmd-branding {{
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }}
-        .cp-hero-kicker {{
-            color: {COLORS["accent_secondary"]};
-            font-size: 0.71rem;
+        .cp-cmd-icon {{
+            width: 44px;
+            height: 44px;
+            background: {COLORS["accent_subtle"]};
+            border: 1px solid {COLORS["accent"]};
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }}
+        .cp-cmd-titles {{
+            display: flex;
+            flex-direction: column;
+        }}
+        .cp-cmd-kicker {{
+            color: {COLORS["accent"]};
+            font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.12em;
-            margin-bottom: 7px;
+            text-transform: uppercase;
         }}
-        .cp-hero-title {{
-            font-size: 1.65rem;
-            font-weight: 700;
+        .cp-cmd-name {{
+            font-size: 1.6rem;
+            font-weight: 800;
             color: #ffffff;
             letter-spacing: -0.02em;
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            line-height: 1.2;
         }}
-        .cp-hero-sub {{
-            font-size: 0.88rem;
+        .cp-cmd-tagline {{
+            font-size: 0.85rem;
             color: {COLORS["text_muted"]};
-            margin: 4px 0 0 0;
+            margin: 2px 0 0 0;
         }}
-        .cp-chip-group {{
+        .cp-cmd-badges {{
             display: flex;
-            gap: 8px;
             align-items: center;
+            gap: 8px;
             flex-wrap: wrap;
         }}
-        .cp-chip {{
-            background: {COLORS["surface_raised"]};
-            border: 1px solid {COLORS["border"]};
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: {COLORS["text"]};
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }}
-        .cp-chip-accent {{
-            background: {COLORS["accent_subtle"]};
-            border: 1px solid {COLORS["accent"]};
-            color: #ffffff;
-            font-weight: 600;
-        }}
-        .cp-journey {{
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 8px;
-            margin: 1.35rem 0 0.9rem;
-        }}
-        .cp-journey > div {{
+
+        /* Transparent Data-Status Bar */
+        .cp-status-bar {{
             background: {COLORS["surface"]};
             border: 1px solid {COLORS["border"]};
             border-radius: 10px;
-            padding: 10px 12px;
-            min-width: 0;
+            padding: 10px 16px;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }}
-        .cp-journey strong {{
-            display: block;
-            color: #ffffff;
-            font-size: 0.82rem;
-            margin-bottom: 3px;
+        .cp-status-items {{
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
         }}
-        .cp-journey span {{
-            display: block;
+        .cp-status-item {{
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }}
+        .cp-status-label {{
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
             color: {COLORS["text_muted"]};
-            font-size: 0.72rem;
+        }}
+        .cp-status-value {{
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }}
+
+        .cp-pill {{
+            background: {COLORS["surface_raised"]};
+            border: 1px solid {COLORS["border"]};
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }}
+        .cp-pill-amber {{
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.4);
+            color: #FBBF24;
+        }}
+        .cp-pill-teal {{
+            background: {COLORS["accent_subtle"]};
+            border-color: {COLORS["accent"]};
+            color: {COLORS["accent"]};
+        }}
+        .cp-pill-red {{
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #F87171;
+        }}
+        .cp-pill-green {{
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34D399;
+        }}
+
+        /* KPI Cards */
+        .cp-kpi-card {{
+            background: {COLORS["surface"]};
+            border: 1px solid {COLORS["border"]};
+            border-top: 3px solid {COLORS["accent"]};
+            border-radius: 12px;
+            padding: 16px 18px;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }}
+        .cp-kpi-card:hover {{
+            transform: translateY(-2px);
+            border-color: {COLORS["border_focus"]};
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }}
+        .cp-kpi-label {{
+            font-size: 0.73rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: {COLORS["text_muted"]};
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }}
+        .cp-kpi-val {{
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            line-height: 1.1;
+        }}
+        .cp-kpi-sub {{
+            font-size: 0.78rem;
+            color: {COLORS["text_muted"]};
+            margin-top: 6px;
             line-height: 1.35;
         }}
+
+        /* Top Priority Action Queue */
         .cp-queue-card {{
             background: {COLORS["surface"]};
             border: 1px solid {COLORS["border"]};
             border-top: 3px solid {COLORS["accent"]};
-            border-radius: 11px;
+            border-radius: 10px;
             padding: 14px 16px;
             margin-bottom: 10px;
-            min-height: 154px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.15s ease;
+        }}
+        .cp-queue-card:hover {{
+            border-color: {COLORS["border_focus"]};
+            transform: translateY(-1px);
         }}
         .cp-queue-top {{
             display: flex;
@@ -250,29 +363,20 @@ def inject_custom_css():
         }}
         .cp-queue-rank {{
             color: {COLORS["text_muted"]};
-            font-size: 0.73rem;
+            font-size: 0.74rem;
             font-weight: 700;
             letter-spacing: 0.05em;
             text-transform: uppercase;
         }}
-        .cp-queue-aqi {{
-            border: 1px solid;
-            border-radius: 999px;
-            padding: 2px 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            white-space: nowrap;
-        }}
         .cp-queue-station {{
             color: #ffffff;
-            font-size: 1rem;
-            font-weight: 650;
+            font-size: 1.02rem;
+            font-weight: 700;
             line-height: 1.3;
-            overflow-wrap: anywhere;
         }}
         .cp-queue-meta {{
             color: {COLORS["text_muted"]};
-            font-size: 0.77rem;
+            font-size: 0.78rem;
             margin: 4px 0 10px;
         }}
         .cp-queue-action {{
@@ -281,64 +385,7 @@ def inject_custom_css():
             line-height: 1.45;
         }}
 
-        .cp-kpi-card {{
-            background: {COLORS["surface"]};
-            border: 1px solid {COLORS["border"]};
-            border-radius: 14px;
-            padding: 16px 18px;
-            transition: transform 0.15s ease, border-color 0.15s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-            position: relative;
-            overflow: hidden;
-        }}
-        .cp-kpi-card:hover {{
-            transform: translateY(-2px);
-            border-color: {COLORS["border_focus"]};
-        }}
-        .cp-kpi-label {{
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: {COLORS["text_muted"]};
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }}
-        .cp-kpi-val {{
-            font-size: 1.85rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-            line-height: 1.1;
-        }}
-        .cp-kpi-sub {{
-            font-size: 0.78rem;
-            color: {COLORS["text_muted"]};
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }}
-
-        .cp-takeaway {{
-            background: rgba(79, 140, 255, 0.08);
-            border-left: 4px solid {COLORS["accent"]};
-            border-radius: 8px;
-            padding: 12px 18px;
-            margin-bottom: 1.25rem;
-            font-size: 0.90rem;
-            color: {COLORS["text"]};
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }}
-        .cp-takeaway-strong {{
-            color: #ffffff;
-            font-weight: 600;
-        }}
-
+        /* Action Dossier */
         .cp-action-dossier {{
             background: {COLORS["surface"]};
             border: 1px solid {COLORS["border"]};
@@ -346,11 +393,11 @@ def inject_custom_css():
             border-radius: 12px;
             padding: 18px 22px;
             margin-top: 1rem;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
         }}
         .cp-action-title {{
             font-size: 1.05rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #ffffff;
             margin: 0 0 10px 0;
             display: flex;
@@ -375,6 +422,7 @@ def inject_custom_css():
             color: {COLORS["text_muted"]};
         }}
 
+        /* Section navigation styling */
         .stTabs [data-baseweb="tab-list"] {{
             gap: 6px;
             background-color: {COLORS["surface"]};
@@ -401,13 +449,13 @@ def inject_custom_css():
         }}
         .stTabs [aria-selected="true"] {{
             background-color: {COLORS["accent"]} !important;
-            color: #ffffff !important;
-            font-weight: 600 !important;
-            box-shadow: 0 2px 8px rgba(79, 140, 255, 0.3) !important;
+            color: #0B1220 !important;
+            font-weight: 700 !important;
+            box-shadow: 0 2px 8px rgba(45, 212, 191, 0.3) !important;
         }}
         .stTabs [data-baseweb="tab"]:focus-visible,
         button:focus-visible {{
-            outline: 2px solid {COLORS["accent_secondary"]} !important;
+            outline: 2px solid {COLORS["accent"]} !important;
             outline-offset: 2px !important;
         }}
 
@@ -415,93 +463,63 @@ def inject_custom_css():
             border: 1px solid {COLORS["border"]};
             border-radius: 10px;
             overflow: hidden;
+            background-color: {COLORS["surface"]};
         }}
 
-        .cp-banner-compact {{
-            background: rgba(245, 197, 66, 0.10);
-            border: 1px solid rgba(245, 197, 66, 0.35);
+        /* Sidebar radio navigation */
+        [data-testid="stSidebar"] [data-testid="stRadio"] > div {{
+            background: transparent;
+            gap: 4px;
+        }}
+        [data-testid="stSidebar"] [data-testid="stRadio"] label {{
+            background-color: rgba(22, 34, 53, 0.6);
+            border: 1px solid {COLORS["border"]};
             border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 0.80rem;
-            color: #F5C542;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            line-height: 1.4;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
         }}
-        .cp-banner-compact strong {{
-            color: #ffdc77;
-            white-space: nowrap;
-        }}
-        .cp-banner-compact span {{
-            color: {COLORS["text"]};
+        [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {{
+            background-color: {COLORS["surface_hover"]};
+            border-color: {COLORS["accent"]};
         }}
 
         .cp-footer {{
             margin-top: 3.5rem;
             padding-top: 1.5rem;
             padding-bottom: 2rem;
-            border-top: 1px solid rgba(143, 161, 189, 0.2);
+            border-top: 1px solid rgba(148, 163, 184, 0.15);
             text-align: center;
         }}
         .cp-footer-primary {{
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 500;
-            color: #E6EDF7;
+            color: #E2E8F0;
             margin-bottom: 6px;
-            letter-spacing: -0.01em;
         }}
-        .cp-footer-primary strong, .cp-footer-primary b {{
+        .cp-footer-primary strong {{
             color: #FFFFFF;
             font-weight: 700;
         }}
         .cp-footer-secondary {{
             font-size: 0.75rem;
-            color: #8FA1BD;
-            opacity: 0.85;
+            color: {COLORS["text_muted"]};
+            opacity: 0.9;
             line-height: 1.5;
             max-width: 820px;
             margin: 0 auto;
         }}
 
-        [data-testid="stIconMaterial"], .stIcon {{
-            vertical-align: -0.18em !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }}
-
-        .stTabs [data-baseweb="tab"] [data-testid="stIconMaterial"] {{
-            margin-right: 6px !important;
-            font-size: 1.05rem !important;
-            vertical-align: -0.15em !important;
-        }}
-
-        h1 [data-testid="stIconMaterial"],
-        h2 [data-testid="stIconMaterial"],
-        h3 [data-testid="stIconMaterial"],
-        h4 [data-testid="stIconMaterial"],
-        h5 [data-testid="stIconMaterial"],
-        h6 [data-testid="stIconMaterial"] {{
-            vertical-align: -0.15em !important;
-            margin-right: 4px !important;
-        }}
-        @media (max-width: 900px) {{
-            .cp-journey {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
-        }}
         @media (max-width: 640px) {{
-            .block-container {{ padding: 1rem 0.9rem 2rem !important; }}
-            .cp-hero {{ padding: 18px; }}
-            .cp-hero-title {{ font-size: 1.4rem; }}
-            .cp-chip-group {{ gap: 6px; }}
-            .cp-chip {{ font-size: 0.72rem; }}
-            .cp-journey {{ grid-template-columns: 1fr 1fr; gap: 6px; }}
-            .cp-journey > div {{ padding: 9px; }}
+            .block-container {{ padding: 0.8rem 0.8rem 2rem !important; }}
+            .cp-cmd-header {{ padding: 14px; }}
+            .cp-cmd-name {{ font-size: 1.3rem; }}
+            .cp-status-bar {{ padding: 10px 12px; }}
+            .cp-status-items {{ gap: 10px; }}
             .cp-evidence-grid {{ grid-template-columns: 1fr; }}
-            .cp-action-dossier {{ padding: 15px; }}
-            .stTabs [data-baseweb="tab"] {{ padding: 7px 10px !important; }}
+            .cp-action-dossier {{ padding: 14px; }}
+            .stTabs [data-baseweb="tab"] {{ padding: 6px 10px !important; }}
         }}
     </style>
     """
